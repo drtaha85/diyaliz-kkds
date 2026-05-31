@@ -5,251 +5,251 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Diyaliz KKDS — Yaşam Lab</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; min-height: 100vh; }
+ * { box-sizing: border-box; margin: 0; padding: 0; }
+ body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; min-height: 100vh; }
 
-  /* GİRİŞ */
-  #giris { min-height: 100vh; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
-  .giris-kart { background: #1e293b; border-radius: 20px; padding: 32px; width: 100%; max-width: 420px; box-shadow: 0 24px 80px rgba(0,0,0,0.5); }
-  .giris-baslik { text-align: center; margin-bottom: 28px; }
-  .giris-baslik .ikon { font-size: 52px; display: block; margin-bottom: 10px; }
-  .giris-baslik h1 { color: #f8fafc; font-size: 26px; font-weight: 900; letter-spacing: -1px; }
-  .giris-baslik p { color: #475569; font-size: 12px; margin-top: 6px; }
-  .form-grup { margin-bottom: 14px; }
-  .form-grup label { display: block; font-size: 11px; font-weight: 700; color: #475569; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
-  .form-grup input { width: 100%; padding: 11px 14px; background: #0f172a; border: 1.5px solid #334155; border-radius: 10px; font-size: 15px; color: #f1f5f9; outline: none; font-family: inherit; transition: border-color 0.2s; }
-  .form-grup input:focus { border-color: #3b82f6; }
-  .form-grup input.mono { font-family: monospace; letter-spacing: 2px; }
-  .btn-ana { width: 100%; padding: 13px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; margin-top: 6px; transition: opacity 0.2s; }
-  .btn-ana:disabled { background: #334155; cursor: not-allowed; }
-  .btn-ayar { width: 100%; margin-top: 10px; padding: 8px; background: transparent; color: #475569; border: 1px solid #334155; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; }
-  .ayar-panel { margin-top: 10px; padding: 14px; background: #0f172a; border-radius: 10px; border: 1px solid #334155; display: none; }
-  .ayar-panel.acik { display: block; }
-  .ayar-panel label { font-size: 11px; color: #475569; display: block; margin-bottom: 3px; margin-top: 8px; }
-  .ayar-panel input { width: 100%; padding: 7px 10px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; font-size: 13px; color: #f1f5f9; outline: none; font-family: monospace; }
+ /* GİRİŞ */
+ #giris { min-height: 100vh; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
+ .giris-kart { background: #1e293b; border-radius: 20px; padding: 32px; width: 100%; max-width: 420px; box-shadow: 0 24px 80px rgba(0,0,0,0.5); }
+ .giris-baslik { text-align: center; margin-bottom: 28px; }
+ .giris-baslik .ikon { font-size: 52px; display: block; margin-bottom: 10px; }
+ .giris-baslik h1 { color: #f8fafc; font-size: 26px; font-weight: 900; letter-spacing: -1px; }
+ .giris-baslik p { color: #475569; font-size: 12px; margin-top: 6px; }
+ .form-grup { margin-bottom: 14px; }
+ .form-grup label { display: block; font-size: 11px; font-weight: 700; color: #475569; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
+ .form-grup input { width: 100%; padding: 11px 14px; background: #0f172a; border: 1.5px solid #334155; border-radius: 10px; font-size: 15px; color: #f1f5f9; outline: none; font-family: inherit; transition: border-color 0.2s; }
+ .form-grup input:focus { border-color: #3b82f6; }
+ .form-grup input.mono { font-family: monospace; letter-spacing: 2px; }
+ .btn-ana { width: 100%; padding: 13px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; margin-top: 6px; transition: opacity 0.2s; }
+ .btn-ana:disabled { background: #334155; cursor: not-allowed; }
+ .btn-ayar { width: 100%; margin-top: 10px; padding: 8px; background: transparent; color: #475569; border: 1px solid #334155; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; }
+ .ayar-panel { margin-top: 10px; padding: 14px; background: #0f172a; border-radius: 10px; border: 1px solid #334155; display: none; }
+ .ayar-panel.acik { display: block; }
+ .ayar-panel label { font-size: 11px; color: #475569; display: block; margin-bottom: 3px; margin-top: 8px; }
+ .ayar-panel input { width: 100%; padding: 7px 10px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; font-size: 13px; color: #f1f5f9; outline: none; font-family: monospace; }
 
-  /* HEADER */
-  #header { background: #0f172a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
-  #header .sol .etiket { color: #3b82f6; font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; }
-  #header .sol .hasta-ad { color: #f8fafc; font-size: 20px; font-weight: 900; margin-top: 1px; }
-  #header .sol .hasta-alt { color: #475569; font-size: 11px; margin-top: 1px; }
-  #header .sag { display: flex; gap: 8px; align-items: center; }
-  .anomali-badge { background: #ef4444; color: #fff; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 800; }
-  .btn-geri { background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: inherit; }
+ /* HEADER */
+ #header { background: #0f172a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+ #header .sol .etiket { color: #3b82f6; font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; }
+ #header .sol .hasta-ad { color: #f8fafc; font-size: 20px; font-weight: 900; margin-top: 1px; }
+ #header .sol .hasta-alt { color: #475569; font-size: 11px; margin-top: 1px; }
+ #header .sag { display: flex; gap: 8px; align-items: center; }
+ .anomali-badge { background: #ef4444; color: #fff; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 800; }
+ .btn-geri { background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: inherit; }
 
-  /* TABS */
-  #tabs { background: #e2e8f0; padding: 0 24px; display: flex; gap: 3px; }
-  .tab { padding: 10px 18px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700; background: #e2e8f0; color: #64748b; position: relative; transition: all 0.15s; }
-  .tab.aktif { background: #0f172a; color: #fff; }
-  .tab .tab-badge { position: absolute; top: 4px; right: 4px; background: #ef4444; color: #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+ /* TABS */
+ #tabs { background: #e2e8f0; padding: 0 24px; display: flex; gap: 3px; }
+ .tab { padding: 10px 18px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700; background: #e2e8f0; color: #64748b; position: relative; transition: all 0.15s; }
+ .tab.aktif { background: #0f172a; color: #fff; }
+ .tab .tab-badge { position: absolute; top: 4px; right: 4px; background: #ef4444; color: #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
 
-  /* İÇERİK */
-  #icerik { padding: 20px 24px; max-width: 960px; margin: 0 auto; }
-  .panel { display: none; }
-  .panel.aktif { display: block; }
+ /* İÇERİK */
+ #icerik { padding: 20px 24px; max-width: 960px; margin: 0 auto; }
+ .panel { display: none; }
+ .panel.aktif { display: block; }
 
-  /* LAB PANELİ */
-  .cekme-kutu { background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-  .tarih-grup label { display: block; font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 1px; margin-bottom: 4px; }
-  .tarih-grup input { padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; color: #1e293b; }
-  .btn-cek { padding: 10px 24px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; transition: opacity 0.2s; }
-  .btn-cek:disabled { background: #94a3b8; cursor: not-allowed; }
-  .hata-kutu { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; color: #991b1b; font-size: 13px; }
-  .bos-kutu { background: #fff; border-radius: 14px; padding: 48px; text-align: center; color: #94a3b8; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-  .bos-kutu .bos-ikon { font-size: 40px; margin-bottom: 10px; }
-  .bos-kutu .bos-baslik { font-weight: 700; color: #64748b; margin-bottom: 4px; }
+ /* LAB PANELİ */
+ .cekme-kutu { background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+ .tarih-grup label { display: block; font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 1px; margin-bottom: 4px; }
+ .tarih-grup input { padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; color: #1e293b; }
+ .btn-cek { padding: 10px 24px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; transition: opacity 0.2s; }
+ .btn-cek:disabled { background: #94a3b8; cursor: not-allowed; }
+ .hata-kutu { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; color: #991b1b; font-size: 13px; }
+ .bos-kutu { background: #fff; border-radius: 14px; padding: 48px; text-align: center; color: #94a3b8; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+ .bos-kutu .bos-ikon { font-size: 40px; margin-bottom: 10px; }
+ .bos-kutu .bos-baslik { font-weight: 700; color: #64748b; margin-bottom: 4px; }
 
-  /* LAB TABLO */
-  .lab-tablo { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-  .lab-baslik { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 10px 12px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
-  .lab-baslik span { font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
-  .lab-satir { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; align-items: center; }
-  .lab-satir.high { background: #fff7ed; }
-  .lab-satir.low { background: #eff6ff; }
-  .lab-satir .test-ad { font-size: 13px; color: #334155; }
-  .lab-satir.high .test-ad, .lab-satir.low .test-ad { font-weight: 700; }
-  .lab-satir .sonuc-deger { font-size: 14px; font-weight: 700; }
-  .lab-satir.high .sonuc-deger { color: #9a3412; }
-  .lab-satir.low .sonuc-deger { color: #1e3a8a; }
-  .lab-satir.normal .sonuc-deger { color: #334155; }
-  .sonuc-birim { font-size: 11px; font-weight: 400; color: #94a3b8; }
-  .ref-deger { font-size: 12px; color: #94a3b8; }
+ /* LAB TABLO */
+ .lab-tablo { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+ .lab-baslik { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 10px 12px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+ .lab-baslik span { font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
+ .lab-satir { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; align-items: center; }
+ .lab-satir.high { background: #fff7ed; }
+ .lab-satir.low { background: #eff6ff; }
+ .lab-satir .test-ad { font-size: 13px; color: #334155; }
+ .lab-satir.high .test-ad, .lab-satir.low .test-ad { font-weight: 700; }
+ .lab-satir .sonuc-deger { font-size: 14px; font-weight: 700; }
+ .lab-satir.high .sonuc-deger { color: #9a3412; }
+ .lab-satir.low .sonuc-deger { color: #1e3a8a; }
+ .lab-satir.normal .sonuc-deger { color: #334155; }
+ .sonuc-birim { font-size: 11px; font-weight: 400; color: #94a3b8; }
+ .ref-deger { font-size: 12px; color: #94a3b8; }
 
-  /* BADGE */
-  .badge { border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 800; white-space: nowrap; color: #fff; }
-  .badge.normal { background: #16a34a; }
-  .badge.high { background: #ea580c; }
-  .badge.low { background: #2563eb; }
+ /* BADGE */
+ .badge { border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 800; white-space: nowrap; color: #fff; }
+ .badge.normal { background: #16a34a; }
+ .badge.high { background: #ea580c; }
+ .badge.low { background: #2563eb; }
 
-  /* TEDAVİ PANELİ */
-  .grup-baslik { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 8px; margin-top: 16px; }
-  .oneri-kart { border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; border-width: 1.5px; border-style: solid; }
-  .oneri-kart.normal { background: #f0fdf4; border-color: #bbf7d0; }
-  .oneri-kart.high { background: #fff7ed; border-color: #fed7aa; }
-  .oneri-kart.low { background: #eff6ff; border-color: #bfdbfe; }
-  .oneri-ust { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-  .oneri-param { font-weight: 700; color: #1e293b; font-size: 14px; }
-  .oneri-sag { display: flex; gap: 8px; align-items: center; }
-  .oneri-deger { font-weight: 700; font-size: 15px; }
-  .oneri-kart.high .oneri-deger { color: #9a3412; }
-  .oneri-kart.low .oneri-deger { color: #1e3a8a; }
-  .oneri-kart.normal .oneri-deger { color: #166534; }
-  .oneri-liste { margin: 4px 0 0; padding-left: 18px; }
-  .oneri-liste li { font-size: 13px; margin-bottom: 2px; }
-  .oneri-kart.high .oneri-liste li { color: #9a3412; }
-  .oneri-kart.low .oneri-liste li { color: #1e3a8a; }
-  .onay-kutu { background: #fff; border-radius: 14px; padding: 20px; margin-top: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-  .onay-satir { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; font-size: 13px; color: #475569; }
-  textarea.not-alani { width: 100%; margin-top: 12px; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; outline: none; }
-  textarea.not-alani:focus { border-color: #2563eb; }
+ /* TEDAVİ PANELİ */
+ .grup-baslik { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 8px; margin-top: 16px; }
+ .oneri-kart { border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; border-width: 1.5px; border-style: solid; }
+ .oneri-kart.normal { background: #f0fdf4; border-color: #bbf7d0; }
+ .oneri-kart.high { background: #fff7ed; border-color: #fed7aa; }
+ .oneri-kart.low { background: #eff6ff; border-color: #bfdbfe; }
+ .oneri-ust { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+ .oneri-param { font-weight: 700; color: #1e293b; font-size: 14px; }
+ .oneri-sag { display: flex; gap: 8px; align-items: center; }
+ .oneri-deger { font-weight: 700; font-size: 15px; }
+ .oneri-kart.high .oneri-deger { color: #9a3412; }
+ .oneri-kart.low .oneri-deger { color: #1e3a8a; }
+ .oneri-kart.normal .oneri-deger { color: #166534; }
+ .oneri-liste { margin: 4px 0 0; padding-left: 18px; }
+ .oneri-liste li { font-size: 13px; margin-bottom: 2px; }
+ .oneri-kart.high .oneri-liste li { color: #9a3412; }
+ .oneri-kart.low .oneri-liste li { color: #1e3a8a; }
+ .onay-kutu { background: #fff; border-radius: 14px; padding: 20px; margin-top: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+ .onay-satir { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; font-size: 13px; color: #475569; }
+ textarea.not-alani { width: 100%; margin-top: 12px; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; outline: none; }
+ textarea.not-alani:focus { border-color: #2563eb; }
 
-  /* AI PANELİ */
-  .ai-kutu { background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-  .btn-ai { width: 100%; padding: 13px; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
-  .btn-ai:disabled { background: #94a3b8; cursor: not-allowed; }
-  .ai-sonuc { background: #faf5ff; border: 1.5px solid #d8b4fe; border-radius: 14px; padding: 20px; }
-  .ai-sonuc-baslik { font-size: 13px; font-weight: 800; color: #6d28d9; margin-bottom: 12px; }
-  .ai-metin { font-size: 14px; color: #374151; line-height: 1.8; white-space: pre-wrap; }
-  .ai-uyari { margin-top: 12px; padding: 8px 12px; background: #fff7ed; border-radius: 8px; font-size: 11px; color: #9a3412; }
+ /* AI PANELİ */
+ .ai-kutu { background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+ .btn-ai { width: 100%; padding: 13px; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+ .btn-ai:disabled { background: #94a3b8; cursor: not-allowed; }
+ .ai-sonuc { background: #faf5ff; border: 1.5px solid #d8b4fe; border-radius: 14px; padding: 20px; }
+ .ai-sonuc-baslik { font-size: 13px; font-weight: 800; color: #6d28d9; margin-bottom: 12px; }
+ .ai-metin { font-size: 14px; color: #374151; line-height: 1.8; white-space: pre-wrap; }
+ .ai-uyari { margin-top: 12px; padding: 8px 12px; background: #fff7ed; border-radius: 8px; font-size: 11px; color: #9a3412; }
 
-  #ana { display: none; }
-  #ana.goster { display: block; }
-  #giris.gizli { display: none; }
+ #ana { display: none; }
+ #ana.goster { display: block; }
+ #giris.gizli { display: none; }
 </style>
 </head>
 <body>
 
 <!-- GİRİŞ EKRANI -->
 <div id="giris">
-  <div style="width:100%;max-width:700px;margin:0 auto;padding:20px;">
-    <div style="text-align:center;margin-bottom:24px;">
-      <span style="font-size:48px">🫀</span>
-      <h1 style="color:#f8fafc;font-size:24px;font-weight:900;margin:8px 0 4px;letter-spacing:-1px">Diyaliz KKDS</h1>
-      <p style="color:#475569;font-size:12px">Yaşam Lab Otomatik Entegrasyon — 205 Hasta</p>
-    </div>
+ <div style="width:100%;max-width:700px;margin:0 auto;padding:20px;">
+ <div style="text-align:center;margin-bottom:24px;">
+ <span style="font-size:48px">🫀</span>
+ <h1 style="color:#f8fafc;font-size:24px;font-weight:900;margin:8px 0 4px;letter-spacing:-1px">Diyaliz KKDS</h1>
+ <p style="color:#475569;font-size:12px">Yaşam Lab Otomatik Entegrasyon — 205 Hasta</p>
+ </div>
 
-    <!-- Arama -->
-    <div style="background:#1e293b;border-radius:14px;padding:16px;margin-bottom:16px;">
-      <input id="inp-arama" type="text" placeholder="🔍  Hasta adı veya TC ile ara..."
-        style="width:100%;padding:12px 16px;background:#0f172a;border:1.5px solid #334155;border-radius:10px;font-size:15px;color:#f1f5f9;outline:none;font-family:inherit;box-sizing:border-box;"
-        oninput="aramaYap(this.value)"
-        onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
-    </div>
+ <!-- Arama -->
+ <div style="background:#1e293b;border-radius:14px;padding:16px;margin-bottom:16px;">
+ <input id="inp-arama" type="text" placeholder="🔍 Hasta adı veya TC ile ara..."
+ style="width:100%;padding:12px 16px;background:#0f172a;border:1.5px solid #334155;border-radius:10px;font-size:15px;color:#f1f5f9;outline:none;font-family:inherit;box-sizing:border-box;"
+ oninput="aramaYap(this.value)"
+ onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
+ </div>
 
-    <!-- Manuel TC girişi -->
-    <div style="background:#1e293b;border-radius:14px;padding:16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-      <div style="flex:1;min-width:160px;">
-        <label style="display:block;font-size:10px;font-weight:700;color:#475569;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">TC Kimlik No</label>
-        <input class="mono" id="inp-tc" type="text" maxlength="11" placeholder="12345678901"
-          style="width:100%;padding:10px 14px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;font-size:14px;color:#f1f5f9;outline:none;font-family:monospace;letter-spacing:2px;box-sizing:border-box;"
-          onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
-      </div>
-      <div style="flex:2;min-width:160px;">
-        <label style="display:block;font-size:10px;font-weight:700;color:#475569;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">Adı Soyadı</label>
-        <input id="inp-ad" type="text" placeholder="Ad Soyad"
-          style="width:100%;padding:10px 14px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;font-size:14px;color:#f1f5f9;outline:none;font-family:inherit;box-sizing:border-box;"
-          onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
-      </div>
-      <button class="btn-ana" id="btn-giris" style="padding:10px 20px;white-space:nowrap;flex-shrink:0">GEÇ →</button>
-    </div>
+ <!-- Manuel TC girişi -->
+ <div style="background:#1e293b;border-radius:14px;padding:16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+ <div style="flex:1;min-width:160px;">
+ <label style="display:block;font-size:10px;font-weight:700;color:#475569;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">TC Kimlik No</label>
+ <input class="mono" id="inp-tc" type="text" maxlength="11" placeholder="12345678901"
+ style="width:100%;padding:10px 14px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;font-size:14px;color:#f1f5f9;outline:none;font-family:monospace;letter-spacing:2px;box-sizing:border-box;"
+ onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
+ </div>
+ <div style="flex:2;min-width:160px;">
+ <label style="display:block;font-size:10px;font-weight:700;color:#475569;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">Adı Soyadı</label>
+ <input id="inp-ad" type="text" placeholder="Ad Soyad"
+ style="width:100%;padding:10px 14px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;font-size:14px;color:#f1f5f9;outline:none;font-family:inherit;box-sizing:border-box;"
+ onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
+ </div>
+ <button class="btn-ana" id="btn-giris" style="padding:10px 20px;white-space:nowrap;flex-shrink:0">GEÇ →</button>
+ </div>
 
-    <!-- Hasta Listesi -->
-    <div style="background:#1e293b;border-radius:14px;overflow:hidden;max-height:55vh;overflow-y:auto;" id="hasta-liste-konteyner">
-      <div style="padding:10px 16px;background:#0f172a;border-bottom:1px solid #334155;display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;">
-        <span style="font-size:10px;font-weight:800;color:#475569;letter-spacing:1px;text-transform:uppercase">TC</span>
-        <span style="font-size:10px;font-weight:800;color:#475569;letter-spacing:1px;text-transform:uppercase">AD SOYAD</span>
-        <span style="font-size:10px;font-weight:800;color:#475569;letter-spacing:1px;text-transform:uppercase">YAŞ</span>
-      </div>
-      <div id="hasta-liste"></div>
-    </div>
+ <!-- Hasta Listesi -->
+ <div style="background:#1e293b;border-radius:14px;overflow:hidden;max-height:55vh;overflow-y:auto;" id="hasta-liste-konteyner">
+ <div style="padding:10px 16px;background:#0f172a;border-bottom:1px solid #334155;display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;">
+ <span style="font-size:10px;font-weight:800;color:#475569;letter-spacing:1px;text-transform:uppercase">TC</span>
+ <span style="font-size:10px;font-weight:800;color:#475569;letter-spacing:1px;text-transform:uppercase">AD SOYAD</span>
+ <span style="font-size:10px;font-weight:800;color:#475569;letter-spacing:1px;text-transform:uppercase">YAŞ</span>
+ </div>
+ <div id="hasta-liste"></div>
+ </div>
 
-    <!-- Ayarlar -->
-    <button class="btn-ayar" onclick="toggleAyar()" style="margin-top:12px">⚙️ Bağlantı Ayarları ▼</button>
-    <div class="ayar-panel" id="ayar-panel">
-      <div style="font-size:10px;color:#64748b;font-weight:700;letter-spacing:1px">YAŞAM LAB KREDENSİYELLERİ</div>
-      <label>Kullanıcı Adı</label>
-      <input id="inp-kullanici" value="YasamLab">
-      <label>Şifre</label>
-      <input id="inp-sifre" value="Yas*88amX48_">
-    </div>
-  </div>
+ <!-- Ayarlar -->
+ <button class="btn-ayar" onclick="toggleAyar()" style="margin-top:12px">⚙️ Bağlantı Ayarları ▼</button>
+ <div class="ayar-panel" id="ayar-panel">
+ <div style="font-size:10px;color:#64748b;font-weight:700;letter-spacing:1px">YAŞAM LAB KREDENSİYELLERİ</div>
+ <label>Kullanıcı Adı</label>
+ <input id="inp-kullanici" value="YasamLab">
+ <label>Şifre</label>
+ <input id="inp-sifre" value="Yas*88amX48_">
+ </div>
+ </div>
 </div>
 
 <!-- ANA EKRAN -->
 <div id="ana">
-  <div id="header">
-    <div class="sol">
-      <div class="etiket">Diyaliz KKDS · Yaşam Lab</div>
-      <div class="hasta-ad" id="goster-ad">—</div>
-      <div class="hasta-alt" id="goster-alt">—</div>
-    </div>
-    <div class="sag">
-      <span class="anomali-badge" id="anomali-badge" style="display:none"></span>
-      <button class="btn-geri" onclick="geriDon()">← Geri</button>
-    </div>
-  </div>
+ <div id="header">
+ <div class="sol">
+ <div class="etiket">Diyaliz KKDS · Yaşam Lab</div>
+ <div class="hasta-ad" id="goster-ad">—</div>
+ <div class="hasta-alt" id="goster-alt">—</div>
+ </div>
+ <div class="sag">
+ <span class="anomali-badge" id="anomali-badge" style="display:none"></span>
+ <button class="btn-geri" onclick="geriDon()">← Geri</button>
+ </div>
+ </div>
 
-  <div id="tabs">
-    <button class="tab aktif" onclick="sekmeAc('lab',this)">🔬 Laboratuvar</button>
-    <button class="tab" onclick="sekmeAc('tedavi',this)" id="tab-tedavi">💊 Tedavi</button>
-    <button class="tab" onclick="sekmeAc('ai',this)">🧠 AI Yorum</button>
-  </div>
+ <div id="tabs">
+ <button class="tab aktif" onclick="sekmeAc('lab',this)">🔬 Laboratuvar</button>
+ <button class="tab" onclick="sekmeAc('tedavi',this)" id="tab-tedavi">💊 Tedavi</button>
+ <button class="tab" onclick="sekmeAc('ai',this)">🧠 AI Yorum</button>
+ </div>
 
-  <div id="icerik">
-    <!-- LAB PANELİ -->
-    <div class="panel aktif" id="panel-lab">
-      <div class="cekme-kutu">
-        <div class="tarih-grup">
-          <label>Başlangıç</label>
-          <input type="date" id="tarih1">
-        </div>
-        <div class="tarih-grup">
-          <label>Bitiş</label>
-          <input type="date" id="tarih2">
-        </div>
-        <button class="btn-cek" id="btn-cek" onclick="labCek()">🔄 Lab Sonuçlarını Çek</button>
-      </div>
-      <div class="hata-kutu" id="hata-kutu" style="display:none"></div>
-      <div class="bos-kutu" id="bos-kutu">
-        <div class="bos-ikon">🔬</div>
-        <div class="bos-baslik">Lab sonucu yok</div>
-        <div style="font-size:13px">Tarih aralığı seçip butona tıklayın</div>
-      </div>
-      <div class="lab-tablo" id="lab-tablo" style="display:none">
-        <div class="lab-baslik">
-          <span>Test Adı</span><span>Sonuç</span><span>Referans</span><span>Durum</span>
-        </div>
-        <div id="lab-satirlar"></div>
-      </div>
-    </div>
+ <div id="icerik">
+ <!-- LAB PANELİ -->
+ <div class="panel aktif" id="panel-lab">
+ <div class="cekme-kutu">
+ <div class="tarih-grup">
+ <label>Başlangıç</label>
+ <input type="date" id="tarih1">
+ </div>
+ <div class="tarih-grup">
+ <label>Bitiş</label>
+ <input type="date" id="tarih2">
+ </div>
+ <button class="btn-cek" id="btn-cek" onclick="labCek()">🔄 Lab Sonuçlarını Çek</button>
+ </div>
+ <div class="hata-kutu" id="hata-kutu" style="display:none"></div>
+ <div class="bos-kutu" id="bos-kutu">
+ <div class="bos-ikon">🔬</div>
+ <div class="bos-baslik">Lab sonucu yok</div>
+ <div style="font-size:13px">Tarih aralığı seçip butona tıklayın</div>
+ </div>
+ <div class="lab-tablo" id="lab-tablo" style="display:none">
+ <div class="lab-baslik">
+ <span>Test Adı</span><span>Sonuç</span><span>Referans</span><span>Durum</span>
+ </div>
+ <div id="lab-satirlar"></div>
+ </div>
+ </div>
 
-    <!-- TEDAVİ PANELİ -->
-    <div class="panel" id="panel-tedavi">
-      <div class="bos-kutu" id="tedavi-bos" style="display:none">
-        <div class="bos-ikon">💊</div>
-        <div class="bos-baslik">Önce lab sonuçlarını çekin</div>
-      </div>
-      <div id="oneri-icerik"></div>
-      <div class="onay-kutu" id="onay-kutu" style="display:none">
-        <div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:12px">✅ Hekim Onayı</div>
-        <div id="onay-satirlar"></div>
-        <textarea class="not-alani" rows="4" placeholder="Tedavi planı notu..."></textarea>
-      </div>
-    </div>
+ <!-- TEDAVİ PANELİ -->
+ <div class="panel" id="panel-tedavi">
+ <div class="bos-kutu" id="tedavi-bos" style="display:none">
+ <div class="bos-ikon">💊</div>
+ <div class="bos-baslik">Önce lab sonuçlarını çekin</div>
+ </div>
+ <div id="oneri-icerik"></div>
+ <div class="onay-kutu" id="onay-kutu" style="display:none">
+ <div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:12px">✅ Hekim Onayı</div>
+ <div id="onay-satirlar"></div>
+ <textarea class="not-alani" rows="4" placeholder="Tedavi planı notu..."></textarea>
+ </div>
+ </div>
 
-    <!-- AI PANELİ -->
-    <div class="panel" id="panel-ai">
-      <div class="ai-kutu">
-        <p style="font-size:13px;color:#64748b;margin-bottom:14px">Mevcut lab sonuçlarına göre KDIGO bazlı AI klinik yorum alın.</p>
-        <button class="btn-ai" id="btn-ai" onclick="aiYorumAl()">🧠 AI Klinik Yorum Al</button>
-      </div>
-      <div class="ai-sonuc" id="ai-sonuc" style="display:none">
-        <div class="ai-sonuc-baslik">🧠 AI Klinik Değerlendirme</div>
-        <div class="ai-metin" id="ai-metin"></div>
-        <div class="ai-uyari">⚠️ Bu yorum karar desteği amaçlıdır. Nihai klinik karar hekime aittir.</div>
-      </div>
-    </div>
-  </div>
+ <!-- AI PANELİ -->
+ <div class="panel" id="panel-ai">
+ <div class="ai-kutu">
+ <p style="font-size:13px;color:#64748b;margin-bottom:14px">Mevcut lab sonuçlarına göre KDIGO bazlı AI klinik yorum alın.</p>
+ <button class="btn-ai" id="btn-ai" onclick="aiYorumAl()">🧠 AI Klinik Yorum Al</button>
+ </div>
+ <div class="ai-sonuc" id="ai-sonuc" style="display:none">
+ <div class="ai-sonuc-baslik">🧠 AI Klinik Değerlendirme</div>
+ <div class="ai-metin" id="ai-metin"></div>
+ <div class="ai-uyari">⚠️ Bu yorum karar desteği amaçlıdır. Nihai klinik karar hekime aittir.</div>
+ </div>
+ </div>
+ </div>
 </div>
 
 <script>
@@ -257,49 +257,49 @@
 const HASTALAR = [{"tc": "39067178292", "ad": "ABDULAZİZ ÜREY", "yas": "51", "tip": "Aktif"}, {"tc": "27412557250", "ad": "ABDULGAFUR YAĞCI", "yas": "76", "tip": "Aktif"}, {"tc": "38977155140", "ad": "ABDULHALİM EKİN", "yas": "51", "tip": "Aktif"}, {"tc": "43606008704", "ad": "ABDULLAH ATAY", "yas": "75", "tip": "Aktif"}, {"tc": "38908166146", "ad": "ABDULSELAM EVRAN", "yas": "46", "tip": "Aktif"}, {"tc": "39778154936", "ad": "ABDURRAHMAN CAN", "yas": "73", "tip": "Aktif"}, {"tc": "23968676704", "ad": "ABDURRAHMAN TAŞDEMİR", "yas": "78", "tip": "Aktif"}, {"tc": "32566376930", "ad": "ABDURRAHMAN YALÇIN", "yas": "45", "tip": "Aktif"}, {"tc": "22546714708", "ad": "ADEM KARAMAN", "yas": "70", "tip": "Aktif"}, {"tc": "27130568934", "ad": "ADİLE TAŞ", "yas": "75", "tip": "Aktif"}, {"tc": "38776183788", "ad": "AHMET ÇİFTÇİ", "yas": "82", "tip": "Aktif"}, {"tc": "40966103650", "ad": "AHMET GÖREN", "yas": "74", "tip": "Aktif"}, {"tc": "29995478700", "ad": "AHMET İPEK", "yas": "57", "tip": "Aktif"}, {"tc": "16546913780", "ad": "AHMET BARAN GÜZEL", "yas": "72", "tip": "Aktif"}, {"tc": "26965566870", "ad": "ALİ ERGÜN", "yas": "70", "tip": "Aktif"}, {"tc": "23581683196", "ad": "ALİ YAĞMUR", "yas": "55", "tip": "Aktif"}, {"tc": "38443182700", "ad": "ANBER YILDIZ", "yas": "50", "tip": "Aktif"}, {"tc": "43006030466", "ad": "ASIM KARAKAŞ", "yas": "78", "tip": "Aktif"}, {"tc": "42001080544", "ad": "ASIM KAYA", "yas": "64", "tip": "Aktif"}, {"tc": "15064976536", "ad": "AYNUR ASOROĞLU", "yas": "56", "tip": "Aktif"}, {"tc": "37654214002", "ad": "AYŞAN ARIK", "yas": "75", "tip": "Aktif"}, {"tc": "11852073906", "ad": "AYŞE AVAR", "yas": "55", "tip": "Aktif"}, {"tc": "17743870838", "ad": "AZİZ BİRKAN", "yas": "37", "tip": "Aktif"}, {"tc": "41653091694", "ad": "AZİZE BARAN", "yas": "63", "tip": "Aktif"}, {"tc": "21781752070", "ad": "BAYRAM KARACADAĞ", "yas": "75", "tip": "Aktif"}, {"tc": "21043779104", "ad": "BAYRAM YÜZEN", "yas": "46", "tip": "Aktif"}, {"tc": "34003345394", "ad": "BEHİYE ARTİL", "yas": "79", "tip": "Aktif"}, {"tc": "18658857648", "ad": "CANDAN YILDIZ", "yas": "65", "tip": "Aktif"}, {"tc": "30502439220", "ad": "CELAL ALTINKILIÇ", "yas": "71", "tip": "Aktif"}, {"tc": "43639024450", "ad": "CELAL ÇANKARA", "yas": "48", "tip": "Aktif"}, {"tc": "16966893716", "ad": "CEMİL DÜZÜN", "yas": "69", "tip": "Aktif"}, {"tc": "15220951308", "ad": "CEYLAN SAKALLI", "yas": "41", "tip": "Aktif"}, {"tc": "58591595962", "ad": "CRISTİNA YILDIZ", "yas": "40", "tip": "Aktif"}, {"tc": "11990059688", "ad": "ÇİÇEK KAYMAZ", "yas": "74", "tip": "Aktif"}, {"tc": "18661859172", "ad": "DAVUT ÖZBEK", "yas": "42", "tip": "Aktif"}, {"tc": "18376866038", "ad": "DİCLE FİLİZ", "yas": "56", "tip": "Aktif"}, {"tc": "74140025766", "ad": "DİLFURUŞ BEDİRHANOĞLU", "yas": "70", "tip": "Aktif"}, {"tc": "19471816546", "ad": "EKREM KAYA", "yas": "63", "tip": "Aktif"}, {"tc": "38854174134", "ad": "EMİNE KAYA", "yas": "75", "tip": "Aktif"}, {"tc": "13625025914", "ad": "EMİNE YILDIRIM", "yas": "46", "tip": "Misafir"}, {"tc": "37675222352", "ad": "EMRE KURTOĞLU", "yas": "40", "tip": "Aktif"}, {"tc": "30928450236", "ad": "ENSARİ ATLI", "yas": "68", "tip": "Aktif"}, {"tc": "27925556214", "ad": "ERCAN BÜLBÜL", "yas": "34", "tip": "Aktif"}, {"tc": "12353072474", "ad": "ERDAL MEDENİ", "yas": "49", "tip": "Aktif"}, {"tc": "38479192698", "ad": "FADLİ ARSLAN", "yas": "64", "tip": "Aktif"}, {"tc": "25144634638", "ad": "FAHRİ MEHDİ AYDIN", "yas": "71", "tip": "Aktif"}, {"tc": "12578058994", "ad": "FAHRİYE TEKEŞ", "yas": "84", "tip": "Aktif"}, {"tc": "39766135404", "ad": "FARUK ALTUNTAŞ", "yas": "43", "tip": "Misafir"}, {"tc": "27106559386", "ad": "FARUK KAN", "yas": "57", "tip": "Aktif"}, {"tc": "12815042328", "ad": "FARUK ZENGİN", "yas": "50", "tip": "Aktif"}, {"tc": "35779261796", "ad": "FATMA AKYILDIZ", "yas": "79", "tip": "Aktif"}, {"tc": "26506597066", "ad": "FAYSAL AYDIN", "yas": "51", "tip": "Aktif"}, {"tc": "28742535826", "ad": "FERSENDE DURAN", "yas": "58", "tip": "Aktif"}, {"tc": "32917367952", "ad": "FİKRET ÇETİNKAYA", "yas": "57", "tip": "Aktif"}, {"tc": "30094470366", "ad": "FİKRİYE ÇİÇEK", "yas": "78", "tip": "Aktif"}, {"tc": "42901048996", "ad": "GEVRİ ESİN", "yas": "81", "tip": "Aktif"}, {"tc": "16705921304", "ad": "GÜLLÜ GÜZ", "yas": "96", "tip": "Aktif"}, {"tc": "34252339472", "ad": "GÜLNAZ ÇELİK", "yas": "52", "tip": "Aktif"}, {"tc": "27277272848", "ad": "GÜNAY AKŞİT", "yas": "82", "tip": "Misafir"}, {"tc": "50269537298", "ad": "HACİRE BEBE", "yas": "39", "tip": "Aktif"}, {"tc": "19501562672", "ad": "HACİRE ELALDI", "yas": "62", "tip": "Aktif"}, {"tc": "30733454122", "ad": "HAFİFE GÖR", "yas": "72", "tip": "Aktif"}, {"tc": "13342767968", "ad": "HALİSE BÖRÜTEÇENE", "yas": "73", "tip": "Aktif"}, {"tc": "26821564880", "ad": "HALİT AÇIL", "yas": "59", "tip": "Misafir"}, {"tc": "18997829542", "ad": "HAMİRE DOĞAN", "yas": "76", "tip": "Aktif"}, {"tc": "26338586146", "ad": "HANIM AYGÜN", "yas": "71", "tip": "Aktif"}, {"tc": "22363713748", "ad": "HANIM GÜNDOĞDU", "yas": "81", "tip": "Aktif"}, {"tc": "30565446340", "ad": "HANİFE GÜLSÜN", "yas": "75", "tip": "Aktif"}, {"tc": "19036828366", "ad": "HAYRİ KARAMAN", "yas": "40", "tip": "Aktif"}, {"tc": "23578683260", "ad": "HAYRİ YAĞMUR", "yas": "53", "tip": "Aktif"}, {"tc": "30541461206", "ad": "HAYRİYE BARAN", "yas": "75", "tip": "Aktif"}, {"tc": "43423031718", "ad": "HAYRULLAH TÜRKER", "yas": "43", "tip": "Aktif"}, {"tc": "10229140234", "ad": "HEDİYE POLAT", "yas": "61", "tip": "Aktif"}, {"tc": "20059797188", "ad": "HIDIR ARTEN", "yas": "54", "tip": "Aktif"}, {"tc": "22219739892", "ad": "HİLMİ AKYOL", "yas": "65", "tip": "Aktif"}, {"tc": "41662086520", "ad": "HORİYE GÖKMEN", "yas": "64", "tip": "Aktif"}, {"tc": "20935765096", "ad": "HÜSEYİN ARIKAN", "yas": "77", "tip": "Aktif"}, {"tc": "15112955650", "ad": "HÜSEYİN BOYLU", "yas": "57", "tip": "Aktif"}, {"tc": "39091162922", "ad": "HÜSEYİN PINAR", "yas": "69", "tip": "Aktif"}, {"tc": "40084144016", "ad": "HÜSNA LALE", "yas": "59", "tip": "Aktif"}, {"tc": "11840064442", "ad": "HÜSNİYE ARSLAN", "yas": "64", "tip": "Aktif"}, {"tc": "33655334664", "ad": "İBRAHİM GÜLER", "yas": "89", "tip": "Aktif"}, {"tc": "38830186502", "ad": "İSA SOYSAL", "yas": "73", "tip": "Aktif"}, {"tc": "12107809592", "ad": "İSMAİL DEMİR", "yas": "23", "tip": "Misafir"}, {"tc": "13801752658", "ad": "KADER ELHAMAN", "yas": "28", "tip": "Aktif"}, {"tc": "37489213096", "ad": "KADRİYE EVSEN", "yas": "57", "tip": "Aktif"}, {"tc": "34003330994", "ad": "KAMİL ÇETİNKAYA", "yas": "70", "tip": "Aktif"}, {"tc": "39148153712", "ad": "KEMAL AĞIRBAŞ", "yas": "62", "tip": "Aktif"}, {"tc": "35230335172", "ad": "KENAN KAPLAN", "yas": "58", "tip": "Misafir"}, {"tc": "43669019648", "ad": "KUTBETTİN UÇAN", "yas": "71", "tip": "Aktif"}, {"tc": "33628348254", "ad": "LEYLA KAYHAN", "yas": "63", "tip": "Aktif"}, {"tc": "20572783330", "ad": "LEYLA ÜNAL", "yas": "85", "tip": "Aktif"}, {"tc": "18187873812", "ad": "MAHMUT DUMLUPINAR", "yas": "72", "tip": "Aktif"}, {"tc": "15400965842", "ad": "MAKBULE TUNÇ", "yas": "74", "tip": "Aktif"}, {"tc": "60949459130", "ad": "MAŞALLAH KÜNKÜR", "yas": "60", "tip": "Misafir"}, {"tc": "63784207850", "ad": "MEDENİ LALE", "yas": "77", "tip": "Aktif"}, {"tc": "18862583562", "ad": "MEDİNE BÜDÜŞ", "yas": "45", "tip": "Aktif"}, {"tc": "22141731438", "ad": "MEDİNE ÜRKÜT", "yas": "55", "tip": "Aktif"}, {"tc": "17578893682", "ad": "MEHMET ATLI", "yas": "80", "tip": "Misafir"}, {"tc": "19094587182", "ad": "MEHMET AYKAL", "yas": "45", "tip": "Aktif"}, {"tc": "21067760874", "ad": "MEHMET CENGİZ", "yas": "77", "tip": "Aktif"}, {"tc": "18262871252", "ad": "MEHMET ÇELİK", "yas": "61", "tip": "Aktif"}, {"tc": "42136082062", "ad": "MEHMET EK", "yas": "86", "tip": "Aktif"}, {"tc": "33901388410", "ad": "MEHMET KELEŞ", "yas": "67", "tip": "Aktif"}, {"tc": "29257506028", "ad": "MEHMET KÖPRÜ", "yas": "59", "tip": "Aktif"}, {"tc": "15673958060", "ad": "MEHMET ONUR", "yas": "71", "tip": "Aktif"}, {"tc": "24292654420", "ad": "MEHMET ÖZGEN", "yas": "65", "tip": "Aktif"}, {"tc": "22825717598", "ad": "MEHMET AKİF ELCAN", "yas": "58", "tip": "Aktif"}, {"tc": "63958112386", "ad": "MEHMET ALİ GÜMÜŞ", "yas": "80", "tip": "Aktif"}, {"tc": "23743695302", "ad": "MEHMET ALİ OĞUZSOY", "yas": "42", "tip": "Aktif"}, {"tc": "37309232122", "ad": "MEHMET ALİ ÖNLÜ", "yas": "83", "tip": "Aktif"}, {"tc": "32584373140", "ad": "MEHMET BEŞİR AKYÜZ", "yas": "63", "tip": "Aktif"}, {"tc": "42790052234", "ad": "MEHMET EMİN KAN", "yas": "80", "tip": "Aktif"}, {"tc": "42424066996", "ad": "MEHMET KADRİ KARDAŞ", "yas": "69", "tip": "Aktif"}, {"tc": "16930916038", "ad": "MEHMET SAİT AKTAŞ", "yas": "62", "tip": "Aktif"}, {"tc": "23158708802", "ad": "MEHMET SELİM TANRIKULU", "yas": "76", "tip": "Aktif"}, {"tc": "32698391382", "ad": "MEHMET ŞAH YOLDAŞ", "yas": "58", "tip": "Aktif"}, {"tc": "34931332480", "ad": "MEHMET VEDAT SAYIN", "yas": "76", "tip": "Aktif"}, {"tc": "16927916102", "ad": "MEHMET ZÜLFİ AKTAŞ", "yas": "56", "tip": "Aktif"}, {"tc": "31612426476", "ad": "MEKİYE SÜGÜCİ", "yas": "79", "tip": "Aktif"}, {"tc": "41785073926", "ad": "MELEK KARADUMAN", "yas": "24", "tip": "Aktif"}, {"tc": "34351061182", "ad": "MESİH BABAYİĞİT", "yas": "63", "tip": "Aktif"}, {"tc": "38764173302", "ad": "MEŞEDİYE İZ", "yas": "65", "tip": "Aktif"}, {"tc": "15937941616", "ad": "METİN AY", "yas": "60", "tip": "Aktif"}, {"tc": "13520025132", "ad": "MEVLÜDE ALDAN", "yas": "76", "tip": "Aktif"}, {"tc": "42943048756", "ad": "MEYASE DOSTER", "yas": "83", "tip": "Aktif"}, {"tc": "32590372168", "ad": "MEYMO GEZER", "yas": "87", "tip": "Aktif"}, {"tc": "11546100772", "ad": "MİRAY ÇAKIRCA", "yas": "20", "tip": "Aktif"}, {"tc": "11090094442", "ad": "MURAT YOKUŞ", "yas": "50", "tip": "Aktif"}, {"tc": "53380195408", "ad": "MUSTAFA ARICA", "yas": "66", "tip": "Aktif"}, {"tc": "22094160712", "ad": "MUSTAFA ÇELİK", "yas": "23", "tip": "Aktif"}, {"tc": "37375219928", "ad": "MÜNİRE YERLİKAYA", "yas": "74", "tip": "Aktif"}, {"tc": "16033944280", "ad": "MÜRSEL AYDIN", "yas": "68", "tip": "Aktif"}, {"tc": "34204335194", "ad": "MÜRVET ALTAŞ", "yas": "45", "tip": "Aktif"}, {"tc": "21697750030", "ad": "MÜRVET EFE", "yas": "76", "tip": "Aktif"}, {"tc": "40948097304", "ad": "NACİ ATEŞ", "yas": "50", "tip": "Aktif"}, {"tc": "17698873144", "ad": "NACİYE BURAN", "yas": "66", "tip": "Aktif"}, {"tc": "35086310040", "ad": "NASRETTİN TOLAT", "yas": "65", "tip": "Aktif"}, {"tc": "28699508928", "ad": "NAZİME ERGİN", "yas": "60", "tip": "Aktif"}, {"tc": "48931582066", "ad": "NEDİME KARDAŞ", "yas": "67", "tip": "Aktif"}, {"tc": "40375112878", "ad": "NEJLA DİNÇ", "yas": "66", "tip": "Aktif"}, {"tc": "21232770936", "ad": "NESİME ÖZEKİNCİ", "yas": "81", "tip": "Aktif"}, {"tc": "11228100342", "ad": "NURHAYAT AY", "yas": "24", "tip": "Aktif"}, {"tc": "28813502290", "ad": "NURİYE ASLAN", "yas": "71", "tip": "Aktif"}, {"tc": "41647070582", "ad": "NURİYE GÜZEL", "yas": "72", "tip": "Aktif"}, {"tc": "39328153464", "ad": "NURSULTAN KAYHAN", "yas": "28", "tip": "Aktif"}, {"tc": "10274123190", "ad": "NUSRET TÜRK", "yas": "74", "tip": "Aktif"}, {"tc": "12344052720", "ad": "ÖMER ÖZDEMİR", "yas": "65", "tip": "Aktif"}, {"tc": "42382056886", "ad": "ÖMER VAR", "yas": "61", "tip": "Aktif"}, {"tc": "29464488780", "ad": "RAİF EKİCİ", "yas": "72", "tip": "Aktif"}, {"tc": "41572069576", "ad": "RAMAZAN KARDEŞOĞLU", "yas": "55", "tip": "Aktif"}, {"tc": "12896051912", "ad": "REMZİYE ALKAÇ", "yas": "48", "tip": "Aktif"}, {"tc": "18388867290", "ad": "REMZİYE POLAT", "yas": "55", "tip": "Aktif"}, {"tc": "62245418866", "ad": "REYHAN EKMEN", "yas": "53", "tip": "Aktif"}, {"tc": "43504026060", "ad": "RİHAN TAŞKAYA", "yas": "60", "tip": "Aktif"}, {"tc": "33358100856", "ad": "SABAHATTİN ŞEREN", "yas": "35", "tip": "Aktif"}, {"tc": "29242500598", "ad": "SABİHA ALPARSLAN", "yas": "43", "tip": "Aktif"}, {"tc": "18997845696", "ad": "SABİHA ENGİN", "yas": "76", "tip": "Aktif"}, {"tc": "28786499306", "ad": "SADET TAŞKURA", "yas": "58", "tip": "Aktif"}, {"tc": "38746184630", "ad": "SAİDE BAŞAK", "yas": "32", "tip": "Aktif"}, {"tc": "24124671748", "ad": "SAİP BORA", "yas": "46", "tip": "Aktif"}, {"tc": "25366635758", "ad": "SAİT DÜNDAR", "yas": "56", "tip": "Aktif"}, {"tc": "26881582640", "ad": "SALAHATTİN BORAHAN", "yas": "71", "tip": "Aktif"}, {"tc": "17509887308", "ad": "SALİHA YENER", "yas": "71", "tip": "Aktif"}, {"tc": "15529688318", "ad": "SARİYE GÖZEGEÇ", "yas": "63", "tip": "Aktif"}, {"tc": "27325559952", "ad": "SEBİHA ERGÖRMÜŞ", "yas": "70", "tip": "Aktif"}, {"tc": "23215689242", "ad": "SEDİRYE ENSARİ", "yas": "79", "tip": "Aktif"}, {"tc": "35338288066", "ad": "SELAHADDİN ALP", "yas": "74", "tip": "Aktif"}, {"tc": "20614791774", "ad": "SELAHAT UZEL", "yas": "64", "tip": "Aktif"}, {"tc": "35152300920", "ad": "SELCA EREN", "yas": "53", "tip": "Aktif"}, {"tc": "20014812918", "ad": "SELMA UZUNBOY", "yas": "64", "tip": "Aktif"}, {"tc": "21787749050", "ad": "SENİHA KIRINFIL", "yas": "35", "tip": "Aktif"}, {"tc": "17557893566", "ad": "SERDAR BAYDAN", "yas": "28", "tip": "Aktif"}, {"tc": "19585827476", "ad": "SERDAR DEMİR", "yas": "47", "tip": "Misafir"}, {"tc": "15647067118", "ad": "SERKAN ALDEMİR", "yas": "46", "tip": "Aktif"}, {"tc": "43990002760", "ad": "SERVET OBİ", "yas": "55", "tip": "Aktif"}, {"tc": "32371400134", "ad": "SEVİNÇ GÖRCEĞİZ", "yas": "58", "tip": "Misafir"}, {"tc": "40750117498", "ad": "SIDDIKA MARAL", "yas": "70", "tip": "Misafir"}, {"tc": "17470892974", "ad": "SİTTİ YERLİKAYA", "yas": "66", "tip": "Aktif"}, {"tc": "13328723278", "ad": "SONGÜL BAYIR", "yas": "36", "tip": "Aktif"}, {"tc": "37372233910", "ad": "SULTAN NERGİZ", "yas": "85", "tip": "Aktif"}, {"tc": "35731282562", "ad": "SÜLEYMAN YAZICI", "yas": "75", "tip": "Aktif"}, {"tc": "39184172050", "ad": "ŞABAN TİNTE", "yas": "42", "tip": "Aktif"}, {"tc": "46738654924", "ad": "ŞAHİDE KILINÇER", "yas": "53", "tip": "Aktif"}, {"tc": "42967031710", "ad": "ŞAHİN KARAKAŞ", "yas": "60", "tip": "Aktif"}, {"tc": "37636218646", "ad": "ŞAİZE ÇELİK", "yas": "65", "tip": "Misafir"}, {"tc": "10139142472", "ad": "ŞEHMUS AKBA", "yas": "44", "tip": "Aktif"}, {"tc": "33628344812", "ad": "ŞERİFE YILDIZ", "yas": "73", "tip": "Aktif"}, {"tc": "24559659960", "ad": "ŞÜKRAN BALDAN", "yas": "68", "tip": "Aktif"}, {"tc": "26884563158", "ad": "TALİA MECİTOĞLU", "yas": "59", "tip": "Aktif"}, {"tc": "23276247856", "ad": "TANSU TETİK", "yas": "59", "tip": "Aktif"}, {"tc": "18079876938", "ad": "TUHFETULLAH İLER", "yas": "82", "tip": "Aktif"}, {"tc": "37267233452", "ad": "VESİLE ETYEMEZ", "yas": "66", "tip": "Aktif"}, {"tc": "22819719706", "ad": "VEYSİ DONAT", "yas": "31", "tip": "Aktif"}, {"tc": "10154147452", "ad": "VEYSİ EKİN", "yas": "28", "tip": "Aktif"}, {"tc": "37522215018", "ad": "YAKUP BAYAR", "yas": "63", "tip": "Aktif"}, {"tc": "22147736956", "ad": "YAŞAR BALAMİR", "yas": "59", "tip": "Aktif"}, {"tc": "37399228586", "ad": "YUSUF ÇARIK", "yas": "48", "tip": "Aktif"}, {"tc": "11087092604", "ad": "YUSUF BİLAL AYDENİZ", "yas": "35", "tip": "Aktif"}, {"tc": "33457360090", "ad": "YÜKSEL KARHAN", "yas": "66", "tip": "Aktif"}, {"tc": "17194908166", "ad": "ZAHAT ÇAKIR", "yas": "33", "tip": "Aktif"}, {"tc": "18205871394", "ad": "ZEKİYE TELAL", "yas": "78", "tip": "Aktif"}, {"tc": "19006852810", "ad": "ZEYNEP SERT", "yas": "62", "tip": "Aktif"}, {"tc": "27736281602", "ad": "ZÜBEYDE ÇERİOĞLU", "yas": "64", "tip": "Aktif"}, {"tc": "10004128938", "ad": "ZÜLFİYE BİLGİN", "yas": "48", "tip": "Aktif"}];
 
 function renderHastaListesi(liste) {
-  const konteyner = document.getElementById('hasta-liste');
-  if (!konteyner) return;
-  konteyner.innerHTML = '';
-  liste.forEach(h => {
-    const div = document.createElement('div');
-    div.style.cssText = 'display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;padding:10px 16px;border-bottom:1px solid #1e293b;cursor:pointer;transition:background 0.15s;align-items:center;';
-    div.innerHTML = `
-      <span style="font-size:12px;color:#64748b;font-family:monospace">${h.tc}</span>
-      <span style="font-size:14px;font-weight:700;color:#f1f5f9">${h.ad}</span>
-      <span style="font-size:13px;color:#94a3b8">${h.yas} yaş</span>
-    `;
-    div.onmouseenter = () => div.style.background = '#334155';
-    div.onmouseleave = () => div.style.background = 'transparent';
-    div.onclick = () => {
-      document.getElementById('inp-tc').value = h.tc;
-      document.getElementById('inp-ad').value = h.ad;
-      hastaGir(h.tc, h.ad);
-    };
-    konteyner.appendChild(div);
-  });
-  if (liste.length === 0) {
-    konteyner.innerHTML = '<div style="padding:24px;text-align:center;color:#475569;font-size:13px">Hasta bulunamadı</div>';
-  }
+ const konteyner = document.getElementById('hasta-liste');
+ if (!konteyner) return;
+ konteyner.innerHTML = '';
+ liste.forEach(h => {
+ const div = document.createElement('div');
+ div.style.cssText = 'display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;padding:10px 16px;border-bottom:1px solid #1e293b;cursor:pointer;transition:background 0.15s;align-items:center;';
+ div.innerHTML = `
+ <span style="font-size:12px;color:#64748b;font-family:monospace">${h.tc}</span>
+ <span style="font-size:14px;font-weight:700;color:#f1f5f9">${h.ad}</span>
+ <span style="font-size:13px;color:#94a3b8">${h.yas} yaş</span>
+ `;
+ div.onmouseenter = () => div.style.background = '#334155';
+ div.onmouseleave = () => div.style.background = 'transparent';
+ div.onclick = () => {
+ document.getElementById('inp-tc').value = h.tc;
+ document.getElementById('inp-ad').value = h.ad;
+ hastaGir(h.tc, h.ad);
+ };
+ konteyner.appendChild(div);
+ });
+ if (liste.length === 0) {
+ konteyner.innerHTML = '<div style="padding:24px;text-align:center;color:#475569;font-size:13px">Hasta bulunamadı</div>';
+ }
 }
 
 function aramaYap(aramaText) {
-  const q = aramaText.toLowerCase().trim();
-  if (!q) {
-    renderHastaListesi(HASTALAR);
-    return;
-  }
-  const sonuclar = HASTALAR.filter(h =>
-    h.ad.toLowerCase().includes(q) || h.tc.includes(q)
-  );
-  renderHastaListesi(sonuclar);
+ const q = aramaText.toLowerCase().trim();
+ if (!q) {
+ renderHastaListesi(HASTALAR);
+ return;
+ }
+ const sonuclar = HASTALAR.filter(h =>
+ h.ad.toLowerCase().includes(q) || h.tc.includes(q)
+ );
+ renderHastaListesi(sonuclar);
 }
 
 function hastaGir(tc, ad) {
-  hasta = { tc, ad };
-  document.getElementById('goster-ad').textContent = ad;
-  document.getElementById('goster-alt').textContent = 'TC: ' + tc;
-  document.getElementById('giris').classList.add('gizli');
-  document.getElementById('ana').classList.add('goster');
+ hasta = { tc, ad };
+ document.getElementById('goster-ad').textContent = ad;
+ document.getElementById('goster-alt').textContent = 'TC: ' + tc;
+ document.getElementById('giris').classList.add('gizli');
+ document.getElementById('ana').classList.add('goster');
 }
 
 // ── GLOBAL DURUM ─────────────────────────────────────────────────────────────
@@ -314,815 +314,814 @@ document.getElementById('tarih2').value = bugun;
 
 // ── YARDIMCILAR ──────────────────────────────────────────────────────────────
 function toggleAyar() {
-  const p = document.getElementById('ayar-panel');
-  p.classList.toggle('acik');
+ const p = document.getElementById('ayar-panel');
+ p.classList.toggle('acik');
 }
 
 function geriDon() {
-  document.getElementById('giris').classList.remove('gizli');
-  document.getElementById('ana').classList.remove('goster');
-  labSonuclari = [];
+ document.getElementById('giris').classList.remove('gizli');
+ document.getElementById('ana').classList.remove('goster');
+ labSonuclari = [];
 }
 
 function sekmeAc(id, el) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('aktif'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('aktif'));
-  document.getElementById('panel-' + id).classList.add('aktif');
-  el.classList.add('aktif');
+ document.querySelectorAll('.panel').forEach(p => p.classList.remove('aktif'));
+ document.querySelectorAll('.tab').forEach(t => t.classList.remove('aktif'));
+ document.getElementById('panel-' + id).classList.add('aktif');
+ el.classList.add('aktif');
 }
 
 // ── GİRİŞ ────────────────────────────────────────────────────────────────────
 document.getElementById('btn-giris').onclick = function() {
-  const tc = document.getElementById('inp-tc').value.trim();
-  const ad = document.getElementById('inp-ad').value.trim() || 'Hasta';
-  if (!tc) return;
-  hastaGir(tc, ad);
+ const tc = document.getElementById('inp-tc').value.trim();
+ const ad = document.getElementById('inp-ad').value.trim() || 'Hasta';
+ if (!tc) return;
+ hastaGir(tc, ad);
 };
 
 // Sayfa yüklenince hasta listesini göster
 document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() { renderHastaListesi(HASTALAR); }, 100);
+ setTimeout(function() { renderHastaListesi(HASTALAR); }, 100);
 });
 
 document.getElementById('inp-tc').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') document.getElementById('btn-giris').click();
+ if (e.key === 'Enter') document.getElementById('btn-giris').click();
 });
 
 // ── SOAP İSTEK ───────────────────────────────────────────────────────────────
 function buildSoap(kullanici, sifre, tc, t1, t2) {
-  return '<?xml version="1.0" encoding="utf-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><SOAP-ENV:Header><NS1:AuthHeader xmlns:NS1="http://tempuri.org/"><Username xmlns="http://tempuri.org/">' + kullanici + '</Username><Password xmlns="http://tempuri.org/">' + sifre + '</Password></NS1:AuthHeader></SOAP-ENV:Header><SOAP-ENV:Body><HastaSonuclariKimlikNO xmlns="http://tempuri.org/"><KimlikNO>' + tc + '</KimlikNO><Tarih1>' + t1 + 'T00:00:00.000Z</Tarih1><Tarih2>' + t2 + 'T23:59:59.000Z</Tarih2></HastaSonuclariKimlikNO></SOAP-ENV:Body></SOAP-ENV:Envelope>';
+ return '<?xml version="1.0" encoding="utf-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><SOAP-ENV:Header><NS1:AuthHeader xmlns:NS1="http://tempuri.org/"><Username xmlns="http://tempuri.org/">' + kullanici + '</Username><Password xmlns="http://tempuri.org/">' + sifre + '</Password></NS1:AuthHeader></SOAP-ENV:Header><SOAP-ENV:Body><HastaSonuclariKimlikNO xmlns="http://tempuri.org/"><KimlikNO>' + tc + '</KimlikNO><Tarih1>' + t1 + 'T00:00:00.000Z</Tarih1><Tarih2>' + t2 + 'T23:59:59.000Z</Tarih2></HastaSonuclariKimlikNO></SOAP-ENV:Body></SOAP-ENV:Envelope>';
 }
 
 // ── XML PARSE ────────────────────────────────────────────────────────────────
 function hesaplaDurum(sonuc, min, max) {
-  const s = parseFloat(sonuc), mn = parseFloat(min), mx = parseFloat(max);
-  if (isNaN(s)) return 'normal';
-  if (!isNaN(mn) && s < mn) return 'low';
-  if (!isNaN(mx) && s > mx) return 'high';
-  return 'normal';
+ const s = parseFloat(sonuc), mn = parseFloat(min), mx = parseFloat(max);
+ if (isNaN(s)) return 'normal';
+ if (!isNaN(mn) && s < mn) return 'low';
+ if (!isNaN(mx) && s > mx) return 'high';
+ return 'normal';
 }
 
 function parseXml(xmlText) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xmlText, 'text/xml');
-  const sonuclar = [];
-  const seen = new Set();
+ const parser = new DOMParser();
+ const doc = parser.parseFromString(xmlText, 'text/xml');
+ const sonuclar = [];
+ const seen = new Set();
 
-  doc.querySelectorAll('TestSonuc').forEach(node => {
-    const get = tag => node.querySelector(tag)?.textContent?.trim() || '';
-    const kisaAdi = get('KisaAdi') || get('UzunAdi');
-    const sonuc = get('Sonuc');
-    const key = kisaAdi + sonuc;
-    if (seen.has(key)) return;
-    seen.add(key);
-    sonuclar.push({ kisaAdi, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
-  });
+ doc.querySelectorAll('TestSonuc').forEach(node => {
+ const get = tag => node.querySelector(tag)?.textContent?.trim() || '';
+ const kisaAdi = get('KisaAdi') || get('UzunAdi');
+ const sonuc = get('Sonuc');
+ const key = kisaAdi + sonuc;
+ if (seen.has(key)) return;
+ seen.add(key);
+ sonuclar.push({ kisaAdi, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
+ });
 
-  if (sonuclar.length === 0) {
-    doc.querySelectorAll('*').forEach(node => {
-      const kisaAd = node.querySelector('KisaAd')?.textContent?.trim();
-      const sonuc = node.querySelector('Sonuc')?.textContent?.trim();
-      if (!kisaAd || !sonuc || isNaN(parseFloat(sonuc))) return;
-      const key = kisaAd + sonuc;
-      if (seen.has(key)) return;
-      seen.add(key);
-      const get = tag => node.querySelector(tag)?.textContent?.trim() || '';
-      sonuclar.push({ kisaAd, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
-    });
-  }
-  return sonuclar;
+ if (sonuclar.length === 0) {
+ doc.querySelectorAll('*').forEach(node => {
+ const kisaAd = node.querySelector('KisaAd')?.textContent?.trim();
+ const sonuc = node.querySelector('Sonuc')?.textContent?.trim();
+ if (!kisaAd || !sonuc || isNaN(parseFloat(sonuc))) return;
+ const key = kisaAd + sonuc;
+ if (seen.has(key)) return;
+ seen.add(key);
+ const get = tag => node.querySelector(tag)?.textContent?.trim() || '';
+ sonuclar.push({ kisaAd, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
+ });
+ }
+ return sonuclar;
 }
 
 // ── LAB ÇEK ──────────────────────────────────────────────────────────────────
 async function labCek() {
-  if (!hasta) return;
-  const kullanici = document.getElementById('inp-kullanici').value;
-  const sifre = document.getElementById('inp-sifre').value;
-  const tarih1 = document.getElementById('tarih1').value;
-  const tarih2 = document.getElementById('tarih2').value;
+ if (!hasta) return;
+ const kullanici = document.getElementById('inp-kullanici').value;
+ const sifre = document.getElementById('inp-sifre').value;
+ const tarih1 = document.getElementById('tarih1').value;
+ const tarih2 = document.getElementById('tarih2').value;
 
-  const btn = document.getElementById('btn-cek');
-  btn.disabled = true;
-  btn.textContent = '⏳ Çekiliyor...';
-  document.getElementById('hata-kutu').style.display = 'none';
-  document.getElementById('bos-kutu').style.display = 'none';
-  document.getElementById('lab-tablo').style.display = 'none';
+ const btn = document.getElementById('btn-cek');
+ btn.disabled = true;
+ btn.textContent = '⏳ Çekiliyor...';
+ document.getElementById('hata-kutu').style.display = 'none';
+ document.getElementById('bos-kutu').style.display = 'none';
+ document.getElementById('lab-tablo').style.display = 'none';
 
-  const soap = buildSoap(kullanici, sifre, hasta.tc, tarih1, tarih2);
+ const soap = buildSoap(kullanici, sifre, hasta.tc, tarih1, tarih2);
 
-  try {
-    const res = await fetch('https://yasamlab.iltelis.com/Integration/Integration.asmx', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/soap+xml; charset=utf-8',
-        'SOAPAction': 'http://tempuri.org/HastaSonuclariKimlikNO'
-      },
-      body: soap
-    });
+ try {
+ const res = await fetch('https://yasamlab.iltelis.com/Integration/Integration.asmx', {
+ method: 'POST',
+ headers: {
+ 'Content-Type': 'application/soap+xml; charset=utf-8',
+ 'SOAPAction': 'http://tempuri.org/HastaSonuclariKimlikNO'
+ },
+ body: soap
+ });
 
-    if (!res.ok) throw new Error('Sunucu hatası: ' + res.status);
-    const xmlText = await res.text();
-    const sonuclar = parseXml(xmlText);
+ if (!res.ok) throw new Error('Sunucu hatası: ' + res.status);
+ const xmlText = await res.text();
+ const sonuclar = parseXml(xmlText);
 
-    if (sonuclar.length === 0) {
-      gosterHata('Bu tarih aralığında sonuç bulunamadı. Aralığı genişletip tekrar deneyin.');
-    } else {
-      labSonuclari = sonuclar;
-      renderLabTablo(sonuclar);
-      renderTedavi(sonuclar);
-      const tarih = new Date().toLocaleString('tr-TR');
-      document.getElementById('goster-alt').textContent = 'TC: ' + hasta.tc + ' · ' + tarih;
-    }
-  } catch(e) {
-    if (e.message.includes('fetch') || e.message.includes('CORS') || e.message.includes('Failed')) {
-      gosterHata('CORS hatası: Tarayıcı bu isteği engelledi.\n\n✅ Çözüm: Bu HTML dosyasını bir web sunucusundan açın veya Chrome\'u şu komutla başlatın:\nchrome.exe --disable-web-security --user-data-dir="C:/temp"');
-    } else {
-      gosterHata('Hata: ' + e.message);
-    }
-  }
+ if (sonuclar.length === 0) {
+ gosterHata('Bu tarih aralığında sonuç bulunamadı. Aralığı genişletip tekrar deneyin.');
+ } else {
+ labSonuclari = sonuclar;
+ renderLabTablo(sonuclar);
+ renderTedavi(sonuclar);
+ const tarih = new Date().toLocaleString('tr-TR');
+ document.getElementById('goster-alt').textContent = 'TC: ' + hasta.tc + ' · ' + tarih;
+ }
+ } catch(e) {
+ if (e.message.includes('fetch') || e.message.includes('CORS') || e.message.includes('Failed')) {
+ gosterHata('CORS hatası: Tarayıcı bu isteği engelledi.\n\n✅ Çözüm: Bu HTML dosyasını bir web sunucusundan açın veya Chrome\'u şu komutla başlatın:\nchrome.exe --disable-web-security --user-data-dir="C:/temp"');
+ } else {
+ gosterHata('Hata: ' + e.message);
+ }
+ }
 
-  btn.disabled = false;
-  btn.textContent = '🔄 Lab Sonuçlarını Çek';
+ btn.disabled = false;
+ btn.textContent = '🔄 Lab Sonuçlarını Çek';
 }
 
 function gosterHata(mesaj) {
-  const kutu = document.getElementById('hata-kutu');
-  kutu.textContent = '❌ ' + mesaj;
-  kutu.style.display = 'block';
-  document.getElementById('bos-kutu').style.display = 'none';
+ const kutu = document.getElementById('hata-kutu');
+ kutu.textContent = '❌ ' + mesaj;
+ kutu.style.display = 'block';
+ document.getElementById('bos-kutu').style.display = 'none';
 }
 
 // ── LAB TABLO RENDER ─────────────────────────────────────────────────────────
 function renderLabTablo(sonuclar) {
-  const konteyner = document.getElementById('lab-satirlar');
-  konteyner.innerHTML = '';
-  const anomali = sonuclar.filter(s => s.durum !== 'normal').length;
+ const konteyner = document.getElementById('lab-satirlar');
+ konteyner.innerHTML = '';
+ const anomali = sonuclar.filter(s => s.durum !== 'normal').length;
 
-  sonuclar.forEach(s => {
-    const div = document.createElement('div');
-    div.className = 'lab-satir ' + s.durum;
-    const badgeLabel = s.durum === 'high' ? '↑ YÜK' : s.durum === 'low' ? '↓ DÜŞ' : '✓ N';
-    div.innerHTML = `
-      <span class="test-ad">${s.kisaAdi || s.uzunAdi || "?"}</span>
-      <span class="sonuc-deger">${s.sonuc} <span class="sonuc-birim">${s.birim}</span></span>
-      <span class="ref-deger">${s.minDeger && s.maxDeger ? s.minDeger + ' – ' + s.maxDeger : '—'}</span>
-      <span class="badge ${s.durum}">${badgeLabel}</span>
-    `;
-    konteyner.appendChild(div);
-  });
+ sonuclar.forEach(s => {
+ const div = document.createElement('div');
+ div.className = 'lab-satir ' + s.durum;
+ const badgeLabel = s.durum === 'high' ? '↑ YÜK' : s.durum === 'low' ? '↓ DÜŞ' : '✓ N';
+ div.innerHTML = `
+ <span class="test-ad">${s.kisaAdi || s.uzunAdi || "?"}</span>
+ <span class="sonuc-deger">${s.sonuc} <span class="sonuc-birim">${s.birim}</span></span>
+ <span class="ref-deger">${s.minDeger && s.maxDeger ? s.minDeger + ' – ' + s.maxDeger : '—'}</span>
+ <span class="badge ${s.durum}">${badgeLabel}</span>
+ `;
+ konteyner.appendChild(div);
+ });
 
-  document.getElementById('lab-tablo').style.display = 'block';
-  document.getElementById('bos-kutu').style.display = 'none';
+ document.getElementById('lab-tablo').style.display = 'block';
+ document.getElementById('bos-kutu').style.display = 'none';
 
-  // Anomali badge
-  const badge = document.getElementById('anomali-badge');
-  if (anomali > 0) { badge.textContent = '⚠️ ' + anomali + ' ANOMALİ'; badge.style.display = 'inline-block'; }
-  else badge.style.display = 'none';
+ // Anomali badge
+ const badge = document.getElementById('anomali-badge');
+ if (anomali > 0) { badge.textContent = '⚠️ ' + anomali + ' ANOMALİ'; badge.style.display = 'inline-block'; }
+ else badge.style.display = 'none';
 
-  // Tab badge
-  const tabTedavi = document.getElementById('tab-tedavi');
-  if (anomali > 0) tabTedavi.innerHTML = `💊 Tedavi <span class="tab-badge">${anomali}</span>`;
-  else tabTedavi.textContent = '💊 Tedavi';
+ // Tab badge
+ const tabTedavi = document.getElementById('tab-tedavi');
+ if (anomali > 0) tabTedavi.innerHTML = `💊 Tedavi <span class="tab-badge">${anomali}</span>`;
+ else tabTedavi.textContent = '💊 Tedavi';
 }
 
 // ── TEDAVİ ANALİZ ────────────────────────────────────────────────────────────
 function bul(sonuclar, ...terms) {
-  for (const t of terms) {
-    const found = sonuclar.find(s =>
-      s.kisaAdi?.toLowerCase().includes(t.toLowerCase()) ||
-      s.uzunAd?.toLowerCase().includes(t.toLowerCase())
-    );
-    if (found) return found;
-  }
-  return null;
+ for (const t of terms) {
+ const found = sonuclar.find(s =>
+ s.kisaAdi?.toLowerCase().includes(t.toLowerCase()) ||
+ s.uzunAd?.toLowerCase().includes(t.toLowerCase())
+ );
+ if (found) return found;
+ }
+ return null;
 }
 
 function analizEt(sonuclar) {
-  const oneriler = [];
+ const oneriler = [];
 
-  const bul = (...terms) => {
-    for (const t of terms) {
-      const found = sonuclar.find(s =>
-        s.kisaAdi?.toLowerCase().includes(t.toLowerCase()) ||
-        s.uzunAdi?.toLowerCase().includes(t.toLowerCase())
-      );
-      if (found) return found;
-    }
-    return null;
-  };
+ const bul = (...terms) => {
+ for (const t of terms) {
+ const found = sonuclar.find(s =>
+ s.kisaAdi?.toLowerCase().includes(t.toLowerCase()) ||
+ s.uzunAdi?.toLowerCase().includes(t.toLowerCase())
+ );
+ if (found) return found;
+ }
+ return null;
+ };
 
-  const val = (parametre) => {
-    const s = bul(...parametre);
-    return s ? parseFloat(s.sonuc) : null;
-  };
+ const val = (parametre) => {
+ const s = bul(...parametre);
+ return s ? parseFloat(s.sonuc) : null;
+ };
 
-  const ekle = (grup, param, deger, durum, label, liste, ilaclar, kontrol, diyaliz) =>
-    oneriler.push({
-      grup, param, deger, durum, label,
-      liste: (liste||[]).filter(Boolean),
-      ilaclar: (ilaclar||[]).filter(Boolean),
-      kontrol: kontrol||'',
-      diyaliz: (diyaliz||[]).filter(Boolean)
-    });
+ const ekle = (grup, param, deger, durum, label, liste, ilaclar, kontrol, diyaliz) =>
+ oneriler.push({
+ grup, param, deger, durum, label,
+ liste: (liste||[]).filter(Boolean),
+ ilaclar: (ilaclar||[]).filter(Boolean),
+ kontrol: kontrol||'',
+ diyaliz: (diyaliz||[]).filter(Boolean)
+ });
 
-  // ── DEĞERLER ──────────────────────────────────────────────────────────────
-  const ca    = val(['kalsiyum','calcium']);
-  const p     = val(['fosfor','fosfat','phosph']);
-  const pth   = val(['pth','parathormon','paratiroi']);
-  const alb   = val(['albumin']);
-  const hgb   = val(['hemoglobin','hgb','hb']);
-  const ferr  = val(['ferritin']);
-  const tsat  = val(['transferrin sat','tsat','demir saturasyon']);
-  const k     = val(['potasyum','kalium']);
-  const na    = val(['sodyum','sodium']);
-  const gluk  = val(['glukoz','glucose']);
-  const crp   = val(['crp','c-reaktif']);
-  const bun   = val(['bun','kan uresi','blood urea n']);
-  const krea  = val(['kreatinin','creatinine']);
+ // ── DEĞERLER ──────────────────────────────────────────────────────────────
+ const ca = val(['kalsiyum','calcium']);
+ const p = val(['fosfor','fosfat','phosph']);
+ const pth = val(['pth','parathormon','paratiroi']);
+ const alb = val(['albumin']);
+ const hgb = val(['hemoglobin','hgb','hb']);
+ const ferr = val(['ferritin']);
+ const tsat = val(['transferrin sat','tsat','demir saturasyon']);
+ const k = val(['potasyum','kalium']);
+ const na = val(['sodyum','sodium']);
+ const gluk = val(['glukoz','glucose']);
+ const crp = val(['crp','c-reaktif']);
+ const bun = val(['bun','kan uresi','blood urea n']);
+ const krea = val(['kreatinin','creatinine']);
 
-  // Düzeltilmiş kalsiyum (albumin varsa)
-  const caDuz = (ca !== null && alb !== null) ? ca + 0.8*(4 - alb) : ca;
+ // Düzeltilmiş kalsiyum (albumin varsa)
+ const caDuz = (ca !== null && alb !== null) ? ca + 0.8*(4 - alb) : ca;
 
-  // ── 1. MİNERAL METABOLİZMA (Ca + P + PTH kombine) ────────────────────────
-  if (p !== null) {
-    if (p > 5.5) {
-      const oneri = ['Düşük fosfatlı diyet (<800 mg/gün)'];
-      const ilac = [];
-      const diy = ['Diyaliz süresini değerlendir', 'Yüksek akışlı membran kullan'];
+ // ── 1. MİNERAL METABOLİZMA (Ca + P + PTH kombine) ────────────────────────
+ if (p !== null) {
+ if (p > 5.5) {
+ const oneri = ['Düşük fosfatlı diyet (<800 mg/gün)'];
+ const ilac = [];
+ const diy = ['Diyaliz süresini değerlendir', 'Yüksek akışlı membran kullan'];
 
-      if (p > 7) {
-        ilac.push('Sevelamer karbonat 1600mg 3x1 (yemekle)');
-        if (caDuz !== null && caDuz > 9.5) {
-          ilac.push('Kalsiyum içeren bağlayıcı kullanma — hiperkalsemi riski');
-        } else {
-          ilac.push('veya Kalsiyum karbonat 1000mg 3x1 (yemekle)');
-        }
-      } else {
-        ilac.push('Sevelamer karbonat 800mg 3x1 (yemekle)');
-      }
-      ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'high', 'YÜKSELMİŞ (>5.5 mg/dL)', oneri, ilac, '1 ay kontrol', diy);
-    } else if (p < 3.5) {
-      ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'low', 'DÜŞÜK (<3.5 mg/dL)',
-        ['Beslenme değerlendirmesi yap', 'Fosfor bağlayıcı dozunu azalt veya kes'],
-        ['Fosfor bağlayıcıyı kes veya yarıya indir'],
-        '1 ay kontrol', []);
-    } else {
-      ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'normal', 'HEDEF ARALIKTA (3.5-5.5 mg/dL)', [], [], '3 ay kontrol', []);
-    }
-  }
+ if (p > 7) {
+ ilac.push('Sevelamer karbonat 1600mg 3x1 (yemekle)');
+ if (caDuz !== null && caDuz > 9.5) {
+ ilac.push('Kalsiyum içeren bağlayıcı kullanma — hiperkalsemi riski');
+ } else {
+ ilac.push('veya Kalsiyum karbonat 1000mg 3x1 (yemekle)');
+ }
+ } else {
+ ilac.push('Sevelamer karbonat 800mg 3x1 (yemekle)');
+ }
+ ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'high', 'YÜKSELMİŞ (>5.5 mg/dL)', oneri, ilac, '1 ay kontrol', diy);
+ } else if (p < 3.5) {
+ ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'low', 'DÜŞÜK (<3.5 mg/dL)',
+ ['Beslenme değerlendirmesi yap', 'Fosfor bağlayıcı dozunu azalt veya kes'],
+ ['Fosfor bağlayıcıyı kes veya yarıya indir'],
+ '1 ay kontrol', []);
+ } else {
+ ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'normal', 'HEDEF ARALIKTA (3.5-5.5 mg/dL)', [], [], '3 ay kontrol', []);
+ }
+ }
 
-  if (caDuz !== null) {
-    if (caDuz > 10.2) {
-      const ilac = ['Kalsiyum içeren fosfor bağlayıcıyı kes'];
-      // PTH ile kombine
-      if (pth !== null && pth < 130) {
-        ilac.push('Aktif D vitamini kes — hem hiperkalsemi hem düşük PTH var');
-        ilac.push('Sinakalseti dikkatli — PTH zaten baskılı');
-      } else if (pth !== null && pth > 585) {
-        ilac.push('Aktif D vitamini dozu azalt');
-        ilac.push('Sinakalseti (Mimpara) 30mg 1x1 değerlendir');
-      } else {
-        ilac.push('Aktif D vitamini dozu azalt');
-      }
-      ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'high', 'YÜKSELMİŞ (>5.5 mg/dL)',
-        ['Ca içeren fosfor bağlayıcıyı kes/azalt'],
-        ilac, '1 ay kontrol',
-        ['Diyalizat Ca 1.25 mmol/L değerine düşür']);
-    } else if (caDuz < 8.4) {
-      const ilac = [];
-      const oneri = ['Semptom değerlendir (Trousseau, Chvostek)'];
-      // PTH ile kombine — EN ÖNEMLİ KONTROL
-      if (pth === null) {
-        ilac.push('PTH ölçümü yapılmadan kalsitriol başlama');
-        ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
-        oneri.push('PTH ölçümü yapılmadan D vitamini başlatma');
-      } else if (pth > 585) {
-        // Ca düşük + PTH yüksek → kalsitriol mantıklı
-        ilac.push('Kalsitriol 0.25-0.5 mcg 1x1 başla (PTH yüksek, Ca düşük — endike)');
-        ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
-        oneri.push('Ca düşük + PTH yüksek: aktif D vitamini endike');
-      } else if (pth < 130) {
-        // Ca düşük + PTH düşük → kalsitriol KONTRENDİKE
-        ilac.push('KALSİTROL VERİLMEZ — PTH baskılı, adynamic kemik riski var');
-        ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
-        ilac.push('Diyalizat Ca 1.5 mmol/L değerine yükselt');
-        oneri.push('Ca düşük + PTH düşük: D vitamini kontrendike!');
-      } else {
-        // Ca düşük + PTH normal
-        ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
-        ilac.push('Kalsitriol 0.25 mcg 1x1 dikkatli başla (PTH normal, Ca düşük)');
-        oneri.push('Ca-P-PTH birlikte takip et');
-      }
-      ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'low', 'DÜŞÜK (<3.5 mg/dL)', oneri, ilac, '1 ay kontrol',
-        ['Diyalizat Ca 1.5 mmol/L değerine yükselt']);
-    } else {
-      ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'normal', 'HEDEF ARALIKTA (8.4-10.2 mg/dL)', [], [], '3 ay kontrol', []);
-    }
-  }
+ if (caDuz !== null) {
+ if (caDuz > 10.2) {
+ const ilac = ['Kalsiyum içeren fosfor bağlayıcıyı kes'];
+ // PTH ile kombine
+ if (pth !== null && pth < 130) {
+ ilac.push('Aktif D vitamini kes — hem hiperkalsemi hem düşük PTH var');
+ ilac.push('Sinakalseti dikkatli — PTH zaten baskılı');
+ } else if (pth !== null && pth > 585) {
+ ilac.push('Aktif D vitamini dozu azalt');
+ ilac.push('Sinakalseti (Mimpara) 30mg 1x1 değerlendir');
+ } else {
+ ilac.push('Aktif D vitamini dozu azalt');
+ }
+ ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'high', 'YÜKSELMİŞ (>5.5 mg/dL)',
+ ['Ca içeren fosfor bağlayıcıyı kes/azalt'],
+ ilac, '1 ay kontrol',
+ ['Diyalizat Ca 1.25 mmol/L değerine düşür']);
+ } else if (caDuz < 8.4) {
+ const ilac = [];
+ const oneri = ['Semptom değerlendir (Trousseau, Chvostek)'];
+ // PTH ile kombine — EN ÖNEMLİ KONTROL
+ if (pth === null) {
+ ilac.push('PTH ölçümü yapılmadan kalsitriol başlama');
+ ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
+ oneri.push('PTH ölçümü yapılmadan D vitamini başlatma');
+ } else if (pth > 585) {
+ // Ca düşük + PTH yüksek → kalsitriol mantıklı
+ ilac.push('Kalsitriol 0.25-0.5 mcg 1x1 başla (PTH yüksek, Ca düşük — endike)');
+ ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
+ oneri.push('Ca düşük + PTH yüksek: aktif D vitamini endike');
+ } else if (pth < 130) {
+ // Ca düşük + PTH düşük → kalsitriol KONTRENDİKE
+ ilac.push('KALSİTROL VERİLMEZ — PTH baskılı, adynamic kemik riski var');
+ ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
+ ilac.push('Diyalizat Ca 1.5 mmol/L değerine yükselt');
+ oneri.push('Ca düşük + PTH düşük: D vitamini kontrendike!');
+ } else {
+ // Ca düşük + PTH normal
+ ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
+ ilac.push('Kalsitriol 0.25 mcg 1x1 dikkatli başla (PTH normal, Ca düşük)');
+ oneri.push('Ca-P-PTH birlikte takip et');
+ }
+ ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'low', 'DÜŞÜK (<3.5 mg/dL)', oneri, ilac, '1 ay kontrol',
+ ['Diyalizat Ca 1.5 mmol/L değerine yükselt']);
+ } else {
+ ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'normal', 'HEDEF ARALIKTA (8.4-10.2 mg/dL)', [], [], '3 ay kontrol', []);
+ }
+ }
 
-  if (pth !== null) {
-    if (pth > 585) {
-      const ilac = [];
-      const oneri = ['Sekonder hiperparatiroidizm'];
-      // Ca ile kombine
-      if (caDuz !== null && caDuz > 10.2) {
-        ilac.push('Sinakalseti (Mimpara) 30mg 1x1 — Ca yüksek, PTH yüksek');
-        ilac.push('Aktif D vitamini KULLANMA — hiperkalsemi riski');
-      } else if (caDuz !== null && caDuz < 8.4) {
-        ilac.push('Kalsitriol 0.25-0.5 mcg 1x1 başla — Ca düşük, PTH yüksek');
-        ilac.push('veya Parikalsitriol (Zemplar) 1-2 mcg IV her seans');
-      } else {
-        ilac.push('Parikalsitriol (Zemplar) 1 mcg IV her seans');
-        ilac.push('veya Kalsitriol 0.25 mcg 1x1');
-        if (pth > 800) ilac.push('Sinakalseti (Mimpara) 30mg 1x1 ekle');
-      }
-      if (pth > 1000) oneri.push('Paratiroidektomi konsültasyonu değerlendir');
-      ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'high', 'YÜKSELMİŞ (>585 pg/mL)',
-        oneri, ilac, pth > 1000 ? 'Paratiroidektomi konsültasyonu' : '3 ay kontrol', []);
-    } else if (pth < 130) {
-      ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'low', 'DÜŞÜK (<130 pg/mL)',
-        ['Adynamic kemik hastalığı riski', 'Aktif D vitamini kesme/azaltma'],
-        ['Kalsitriol/parikalsitriol dozunu yarıya indir veya kes',
-         'Sinakalseti kullanıyorsa doz azalt veya kes'],
-        '3 ay kontrol', []);
-    } else {
-      ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'normal', 'HEDEF ARALIKTA (130-585 pg/mL)', [], [], '3 ay kontrol', []);
-    }
-  }
+ if (pth !== null) {
+ if (pth > 585) {
+ const ilac = [];
+ const oneri = ['Sekonder hiperparatiroidizm'];
+ // Ca ile kombine
+ if (caDuz !== null && caDuz > 10.2) {
+ ilac.push('Sinakalseti (Mimpara) 30mg 1x1 — Ca yüksek, PTH yüksek');
+ ilac.push('Aktif D vitamini KULLANMA — hiperkalsemi riski');
+ } else if (caDuz !== null && caDuz < 8.4) {
+ ilac.push('Kalsitriol 0.25-0.5 mcg 1x1 başla — Ca düşük, PTH yüksek');
+ ilac.push('veya Parikalsitriol (Zemplar) 1-2 mcg IV her seans');
+ } else {
+ ilac.push('Parikalsitriol (Zemplar) 1 mcg IV her seans');
+ ilac.push('veya Kalsitriol 0.25 mcg 1x1');
+ if (pth > 800) ilac.push('Sinakalseti (Mimpara) 30mg 1x1 ekle');
+ }
+ if (pth > 1000) oneri.push('Paratiroidektomi konsültasyonu değerlendir');
+ ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'high', 'YÜKSELMİŞ (>585 pg/mL)',
+ oneri, ilac, pth > 1000 ? 'Paratiroidektomi konsültasyonu' : '3 ay kontrol', []);
+ } else if (pth < 130) {
+ ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'low', 'DÜŞÜK (<130 pg/mL)',
+ ['Adynamic kemik hastalığı riski', 'Aktif D vitamini kesme/azaltma'],
+ ['Kalsitriol/parikalsitriol dozunu yarıya indir veya kes',
+ 'Sinakalseti kullanıyorsa doz azalt veya kes'],
+ '3 ay kontrol', []);
+ } else {
+ ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'normal', 'HEDEF ARALIKTA (130-585 pg/mL)', [], [], '3 ay kontrol', []);
+ }
+ }
 
-  // ── 2. ANEMİ — KDIGO 2026 CKD G5HD ──────────────────────────────────────
+ // ── 2. ANEMİ — KDIGO 2026 CKD G5HD ──────────────────────────────────────
 
 // === DEMİR DURUM KATEGORİLERİ (KDIGO 2026, HD hastası) ===
-// Profund demir eksikliği (PP 2.11)  : ferritin <30  VE TSAT <20%
-// Sistemik demir eksikliği            : ferritin <200 VE TSAT <20%
-// Demir kısıtlı eritropoez            : ferritin ≥200 AMA TSAT <20%
-// Demir başlama eşiği HD (Rek. 2.1)  : ferritin ≤500 VE TSAT ≤30%
-// Demir askıya alma (PP 2.2)          : ferritin >700 VEYA TSAT ≥40%
-// === ESA EŞİKLERİ (KDIGO 2026) ===
-// Başlama (Rek. 3.2.1) : Hb ≤9.0–10.0 g/dL
-// Üst hedef (Rek. 3.3.1): Hb < 11.5 g/dL — HİÇBİR ZAMAN ≥11.5 hedefleme
+// Profund demir eksikliği : ferritin <30 VE TSAT <20%
+// Sistemik demir eksikliği : ferritin <200 VE TSAT <20%
+// Demir kısıtlı eritropoez : ferritin ≥200 AMA TSAT <20%
+// Demir başlama eşiği HD : ferritin ≤500 VE TSAT ≤30%
+// Demir askıya alma : ferritin >700 VEYA TSAT ≥40%
+// === ESA EŞİKLERİ ===
+// Başlama : Hb ≤9.0–10.0 g/dL
+// Üst hedef : Hb < 11.5 g/dL — HİÇBİR ZAMAN ≥11.5 hedefleme
 
-const k26_profund   = (ferr !== null && ferr < 30)  && (tsat !== null && tsat < 20);
-const k26_sistemik  = (ferr !== null && ferr < 200) && (tsat !== null && tsat < 20);
-const k26_kisitli   = (ferr !== null && ferr >= 200)&& (tsat !== null && tsat < 20);
-const k26_askiya    = (ferr !== null && ferr > 700) || (tsat !== null && tsat >= 40);
-const k26_baslama   = (ferr === null || ferr <= 500) && (tsat === null || tsat <= 30);
+const k26_profund = (ferr !== null && ferr < 30) && (tsat !== null && tsat < 20);
+const k26_sistemik = (ferr !== null && ferr < 200) && (tsat !== null && tsat < 20);
+const k26_kisitli = (ferr !== null && ferr >= 200)&& (tsat !== null && tsat < 20);
+const k26_askiya = (ferr !== null && ferr > 700) || (tsat !== null && tsat >= 40);
+const k26_baslama = (ferr === null || ferr <= 500) && (tsat === null || tsat <= 30);
 const k26_demir_txt = ferr !== null
-    ? (tsat !== null ? `Ferritin ${ferr} ng/mL | TSAT ${tsat}%`
-                     : `Ferritin ${ferr} ng/mL | TSAT ölçülmedi`)
-    : (tsat !== null ? `Ferritin ölçülmedi | TSAT ${tsat}%` : '');
+ ? (tsat !== null ? `Ferritin ${ferr} ng/mL | TSAT ${tsat}%`
+ : `Ferritin ${ferr} ng/mL | TSAT ölçülmedi`)
+ : (tsat !== null ? `Ferritin ölçülmedi | TSAT ${tsat}%` : '');
 
-// ── Hemoglobin Değerlendirmesi (KDIGO 2026) ─────────────────────────────
+// ── Hemoglobin Değerlendirmesi ─────────────────────────────
 if (hgb !== null) {
 
-    if (hgb < 8.0) {
-        // KRİTİK — ESA ACİL (Rek. 3.2.1 + Rek. 3.1.1)
-        const ilac = []; const oneri = [
-            'Rek. 3.2.1: Hb ≤9.0–10.0 g/dL eşiği — ESA acil başlama endike',
-            'Rek. 3.1.1: Birinci basamak tedavi ESA (HIF-PHI değil)'
-        ];
-        if (k26_askiya) {
-            oneri.push('PP 2.2: Ferritin >700 veya TSAT ≥40% → IV demir YOK');
-            ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil (Tablo 7, KDIGO 2026)');
-            ilac.push('PP 3.4.1.2: 4 haftada Hb <1 g/dL artış → doz %25 artır; >2 g/dL artış → %25–50 azalt');
-        } else if (k26_baslama) {
-            oneri.push('Rek. 2.1: Ferritin ≤500 + TSAT ≤30% → IV demir ENDİKE');
-            oneri.push('Rek. 2.2: IV demir oral demire TERCÜH EDİLİR (HD hastası)');
-            oneri.push('PP 2.1: Proaktif IV demir protokolü (PIVOTAL çalışması, N=2141)');
-            ilac.push('IV Demir Sükroz 200 mg IV her seans — proaktif (PP 2.1)');
-            ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil (Rek. 3.2.1)');
-            ilac.push('PP 3.4.3.2: Her 2–4 haftada Hb ölç; >1 g/dL/4 hafta → doz %25–50 azalt');
-        } else {
-            oneri.push('PP 3.7.1: Demir yeterli → ESA hiporesponsvitesi nedenlerini araştır');
-            oneri.push('Nedenler: inflamasyon, yetersiz diyaliz (Kt/V), hiperpara­tiroidizm, B12/folat');
-            ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil');
-            if (crp !== null && crp > 10) {
-                ilac.push('⚠️ CRP >10: Aktif inflamasyon — önce tedavi et (PP 2.8: inf. sırasında IV demir askıya al)');
-            }
-            ilac.push('Ferritin, TSAT, PTH, Kt/V, CRP kontrol — ESA direnci araştır');
-        }
-        ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'low',
-            'KRİTİK ANEMI (<8.0 g/dL) — ESA + DEMİR ACİL',
-            oneri, ilac, '2–4 hafta Hb takibi (PP 3.4.3.2)', []);
+ if (hgb < 8.0) {
+ // KRİTİK — ESA ACİL (+ )
+ const ilac = []; const oneri = [
+ 'Hb ≤9.0–10.0 g/dL eşiği — ESA acil başlama endike',
+ 'Birinci basamak tedavi ESA (HIF-PHI değil)'
+ ];
+ if (k26_askiya) {
+ oneri.push('Ferritin >700 veya TSAT ≥40% → IV demir YOK');
+ ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil ');
+ ilac.push('.2: 4 haftada Hb <1 g/dL artış → doz %25 artır; >2 g/dL artış → %25–50 azalt');
+ } else if (k26_baslama) {
+ oneri.push('Ferritin ≤500 + TSAT ≤30% → IV demir ENDİKE');
+ oneri.push('IV demir oral demire TERCÜH EDİLİR (HD hastası)');
+ oneri.push('Proaktif IV demir protokolü ');
+ ilac.push('IV Demir Sükroz 200 mg IV her seans — proaktif ');
+ ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil ');
+ ilac.push('.2: Her 2–4 haftada Hb ölç; >1 g/dL/4 hafta → doz %25–50 azalt');
+ } else {
+ oneri.push('Demir yeterli → ESA hiporesponsvitesi nedenlerini araştır');
+ oneri.push('Nedenler: inflamasyon, yetersiz diyaliz (Kt/V), hiperpara­tiroidizm, B12/folat');
+ ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil');
+ if (crp !== null && crp > 10) {
+ ilac.push('⚠️ CRP >10: Aktif inflamasyon — önce tedavi et (inf. sırasında IV demir askıya al)');
+ }
+ ilac.push('Ferritin, TSAT, PTH, Kt/V, CRP kontrol— ESA direnci araştır');
+ }
+ ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'low',
+ 'KRİTİK ANEMI (<8.0 g/dL) — ESA + DEMİR ACİL',
+ oneri, ilac, '2–4 hafta Hb takibi (.2)', []);
 
-    } else if (hgb < 10.0) {
-        // DÜŞÜK — ESA başlama bölgesi (Rek. 3.2.1)
-        const ilac = []; const oneri = [
-            hgb < 9.0
-                ? 'Rek. 3.2.1: Hb <9.0 g/dL → ESA başlama kuvvetle endike'
-                : 'Rek. 3.2.1: Hb 9–10 g/dL → ESA semptomlar ve risk faktörlerine göre bireyselleştir'
-        ];
-        if (!k26_askiya && k26_baslama) {
-            oneri.push('Rek. 2.1: Ferritin ≤500 + TSAT ≤30% → IV demir ENDİKE (önce demir optimizasyonu)');
-            oneri.push('PP 2.1: Proaktif IV demir stratejisi — reaktif değil');
-            ilac.push('IV Demir Sükroz 200 mg IV her seans — proaktif (Rek. 2.1, 2.2)');
-        } else if (k26_askiya) {
-            oneri.push('PP 2.2: Ferritin >700 veya TSAT ≥40% → IV demir DURDUR');
-        }
-        if (hgb < 9.0) {
-            ilac.push('Epoetin alfa 50–100 IU/kg SC/IV 3×/hafta (Rek. 3.2.1, Tablo 7)');
-        } else {
-            ilac.push('ESA başlama: semptomlar + transfüzyon riski + hasta tercihi (PP 3.1.1)');
-            ilac.push('Başlanırsa → Epoetin alfa 50 IU/kg SC/IV 3×/hafta (Tablo 7)');
-        }
-        ilac.push('⚠️ HEDEF: Hb < 11.5 g/dL — HİÇBİR ZAMAN ≥11.5 g/dL hedefleme (Rek. 3.3.1)');
-        ilac.push('PP 3.4.3.2: Her 2–4 haftada Hb ölç; >1 g/dL hızlı artışta doz %25–50 azalt');
-        ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'low',
-            hgb < 9.0 ? 'DÜŞÜK (8–9 g/dL) — ESA ENDİKE' : 'SINIRDA DÜŞÜK (9–10 g/dL) — ESA Değerlendir',
-            oneri, ilac, '2–4 hafta Hb takibi (PP 3.4.3.2)', []);
+ } else if (hgb < 10.0) {
+ // DÜŞÜK — ESA başlama bölgesi 
+ const ilac = []; const oneri = [
+ hgb < 9.0
+ ? 'Hb <9.0 g/dL → ESA başlama kuvvetle endike'
+ : 'Hb 9–10 g/dL → ESA semptomlar ve risk faktörlerine göre bireyselleştir'
+ ];
+ if (!k26_askiya && k26_baslama) {
+ oneri.push('Ferritin ≤500 + TSAT ≤30% → IV demir ENDİKE (önce demir optimizasyonu)');
+ oneri.push('Proaktif IV demir stratejisi — reaktif değil');
+ ilac.push('IV Demir Sükroz 200 mg IV her seans — proaktif');
+ } else if (k26_askiya) {
+ oneri.push('Ferritin >700 veya TSAT ≥40% → IV demir DURDUR');
+ }
+ if (hgb < 9.0) {
+ ilac.push('Epoetin alfa 50–100 IU/kg SC/IV 3×/hafta (, Tablo 7)');
+ } else {
+ ilac.push('ESA başlama: semptomlar + transfüzyon riski + hasta tercihi ');
+ ilac.push('Başlanırsa → Epoetin alfa 50 IU/kg SC/IV 3×/hafta ');
+ }
+ ilac.push('⚠️ HEDEF: Hb < 11.5 g/dL — HİÇBİR ZAMAN ≥11.5 g/dL hedefleme ');
+ ilac.push('.2: Her 2–4 haftada Hb ölç; >1 g/dL hızlı artışta doz %25–50 azalt');
+ ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'low',
+ hgb < 9.0 ? 'DÜŞÜK (8–9 g/dL) — ESA ENDİKE' : 'SINIRDA DÜŞÜK (9–10 g/dL) — ESA Değerlendir',
+ oneri, ilac, '2–4 hafta Hb takibi (.2)', []);
 
-    } else if (hgb < 11.5) {
-        // HEDEF ARALIK (Rek. 3.3.1)
-        const iron_note = k26_baslama && !k26_askiya
-            ? 'IV demir devam (Rek. 2.1: ferritin ≤500 + TSAT ≤30%)'
-            : k26_askiya ? 'PP 2.2: Ferritin >700 veya TSAT ≥40% → demir askıya al'
-            : 'Demir durumu takip et';
-        ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'normal',
-            'HEDEF ARALIKTA (10.0–11.5 g/dL) ✓ — Rek. 3.3.1',
-            ['Rek. 3.3.1: Hb < 11.5 g/dL hedefi korunuyor',
-             'PP 3.4.3.3: İdame fazında en az 3 ayda bir Hb ölç',
-             iron_note,
-             'Hb 11.5 g/dL sınırına yaklaşırsa ESA dozunu proaktif azalt'],
-            [], '3 ay kontrol (PP 3.4.3.3)', []);
+ } else if (hgb < 11.5) {
+ // HEDEF ARALIK 
+ const iron_note = k26_baslama && !k26_askiya
+ ? 'IV demir devam (ferritin ≤500 + TSAT ≤30%)'
+ : k26_askiya ? 'Ferritin >700 veya TSAT ≥40% → demir askıya al'
+ : 'Demir durumu takip et';
+ ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'normal',
+ 'HEDEF ARALIKTA (10.0–11.5 g/dL) ✓ — ',
+ ['Hb < 11.5 g/dL hedefi korunuyor',
+ '.3: İdame fazında en az 3 ayda bir Hb ölç',
+ iron_note,
+ 'Hb 11.5 g/dL sınırına yaklaşırsa ESA dozunu proaktif azalt'],
+ [], '3 ay kontrol(.3)', []);
 
-    } else {
-        // HEDEF ÜSTÜ — Rek. 3.3.1 İHLALİ
-        const ilac = []; const oneri = [
-            'Rek. 3.3.1 İHLAL: Hb ≥11.5 g/dL → ESA DOZU AZALT/DURDUR',
-            'İnme, tromboembolik olay, vasküler erişim trombozu riski ARTAR (TREAT, CHOIR çalışmaları)',
-            'PP 3.4.1.3: En düşük etkili ESA dozu prensibi'
-        ];
-        if (hgb >= 13.0) {
-            oneri.push('⚠️ KRİTİK: Hb ≥13 g/dL — ESA derhal durdur');
-            ilac.push('ESA DURDUR — Hb 10–11.5 g/dL hedeflene kadar bekle');
-            ilac.push('PP 3.4.3.4: İnme/vasküler tromboz varsa ESA dönüşünü bireyselleştir');
-        } else if (hgb >= 12.0) {
-            ilac.push('ESA dozunu %25 azalt (Tablo 7: >2 g/dL/4 hafta artışında %25 azalt kuralı)');
-            ilac.push('PP 3.4.3.2: Doz tutmak yerine azaltmayı tercih et');
-        } else {
-            ilac.push('ESA dozunu %10–25 azalt — hedef Hb < 11.5 g/dL (Rek. 3.3.1)');
-            ilac.push('PP 3.4.1.2: Doz ayarı en az 4 haftada bir; daha sık ayarlamaktan kaçın');
-        }
-        ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'high',
-            hgb >= 13.0 ? 'KRİTİK YÜKSEK (≥13 g/dL) — ESA DURDUR' :
-            hgb >= 12.0 ? 'YÜKSEK (≥12 g/dL) — ESA DOZU AZALT (%25)' :
-                          'HEDEF ÜSTÜ (≥11.5 g/dL) — Rek. 3.3.1: ESA AZALT',
-            oneri, ilac, '2–4 hafta Hb takibi (PP 3.4.3.2)', []);
-    }
+ } else {
+ // HEDEF ÜSTÜ — İHLALİ
+ const ilac = []; const oneri = [
+ 'İHLAL: Hb ≥11.5 g/dL → ESA DOZU AZALT/DURDUR',
+ 'İnme, tromboembolik olay, vasküler erişim trombozu riski ARTAR ',
+ '.3: En düşük etkili ESA dozu prensibi'
+ ];
+ if (hgb >= 13.0) {
+ oneri.push('⚠️ KRİTİK: Hb ≥13 g/dL — ESA derhal durdur');
+ ilac.push('ESA DURDUR — Hb 10–11.5 g/dL hedeflene kadar bekle');
+ ilac.push('.4: İnme/vasküler tromboz varsa ESA dönüşünü bireyselleştir');
+ } else if (hgb >= 12.0) {
+ ilac.push('ESA dozunu %25 azalt (>2 g/dL/4 hafta artışında %25 azalt kuralı)');
+ ilac.push('.2: Doz tutmak yerine azaltmayı tercih et');
+ } else {
+ ilac.push('ESA dozunu %10–25 azalt — hedef Hb < 11.5 g/dL ');
+ ilac.push('.2: Doz ayarı en az 4 haftada bir; daha sık ayarlamaktan kaçın');
+ }
+ ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'high',
+ hgb >= 13.0 ? 'KRİTİK YÜKSEK (≥13 g/dL) — ESA DURDUR' :
+ hgb >= 12.0 ? 'YÜKSEK (≥12 g/dL) — ESA DOZU AZALT (%25)' :
+ 'HEDEF ÜSTÜ (≥11.5 g/dL) — ESA AZALT',
+ oneri, ilac, '2–4 hafta Hb takibi (.2)', []);
+ }
 }
 
 // ── Ferritin Değerlendirmesi — KDIGO 2026 HD Eşikleri ──────────────────
 if (ferr !== null) {
-    const ts = tsat !== null ? ` | TSAT: ${tsat}%` : ' | TSAT: ölçülmedi';
+ const ts = tsat !== null ? ` | TSAT: ${tsat}%` : ' | TSAT: ölçülmedi';
 
-    if (ferr < 30) {
-        // Profund sistemik demir eksikliği — PP 2.11
-        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'low',
-            `PROFund SİSTEMİK DEMİR EKSİKLİĞİ${ts}`,
-            ['PP 2.11: Anemi olmasa dahi IV/oral demir değerlendir (ferritin <30 + TSAT <20%)',
-             'Sistemik demir eksikliği: depolar kritik düzeyde boş',
-             'Kanama kaynağı araştır: GIS, üroloji, jinekoloji'],
-            ['IV Demir Sükroz 200 mg IV her seans — proaktif (Rek. 2.1, 2.2)',
-             'PP 2.5: Hb, ferritin, TSAT 1–3 ayda kontrol',
-             'Hedef: ferritin 200–500 ng/mL, TSAT %20–30'],
-            '1 ay kontrol (PP 2.5)', []);
+ if (ferr < 30) {
+ ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'low',
+ `PROFund SİSTEMİK DEMİR EKSİKLİĞİ${ts}`,
+ ['Anemi olmasa dahi IV/oral demir değerlendir (ferritin <30 + TSAT <20%)',
+ 'Sistemik demir eksikliği: depolar kritik düzeyde boş',
+ 'Kanama kaynağı araştır: GIS, üroloji, jinekoloji'],
+ ['IV Demir Sükroz 200 mg IV her seans — proaktif',
+ 'Hb, ferritin, TSAT 1–3 ayda kontrol',
+ 'Hedef: ferritin 200–500 ng/mL, TSAT %20–30'],
+ '1 ay kontrol', []);
 
-    } else if (ferr <= 200) {
-        // Sistemik demir eksikliği bölgesi
-        const tsat_yorum = tsat !== null
-            ? (tsat <= 30 ? ' → Rek. 2.1: IV demir ENDİKE (TSAT ≤30%)' :
-               tsat >= 40 ? ' → PP 2.2: TSAT ≥40%, demir askıya al'
-                           : ' → TSAT yeterli, demir izle')
-            : ' → TSAT ölçülmedi (Rek. 2.1 tam değerlendirilemez)';
-        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'low',
-            `SİSTEMİK DEMİR EKSİKLİĞİ (30–200 ng/mL)${tsat_yorum}`,
-            ['Rek. 2.1: HD için ferritin ≤500 + TSAT ≤30% → IV demir başla',
-             'Rek. 2.2: IV demir oral demire tercih edilir (HD)',
-             'PP 2.1: Proaktif IV demir protokolü — reaktif değil (PIVOTAL: N=2141)'],
-            tsat !== null && tsat >= 40
-                ? ['PP 2.2: TSAT ≥40% → IV demir durdur; TSAT düşünce yeniden başla']
-                : ['IV Demir Sükroz 200 mg IV her seans (proaktif)',
-                   'PP 2.2: Ferritin >700 veya TSAT ≥40% olana dek sürdür',
-                   'PP 2.5: Hb, ferritin, TSAT 1–3 ayda kontrol'],
-            '1–3 ay kontrol (PP 2.5)', []);
+ } else if (ferr <= 200) {
+ // Sistemik demir eksikliği bölgesi
+ const tsat_yorum = tsat !== null
+ ? (tsat <= 30 ? ' → IV demir ENDİKE (TSAT ≤30%)' :
+ tsat >= 40 ? ' → TSAT ≥40%, demir askıya al'
+ : ' → TSAT yeterli, demir izle')
+ : ' → TSAT ölçülmedi (tam değerlendirilemez)';
+ ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'low',
+ `SİSTEMİK DEMİR EKSİKLİĞİ (30–200 ng/mL)${tsat_yorum}`,
+ ['HD için ferritin ≤500 + TSAT ≤30% → IV demir başla',
+ 'IV demir oral demire tercih edilir (HD)',
+ 'Proaktif IV demir protokolü — reaktif değil (PIVOTAL: N=2141)'],
+ tsat !== null && tsat >= 40
+ ? ['TSAT ≥40% → IV demir durdur; TSAT düşünce yeniden başla']
+ : ['IV Demir Sükroz 200 mg IV her seans (proaktif)',
+ 'Ferritin >700 veya TSAT ≥40% olana dek sürdür',
+ 'Hb, ferritin, TSAT 1–3 ayda kontrol'],
+ '1–3 ay kontrol', []);
 
-    } else if (ferr <= 500) {
-        // Demir yeterli — Rek. 2.1 eşiği içinde
-        const tsat_not = tsat !== null
-            ? (tsat >= 40 ? ' — PP 2.2: TSAT ≥40% → DEMİR ASKIYA AL' :
-               tsat < 20  ? ' — Demir kısıtlı eritropoez (TSAT düşük, ferritin yeterli)' : '')
-            : '';
-        const ilac_orta = tsat !== null && tsat >= 40
-            ? ['IV demir tedavisini geçici durdur (PP 2.2: TSAT ≥40%)',
-               'TSAT <30%a döndüğünde proaktif protokolü yeniden başlat']
-            : [];
-        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'normal',
-            `DEMİR YETERLI / İZLEM (200–500 ng/mL)${tsat_not}`,
-            ['Rek. 2.1 eşiği içinde: ferritin ≤500 + TSAT koşulu sağlanırsa demir sürdür',
-             'PP 2.1: Proaktif strateji — ferritin >700 veya TSAT ≥40% olmadıkça devam',
-             'PP 2.5: Hb, ferritin, TSAT 1–3 ayda bir kontrol'],
-            ilac_orta, '1–3 ay kontrol (PP 2.5)', []);
+ } else if (ferr <= 500) {
+ // Demir yeterli — eşiği içinde
+ const tsat_not = tsat !== null
+ ? (tsat >= 40 ? ' — TSAT ≥40% → DEMİR ASKIYA AL' :
+ tsat < 20 ? ' — Demir kısıtlı eritropoez (TSAT düşük, ferritin yeterli)' : '')
+ : '';
+ const ilac_orta = tsat !== null && tsat >= 40
+ ? ['IV demir tedavisini geçici durdur (TSAT ≥40%)',
+ 'TSAT <30%a döndüğünde proaktif protokolü yeniden başlat']
+ : [];
+ ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'normal',
+ `DEMİR YETERLI / İZLEM (200–500 ng/mL)${tsat_not}`,
+ ['eşiği içinde: ferritin ≤500 + TSAT koşulu sağlanırsa demir sürdür',
+ 'Proaktif strateji — ferritin >700 veya TSAT ≥40% olmadıkça devam',
+ 'Hb, ferritin, TSAT 1–3 ayda bir kontrol'],
+ ilac_orta, '1–3 ay kontrol', []);
 
-    } else if (ferr <= 700) {
-        // Sınırda — Rek. 2.1 eşiğini geçti
-        const tsat_not = tsat !== null
-            ? (tsat >= 40 ? ' + TSAT ≥40%: KESİNLİKLE DURDUR (PP 2.2)' :
-               tsat < 20  ? ' + TSAT <20%: Demir kısıtlı eritropoez — dikkatli değerlendir'
-                           : '') : '';
-        const ilac_kes = tsat !== null && tsat >= 40
-            ? ['IV demir durdur (PP 2.2: ferritin >500 VE TSAT ≥40%)',
-               'Ferritin ve TSAT 1 ayda kontrol']
-            : ['IV demir dozunu azalt veya geçici durdur',
-               '1 ay sonra ferritin + TSAT yeniden değerlendir'];
-        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'high',
-            `FERRİTİN SINIRDA YÜKSEK (500–700 ng/mL)${tsat_not}`,
-            ['Rek. 2.1 eşiğini (>500 ng/mL) geçti — demir tedavisini gözden geçir',
-             'PP 2.2: 700 ng/mL sınırına yaklaşıldı — dozunu azalt veya durdur',
-             'Akut faz reaktanı olabileceğinden TSAT ile birlikte yorumla'],
-            ilac_kes, '1 ay kontrol (PP 2.5)', []);
+ } else if (ferr <= 700) {
+ // Sınırda — eşiğini geçti
+ const tsat_not = tsat !== null
+ ? (tsat >= 40 ? ' + TSAT ≥40%: KESİNLİKLE DURDUR ' :
+ tsat < 20 ? ' + TSAT <20%: Demir kısıtlı eritropoez — dikkatli değerlendir'
+ : '') : '';
+ const ilac_kes = tsat !== null && tsat >= 40
+ ? ['IV demir durdur (ferritin >500 VE TSAT ≥40%)',
+ 'Ferritin ve TSAT 1 ayda kontrol']
+ : ['IV demir dozunu azalt veya geçici durdur',
+ '1 ay sonra ferritin + TSAT yeniden değerlendir'];
+ ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'high',
+ `FERRİTİN SINIRDA YÜKSEK (500–700 ng/mL)${tsat_not}`,
+ ['eşiğini (>500 ng/mL) geçti — demir tedavisini gözden geçir',
+ '700 ng/mL sınırına yaklaşıldı — dozunu azalt veya durdur',
+ 'Akut faz reaktanı olabileceğinden TSAT ile birlikte yorumla'],
+ ilac_kes, '1 ay kontrol', []);
 
-    } else {
-        // Yüksek ferritin (>700) — PP 2.2 rutin demir durdur
-        const tsat_not = tsat !== null
-            ? (tsat >= 40 ? ' + TSAT ≥40%: Kesinlikle durdur (PP 2.2)' :
-               tsat < 20  ? ' + TSAT <20%: Demir kısıtlı eritropoez — inflamasyon araştır'
-                           : ' + TSAT normal') : '';
-        const ilac_yuk = ['PP 2.2: Ferritin >700 → rutin IV demir ASKIYA AL'];
-        const oneri_yuk = ['PP 2.2: Ferritin >700 ng/mL — rutin IV demir tedavisini durdur',
-                           'Akut faz reaktanı yüksekliği (inflamasyon?) olabilir — CRP kontrol'];
-        if (tsat !== null && tsat < 20) {
-            oneri_yuk.push('TSAT <20% + yüksek ferritin → Demir kısıtlı eritropoez (KDIGO 2026 tanımı)');
-            oneri_yuk.push('İnflamasyon hepsidini artırarak demir salınımını bloke ediyor');
-            ilac_yuk.push('ESA yanıtsızlığı + refrakter anemi varsa kısa süreli deneme IV demir değerlendir');
-        }
-        if (ferr > 1200) oneri_yuk.push('Ferritin >1200: Demir birikimi / hemokromatoz araştır');
-        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'high',
-            `YÜKSEK FERRİTİN (>700 ng/mL)${tsat_not}`,
-            oneri_yuk, ilac_yuk, '1 ay kontrol (PP 2.5)', []);
-    }
+ } else {
+ // Yüksek ferritin (>700) — rutin demir durdur
+ const tsat_not = tsat !== null
+ ? (tsat >= 40 ? ' + TSAT ≥40%: Kesinlikle durdur ' :
+ tsat < 20 ? ' + TSAT <20%: Demir kısıtlı eritropoez — inflamasyon araştır'
+ : ' + TSAT normal') : '';
+ const ilac_yuk = ['Ferritin >700 → rutin IV demir ASKIYA AL'];
+ const oneri_yuk = ['Ferritin >700 ng/mL — rutin IV demir tedavisini durdur',
+ 'Akut faz reaktanı yüksekliği (inflamasyon?) olabilir — CRP kontrol'];
+ if (tsat !== null && tsat < 20) {
+ oneri_yuk.push('TSAT <20% + yüksek ferritin → Demir kısıtlı eritropoez ()');
+ oneri_yuk.push('İnflamasyon hepsidini artırarak demir salınımını bloke ediyor');
+ ilac_yuk.push('ESA yanıtsızlığı + refrakter anemi varsa kısa süreli deneme IV demir değerlendir');
+ }
+ if (ferr > 1200) oneri_yuk.push('Ferritin >1200: Demir birikimi / hemokromatoz araştır');
+ ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'high',
+ `YÜKSEK FERRİTİN (>700 ng/mL)${tsat_not}`,
+ oneri_yuk, ilac_yuk, '1 ay kontrol', []);
+ }
 }
 
-// ── TSAT Bağımsız Değerlendirmesi (KDIGO 2026) ─────────────────────────
+// ── TSAT Bağımsız Değerlendirmesi ─────────────────────────
 if (tsat !== null) {
-    if (tsat < 20 && ferr !== null && ferr <= 700) {
-        const tip = ferr < 200
-            ? 'Sistemik demir eksikliği (ferritin↓ + TSAT↓)'
-            : 'Demir kısıtlı eritropoez (ferritin normal/↑ + TSAT↓) — hepsidin artışı?';
-        const oneriler_ts = ferr < 200
-            ? ['Rek. 2.1: IV demir başla (ferritin ≤500 + TSAT ≤30%)',
-               'Rek. 2.2: IV demir oral demire tercih edilir (HD hastası)']
-            : ['Demir kısıtlı eritropoez: İnflamasyon hepsidini artırarak TSATı düşürüyor',
-               'CRP yüksekse enfeksiyonu/inflamasyonu önce tedavi et (PP 2.8)',
-               'Proaktif IV demir protokolü ile TSAT ≥20%ye çıkmayı hedefle'];
-        ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'low',
-            `DÜŞÜK TSAT (<20%) — ${tip}`,
-            oneriler_ts,
-            ['IV Demir Sükroz 200 mg IV proaktif (PP 2.1)',
-             'Hedef TSAT: %20–30 (Rek. 2.1 eşiği)'],
-            '1–3 ay kontrol (PP 2.5)', []);
-    } else if (tsat >= 40) {
-        ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'high',
-            'YÜKSEK TSAT (≥40%) — PP 2.2: IV Demir Askıya Al',
-            ['PP 2.2: TSAT ≥40% → IV demir DURDUR (ferritin değerinden bağımsız)',
-             'Transferrin doygunluğu kritik düzeyde — serbest demir toksisitesi riski',
-             'ESA dozu değiştirilmemeli — demir sorunu'],
-            ['IV demir tedavisini durdur',
-             'TSAT <%30a düştüğünde PP 2.1 proaktif protokolünü yeniden başlat'],
-            '1 ay kontrol', []);
-    }
+ if (tsat < 20 && ferr !== null && ferr <= 700) {
+ const tip = ferr < 200
+ ? 'Sistemik demir eksikliği (ferritin↓ + TSAT↓)'
+ : 'Demir kısıtlı eritropoez (ferritin normal/↑ + TSAT↓) — hepsidin artışı?';
+ const oneriler_ts = ferr < 200
+ ? ['IV demir başla (ferritin ≤500 + TSAT ≤30%)',
+ 'IV demir oral demire tercih edilir (HD hastası)']
+ : ['Demir kısıtlı eritropoez: İnflamasyon hepsidini artırarak TSATı düşürüyor',
+ 'CRP yüksekse enfeksiyonu/inflamasyonu önce tedavi et ',
+ 'Proaktif IV demir protokolü ile TSAT ≥20%ye çıkmayı hedefle'];
+ ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'low',
+ `DÜŞÜK TSAT (<20%) — ${tip}`,
+ oneriler_ts,
+ ['IV Demir Sükroz 200 mg IV proaktif ',
+ 'Hedef TSAT: %20–30 (eşiği)'],
+ '1–3 ay kontrol', []);
+ } else if (tsat >= 40) {
+ ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'high',
+ 'YÜKSEK TSAT (≥40%) — IV Demir Askıya Al',
+ ['TSAT ≥40% → IV demir DURDUR (ferritin değerinden bağımsız)',
+ 'Transferrin doygunluğu kritik düzeyde — serbest demir toksisitesi riski',
+ 'ESA dozu değiştirilmemeli — demir sorunu'],
+ ['IV demir tedavisini durdur',
+ 'TSAT <%30a düştüğünde proaktif protokolünü yeniden başlat'],
+ '1 ay kontrol', []);
+ }
 }
 
 
 
-    // ── 3. ELEKTROLİT (K + Na kombine) ────────────────────────────────────────
-  if (k !== null) {
-    if (k > 5.5) {
-      const ilac = [];
-      const diy = ['Diyalizat K 2.0 mEq/L değerine düşür', 'Diyaliz süresini uzat'];
-      if (k > 6.5) {
-        ilac.push('ACİL: Ca glukonat %10 10mL IV yavaş (kardiak koruma)');
-        ilac.push('İnsülin 10Ü + Dekstroz %10 500mL IV');
-        ilac.push('Kayeksalat 15g 3x1 oral');
-        diy.unshift('ACIL DİYALİZ değerlendir');
-      } else {
-        ilac.push('Kayeksalat 15g 2x1 oral');
-        ilac.push('Diyet: meyve/sebze/kuru baklagil kısıtla');
-      }
-      // Dijital kullananlar için ek uyarı
-      ilac.push('Dijital/antiaritmik ilaç kullanıyorsa EKG zorunlu');
-      ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'high', k>6.5?'KRİTİK HİPERKALEMİ (>6.5 mEq/L)':'HİPERKALEMİ (>5.5 mEq/L)',
-        ['Acil EKG değerlendirmesi', 'Diyet kısıtlaması'], ilac,
-        k>6.5 ? 'Acil değerlendirme' : '2 hafta kontrol', diy);
-    } else if (k < 3.5) {
-      ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'low', 'HİPOKALEMİ (<3.5 mEq/L)',
-        ['Oral/IV potasyum replasmanı', 'Diyalizat K artır'],
-        ['KCl oral 1g 3x1', 'veya IV KCl 40 mEq/gün yavaş infüzyon'],
-        '1 hafta kontrol',
-        ['Diyalizat K 3.0 mEq/L değerine yükselt']);
-    } else {
-      ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'normal', 'HEDEF ARALIKTA (3.5-5.5 mEq/L)', [], [], '3 ay kontrol', []);
-    }
-  }
+ // ── 3. ELEKTROLİT (K + Na kombine) ────────────────────────────────────────
+ if (k !== null) {
+ if (k > 5.5) {
+ const ilac = [];
+ const diy = ['Diyalizat K 2.0 mEq/L değerine düşür', 'Diyaliz süresini uzat'];
+ if (k > 6.5) {
+ ilac.push('ACİL: Ca glukonat %10 10mL IV yavaş (kardiak koruma)');
+ ilac.push('İnsülin 10Ü + Dekstroz %10 500mL IV');
+ ilac.push('Kayeksalat 15g 3x1 oral');
+ diy.unshift('ACIL DİYALİZ değerlendir');
+ } else {
+ ilac.push('Kayeksalat 15g 2x1 oral');
+ ilac.push('Diyet: meyve/sebze/kuru baklagil kısıtla');
+ }
+ // Dijital kullananlar için ek uyarı
+ ilac.push('Dijital/antiaritmik ilaç kullanıyorsa EKG zorunlu');
+ ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'high', k>6.5?'KRİTİK HİPERKALEMİ (>6.5 mEq/L)':'HİPERKALEMİ (>5.5 mEq/L)',
+ ['Acil EKG değerlendirmesi', 'Diyet kısıtlaması'], ilac,
+ k>6.5 ? 'Acil değerlendirme' : '2 hafta kontrol', diy);
+ } else if (k < 3.5) {
+ ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'low', 'HİPOKALEMİ (<3.5 mEq/L)',
+ ['Oral/IV potasyum replasmanı', 'Diyalizat K artır'],
+ ['KCl oral 1g 3x1', 'veya IV KCl 40 mEq/gün yavaş infüzyon'],
+ '1 hafta kontrol',
+ ['Diyalizat K 3.0 mEq/L değerine yükselt']);
+ } else {
+ ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'normal', 'HEDEF ARALIKTA (3.5-5.5 mEq/L)', [], [], '3 ay kontrol', []);
+ }
+ }
 
-  if (na !== null) {
-    if (na < 135) {
-      ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'low', 'HİPONATREMİ',
-        ['Sıvı kısıtlaması değerlendir', 'Dilüsyonel hiponatremi olabilir'],
-        ['Sıvı kısıtlaması 500-750 mL/gün'],
-        '1 ay kontrol', ['Diyalizat Na 140 mEq/L değerine ayarla']);
-    } else if (na > 145) {
-      ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'high', 'HİPERNATREMİ',
-        ['Su alımını artır'], ['Serbest su replasmanı'], '1 ay kontrol', []);
-    } else {
-      ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'normal', 'HEDEF ARALIKTA (135-145 mEq/L)', [], [], '3 ay kontrol', []);
-    }
-  }
+ if (na !== null) {
+ if (na < 135) {
+ ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'low', 'HİPONATREMİ',
+ ['Sıvı kısıtlaması değerlendir', 'Dilüsyonel hiponatremi olabilir'],
+ ['Sıvı kısıtlaması 500-750 mL/gün'],
+ '1 ay kontrol', ['Diyalizat Na 140 mEq/L değerine ayarla']);
+ } else if (na > 145) {
+ ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'high', 'HİPERNATREMİ',
+ ['Su alımını artır'], ['Serbest su replasmanı'], '1 ay kontrol', []);
+ } else {
+ ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'normal', 'HEDEF ARALIKTA (135-145 mEq/L)', [], [], '3 ay kontrol', []);
+ }
+ }
 
-  // ── 4. BESLENME/İNFLAMASYON (Albumin + CRP + Glukoz kombine) ──────────────
-  if (alb !== null) {
-    if (alb < 3.5) {
-      const oneri = ['Beslenme değerlendirmesi', 'Diyetisyen konsültasyonu'];
-      const ilac = ['Oral beslenme desteği: Nepro veya Renilon (1-2 şişe/gün)', 'Protein alımı: 1.2 g/kg/gün hedefle'];
-      // CRP ile kombine — inflamasyon albumini düşürüyor olabilir
-      if (crp !== null && crp > 10) {
-        oneri.push('CRP yüksek — inflamasyon albumini düşürüyor olabilir');
-        oneri.push('Enfeksiyon/inflamasyon kaynağı araştır');
-        ilac.push('Enfeksiyon tedavisi albumini düzeltebilir');
-      }
-      ekle('🔬 Beslenme', 'Albumin', alb+' g/dL', 'low', 'DÜŞÜK (<3.5 mg/dL)',
-        oneri, ilac, '1 ay kontrol', []);
-    } else {
-      ekle('🔬 Beslenme', 'Albumin', alb+' g/dL', 'normal', 'HEDEF ARALIKTA (>3.8 g/dL)', [], [], '3 ay kontrol', []);
-    }
-  }
+ // ── 4. BESLENME/İNFLAMASYON (Albumin + CRP + Glukoz kombine) ──────────────
+ if (alb !== null) {
+ if (alb < 3.5) {
+ const oneri = ['Beslenme değerlendirmesi', 'Diyetisyen konsültasyonu'];
+ const ilac = ['Oral beslenme desteği: Nepro veya Renilon (1-2 şişe/gün)', 'Protein alımı: 1.2 g/kg/gün hedefle'];
+ // CRP ile kombine — inflamasyon albumini düşürüyor olabilir
+ if (crp !== null && crp > 10) {
+ oneri.push('CRP yüksek — inflamasyon albumini düşürüyor olabilir');
+ oneri.push('Enfeksiyon/inflamasyon kaynağı araştır');
+ ilac.push('Enfeksiyon tedavisi albumini düzeltebilir');
+ }
+ ekle('🔬 Beslenme', 'Albumin', alb+' g/dL', 'low', 'DÜŞÜK (<3.5 mg/dL)',
+ oneri, ilac, '1 ay kontrol', []);
+ } else {
+ ekle('🔬 Beslenme', 'Albumin', alb+' g/dL', 'normal', 'HEDEF ARALIKTA (>3.8 g/dL)', [], [], '3 ay kontrol', []);
+ }
+ }
 
-  if (gluk !== null && gluk > 200) {
-    const ilac = ['HbA1c ölçümü planla'];
-    // Albumin ile kombine — diyabetik nefropati?
-    if (alb !== null && alb < 3.5) ilac.push('Diyabetik nefropati açısından değerlendir');
-    ilac.push('Antidiyabetik tedaviyi gözden geçir — diyalizde metformin kullanma');
-    ekle('🔬 Beslenme', 'Glukoz', gluk+' mg/dL', 'high', 'YÜKSELMİŞ (>5.5 mg/dL)',
-      ['Diyabet kontrolü yetersiz', 'Endokrin konsültasyonu'],
-      ilac, '1 ay kontrol', []);
-  }
+ if (gluk !== null && gluk > 200) {
+ const ilac = ['HbA1c ölçümü planla'];
+ // Albumin ile kombine — diyabetik nefropati?
+ if (alb !== null && alb < 3.5) ilac.push('Diyabetik nefropati açısından değerlendir');
+ ilac.push('Antidiyabetik tedaviyi gözden geçir — diyalizde metformin kullanma');
+ ekle('🔬 Beslenme', 'Glukoz', gluk+' mg/dL', 'high', 'YÜKSELMİŞ (>5.5 mg/dL)',
+ ['Diyabet kontrolü yetersiz', 'Endokrin konsültasyonu'],
+ ilac, '1 ay kontrol', []);
+ }
 
-  // ── 5. DİYALİZ YETERLİLİĞİ (BUN + KTV + URR) ────────────────────────────
-  if (bun !== null && bun > 80) {
-    ekle('⚙️ Diyaliz Yeterliliği', 'BUN', bun+' mg/dL', 'high', 'YÜKSELMİŞ (>80 mg/dL)',
-      ['Diyaliz yeterliliği yetersiz olabilir', 'Kt/V hesapla'],
-      ['Diyaliz süresini uzat (minimum 4 saat)', 'Kan akım hızını (Qb) artır: hedef >300 mL/dk'],
-      '1 ay kontrol',
-      ['Diyaliz süresi artır', 'Qb artır', 'Diyalizat akım hızı artır']);
-  } else if (bun !== null) {
-    ekle('⚙️ Diyaliz Yeterliliği', 'BUN', bun+' mg/dL', 'normal', 'NORMAL (<80 mg/dL)', [], [], '3 ay kontrol', []);
-  }
+ // ── 5. DİYALİZ YETERLİLİĞİ (BUN + KTV + URR) ────────────────────────────
+ if (bun !== null && bun > 80) {
+ ekle('⚙️ Diyaliz Yeterliliği', 'BUN', bun+' mg/dL', 'high', 'YÜKSELMİŞ (>80 mg/dL)',
+ ['Diyaliz yeterliliği yetersiz olabilir', 'Kt/V hesapla'],
+ ['Diyaliz süresini uzat (minimum 4 saat)', 'Kan akım hızını (Qb) artır: hedef >300 mL/dk'],
+ '1 ay kontrol',
+ ['Diyaliz süresi artır', 'Qb artır', 'Diyalizat akım hızı artır']);
+ } else if (bun !== null) {
+ ekle('⚙️ Diyaliz Yeterliliği', 'BUN', bun+' mg/dL', 'normal', 'NORMAL (<80 mg/dL)', [], [], '3 ay kontrol', []);
+ }
 
-  // KTV
-  const ktv = val(['kt/v', 'ktv', 'spktv', 'sp kt']);
-  if (ktv !== null) {
-    if (ktv < 1.2) {
-      ekle('⚙️ Diyaliz Yeterliliği', 'Kt/V', ktv.toFixed(2), 'low', 'YETERSİZ (<1.2)',
-        ['Diyaliz dozu yetersiz', 'KDOQI hedef: spKt/V ≥1.2 (önerilen ≥1.4)'],
-        ['Diyaliz süresini uzat (minimum 4 saat)', 'Kan akım hızını (Qb) artır >300 mL/dk', 'Diyalizat akım hızını (Qd) artır >500 mL/dk'],
-        '1 ay kontrol',
-        ['Süre uzat', 'Qb artır', 'Membran yüzey alanını artır', 'AV fistül/greft yeterliliğini kontrol et']);
-    } else if (ktv >= 1.2 && ktv < 1.4) {
-      ekle('⚙️ Diyaliz Yeterliliği', 'Kt/V', ktv.toFixed(2), 'normal', 'HEDEF ARALIKTA (1.2-1.4)',
-        ['Minimum hedef karşılanıyor', 'Önerilen hedef ≥1.4 için diyaliz parametrelerini optimize et'],
-        [], '3 ay kontrol', []);
-    } else {
-      ekle('⚙️ Diyaliz Yeterliliği', 'Kt/V', ktv.toFixed(2), 'normal', 'HEDEF ÜSTÜ (≥1.4 - İYİ)', [], [], '3 ay kontrol', []);
-    }
-  }
+ // KTV
+ const ktv = val(['kt/v', 'ktv', 'spktv', 'sp kt']);
+ if (ktv !== null) {
+ if (ktv < 1.2) {
+ ekle('⚙️ Diyaliz Yeterliliği', 'Kt/V', ktv.toFixed(2), 'low', 'YETERSİZ (<1.2)',
+ ['Diyaliz dozu yetersiz', 'KDOQI hedef: spKt/V ≥1.2 (önerilen ≥1.4)'],
+ ['Diyaliz süresini uzat (minimum 4 saat)', 'Kan akım hızını (Qb) artır >300 mL/dk', 'Diyalizat akım hızını (Qd) artır >500 mL/dk'],
+ '1 ay kontrol',
+ ['Süre uzat', 'Qb artır', 'Membran yüzey alanını artır', 'AV fistül/greft yeterliliğini kontrolet']);
+ } else if (ktv >= 1.2 && ktv < 1.4) {
+ ekle('⚙️ Diyaliz Yeterliliği', 'Kt/V', ktv.toFixed(2), 'normal', 'HEDEF ARALIKTA (1.2-1.4)',
+ ['Minimum hedef karşılanıyor', 'Önerilen hedef ≥1.4 için diyaliz parametrelerini optimize et'],
+ [], '3 ay kontrol', []);
+ } else {
+ ekle('⚙️ Diyaliz Yeterliliği', 'Kt/V', ktv.toFixed(2), 'normal', 'HEDEF ÜSTÜ (≥1.4 - İYİ)', [], [], '3 ay kontrol', []);
+ }
+ }
 
-  // URR
-  const urr_s = bul('urr', 'üre redüksiyon', 'ure reduksiyon');
-  if (urr_s !== null) {
-    const urr = parseFloat(urr_s.sonuc);
-    if (urr < 65) {
-      ekle('⚙️ Diyaliz Yeterliliği', 'URR', urr.toFixed(1)+'%', 'low', 'YETERSİZ (<%65)',
-        ['Üre redüksiyon oranı yetersiz', 'KDOQI hedef: URR ≥%65'],
-        ['Diyaliz süresini uzat', 'Kan akım hızını artır'],
-        '1 ay kontrol',
-        ['Süre uzat', 'Qb artır']);
-    } else if (urr >= 65 && urr < 70) {
-      ekle('⚙️ Diyaliz Yeterliliği', 'URR', urr.toFixed(1)+'%', 'normal', 'HEDEF ARALIKTA (%65-70)', [], [], '3 ay kontrol', []);
-    } else {
-      ekle('⚙️ Diyaliz Yeterliliği', 'URR', urr.toFixed(1)+'%', 'normal', 'İYİ (>%70)', [], [], '3 ay kontrol', []);
-    }
-  }
+ // URR
+ const urr_s = bul('urr', 'üre redüksiyon', 'ure reduksiyon');
+ if (urr_s !== null) {
+ const urr = parseFloat(urr_s.sonuc);
+ if (urr < 65) {
+ ekle('⚙️ Diyaliz Yeterliliği', 'URR', urr.toFixed(1)+'%', 'low', 'YETERSİZ (<%65)',
+ ['Üre redüksiyon oranı yetersiz', 'KDOQI hedef: URR ≥%65'],
+ ['Diyaliz süresini uzat', 'Kan akım hızını artır'],
+ '1 ay kontrol',
+ ['Süre uzat', 'Qb artır']);
+ } else if (urr >= 65 && urr < 70) {
+ ekle('⚙️ Diyaliz Yeterliliği', 'URR', urr.toFixed(1)+'%', 'normal', 'HEDEF ARALIKTA (%65-70)', [], [], '3 ay kontrol', []);
+ } else {
+ ekle('⚙️ Diyaliz Yeterliliği', 'URR', urr.toFixed(1)+'%', 'normal', 'İYİ (>%70)', [], [], '3 ay kontrol', []);
+ }
+ }
 
-  return oneriler;
+ return oneriler;
 }
 
 
 function renderTedavi(sonuclar) {
-  const oneriler = analizEt(sonuclar);
-  const konteyner = document.getElementById('oneri-icerik');
-  const onaylar = document.getElementById('onay-satirlar');
-  konteyner.innerHTML = '';
-  onaylar.innerHTML = '';
+ const oneriler = analizEt(sonuclar);
+ const konteyner = document.getElementById('oneri-icerik');
+ const onaylar = document.getElementById('onay-satirlar');
+ konteyner.innerHTML = '';
+ onaylar.innerHTML = '';
 
-  if (oneriler.length === 0) {
-    document.getElementById('tedavi-bos').style.display = 'block';
-    document.getElementById('onay-kutu').style.display = 'none';
-    return;
-  }
+ if (oneriler.length === 0) {
+ document.getElementById('tedavi-bos').style.display = 'block';
+ document.getElementById('onay-kutu').style.display = 'none';
+ return;
+ }
 
-  document.getElementById('tedavi-bos').style.display = 'none';
+ document.getElementById('tedavi-bos').style.display = 'none';
 
-  const gruplar = {};
-  oneriler.forEach(o => { if (!gruplar[o.grup]) gruplar[o.grup] = []; gruplar[o.grup].push(o); });
+ const gruplar = {};
+ oneriler.forEach(o => { if (!gruplar[o.grup]) gruplar[o.grup] = []; gruplar[o.grup].push(o); });
 
-  Object.entries(gruplar).forEach(([grup, items]) => {
-    const baslik = document.createElement('div');
-    baslik.className = 'grup-baslik';
-    baslik.textContent = grup;
-    konteyner.appendChild(baslik);
+ Object.entries(gruplar).forEach(([grup, items]) => {
+ const baslik = document.createElement('div');
+ baslik.className = 'grup-baslik';
+ baslik.textContent = grup;
+ konteyner.appendChild(baslik);
 
-    items.forEach(item => {
-      const kart = document.createElement('div');
-      kart.className = 'oneri-kart ' + item.durum;
-      const badgeClass = 'badge ' + item.durum;
-      const listeHtml = item.liste.length ? '<ul class="oneri-liste">' + item.liste.map(l => '<li>' + l + '</li>').join('') + '</ul>' : '';
-      
-      // İlaç önerileri
-      const ilacHtml = item.ilaclar && item.ilaclar.length ? `
-        <div style="margin-top:8px;padding:8px 10px;background:rgba(255,255,255,0.5);border-radius:6px;border-left:3px solid #6366f1;">
-          <div style="font-size:10px;font-weight:800;color:#6366f1;letter-spacing:1px;margin-bottom:4px">💊 İLAÇ ÖNERİSİ</div>
-          ${item.ilaclar.map(i => '<div style="font-size:13px;font-weight:600;color:#1e293b">' + i + '</div>').join('')}
-        </div>` : '';
-      
-      // Diyaliz parametresi önerileri
-      const diyalizHtml = item.diyaliz && item.diyaliz.length ? `
-        <div style="margin-top:6px;padding:8px 10px;background:rgba(255,255,255,0.5);border-radius:6px;border-left:3px solid #0891b2;">
-          <div style="font-size:10px;font-weight:800;color:#0891b2;letter-spacing:1px;margin-bottom:4px">⚙️ DİYALİZ PARAMETRESİ</div>
-          ${item.diyaliz.map(d => '<div style="font-size:13px;color:#1e293b">' + d + '</div>').join('')}
-        </div>` : '';
-      
-      // Kontrol tarihi
-      const kontrolHtml = item.kontrol ? `
-        <div style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.5);border-radius:20px;padding:4px 10px;">
-          <span style="font-size:11px">📅</span>
-          <span style="font-size:12px;font-weight:700;color:#475569">${item.kontrol}</span>
-        </div>` : '';
+ items.forEach(item => {
+ const kart = document.createElement('div');
+ kart.className = 'oneri-kart ' + item.durum;
+ const badgeClass = 'badge ' + item.durum;
+ const listeHtml = item.liste.length ? '<ul class="oneri-liste">' + item.liste.map(l => '<li>' + l + '</li>').join('') + '</ul>' : '';
+ 
+ // İlaç önerileri
+ const ilacHtml = item.ilaclar && item.ilaclar.length ? `
+ <div style="margin-top:8px;padding:8px 10px;background:rgba(255,255,255,0.5);border-radius:6px;border-left:3px solid #6366f1;">
+ <div style="font-size:10px;font-weight:800;color:#6366f1;letter-spacing:1px;margin-bottom:4px">💊 İLAÇ ÖNERİSİ</div>
+ ${item.ilaclar.map(i => '<div style="font-size:13px;font-weight:600;color:#1e293b">' + i + '</div>').join('')}
+ </div>` : '';
+ 
+ // Diyaliz parametresi önerileri
+ const diyalizHtml = item.diyaliz && item.diyaliz.length ? `
+ <div style="margin-top:6px;padding:8px 10px;background:rgba(255,255,255,0.5);border-radius:6px;border-left:3px solid #0891b2;">
+ <div style="font-size:10px;font-weight:800;color:#0891b2;letter-spacing:1px;margin-bottom:4px">⚙️ DİYALİZ PARAMETRESİ</div>
+ ${item.diyaliz.map(d => '<div style="font-size:13px;color:#1e293b">' + d + '</div>').join('')}
+ </div>` : '';
+ 
+ // Kontrol tarihi
+ const kontrolHtml = item.kontrol? `
+ <div style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.5);border-radius:20px;padding:4px 10px;">
+ <span style="font-size:11px">📅</span>
+ <span style="font-size:12px;font-weight:700;color:#475569">${item.kontrol}</span>
+ </div>` : '';
 
-      kart.innerHTML = `
-        <div class="oneri-ust">
-          <span class="oneri-param">${item.param}</span>
-          <div class="oneri-sag">
-            <span class="oneri-deger">${item.deger}</span>
-            <span class="${badgeClass}">${item.label}</span>
-          </div>
-        </div>
-        ${listeHtml}
-        ${ilacHtml}
-        ${diyalizHtml}
-        ${kontrolHtml}`;
-      konteyner.appendChild(kart);
+ kart.innerHTML = `
+ <div class="oneri-ust">
+ <span class="oneri-param">${item.param}</span>
+ <div class="oneri-sag">
+ <span class="oneri-deger">${item.deger}</span>
+ <span class="${badgeClass}">${item.label}</span>
+ </div>
+ </div>
+ ${listeHtml}
+ ${ilacHtml}
+ ${diyalizHtml}
+ ${kontrolHtml}`;
+ konteyner.appendChild(kart);
 
-      if (item.liste.length > 0 || (item.ilaclar && item.ilaclar.length > 0)) {
-        const satir = document.createElement('label');
-        satir.className = 'onay-satir';
-        satir.innerHTML = `<input type="checkbox"> <span><strong>${item.param}</strong> tedavisi incelendi ve onaylandı</span>`;
-        onaylar.appendChild(satir);
-      }
-    });
-  });
+ if (item.liste.length > 0 || (item.ilaclar && item.ilaclar.length > 0)) {
+ const satir = document.createElement('label');
+ satir.className = 'onay-satir';
+ satir.innerHTML = `<input type="checkbox"> <span><strong>${item.param}</strong> tedavisi incelendi ve onaylandı</span>`;
+ onaylar.appendChild(satir);
+ }
+ });
+ });
 
-  document.getElementById('onay-kutu').style.display = 'block';
+ document.getElementById('onay-kutu').style.display = 'block';
 }
 
 // ── AI YORUM ──────────────────────────────────────────────────────────────────
 async function aiYorumAl() {
-  if (labSonuclari.length === 0) return;
-  const btn = document.getElementById('btn-ai');
-  btn.disabled = true;
-  btn.textContent = '⏳ Yorum alınıyor...';
-  document.getElementById('ai-sonuc').style.display = 'none';
+ if (labSonuclari.length === 0) return;
+ const btn = document.getElementById('btn-ai');
+ btn.disabled = true;
+ btn.textContent = '⏳ Yorum alınıyor...';
+ document.getElementById('ai-sonuc').style.display = 'none';
 
-  const labOzet = labSonuclari.slice(0, 30).map(s => `${s.kisaAdi || s.uzunAdi || "?"}: ${s.sonuc} ${s.birim} (ref: ${s.minDeger}-${s.maxDeger})`).join('\n');
+ const labOzet = labSonuclari.slice(0, 30).map(s => `${s.kisaAdi || s.uzunAdi || "?"}: ${s.sonuc} ${s.birim} (ref: ${s.minDeger}-${s.maxDeger})`).join('\n');
 
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
-        messages: [{ role: 'user', content: `Sen bir diyaliz nefroloji uzmanısın. KDIGO 2026 Clinical Practice Guideline for the Management of Anemia in CKD (Kidney International 2026;109(Suppl 1S):S1–S99) kılavuzuna göre değerlendirme yapıyorsun. Anemi yönetiminde: Rek.2.1 (ferritin ≤500+TSAT≤30% → IV demir, HD), Rek.2.2 (IV>oral HD), PP 2.1 (proaktif strateji), PP 2.2 (ferritin >700 veya TSAT≥40% → durdur), Rek.3.1.1 (ESA birinci basamak), Rek.3.2.1 (Hb≤9–10→ESA başla, HD), Rek.3.3.1 (Hb<11.5 g/dL hedef), Tablo 7 (ESA dozlama). Yeni terminoloji: sistemik demir eksikliği (eski: mutlak), demir kısıtlı eritropoez (eski: fonksiyonel). Mineral metabolizma için KDIGO 2024 CKD-MBD kılavuzunu kullan. Tüm değerlendirmeyi Türkçe yap.\n\nHasta: ${hasta.ad} | TC: ${hasta.tc}\n\nLAB SONUÇLARI:\n${labOzet}\n\n3-4 cümle klinik değerlendirme, ardından öncelikli tedavi önerileri madde madde. Net ve pratik ol.` }]
-      })
-    });
-    const data = await res.json();
-    const metin = data.content?.map(c => c.text || '').join('') || 'Yorum alınamadı.';
-    document.getElementById('ai-metin').textContent = metin;
-    document.getElementById('ai-sonuc').style.display = 'block';
-  } catch(e) {
-    document.getElementById('ai-metin').textContent = 'AI yorumu alınamadı: ' + e.message;
-    document.getElementById('ai-sonuc').style.display = 'block';
-  }
+ try {
+ const res = await fetch('https://api.anthropic.com/v1/messages', {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({
+ model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+ messages: [{ role: 'user', content: `Sen bir diyaliz nefroloji uzmanısın. KDIGO 2026 Clinical Practice Guideline for the Management of Anemia in CKD (Kidney International 2026;109(Suppl 1S):S1–S99) kılavuzuna göre değerlendirme yapıyorsun. Anemi yönetiminde: Rek.2.1 (ferritin ≤500+TSAT≤30% → IV demir, HD), Rek.2.2 (IV>oral HD), (proaktif strateji), (ferritin >700 veya TSAT≥40% → durdur), Rek.3.1.1 (ESA birinci basamak), Rek.3.2.1 (Hb≤9–10→ESA başla, HD), Rek.3.3.1 (Hb<11.5 g/dL hedef), Tablo 7 (ESA dozlama). Yeni terminoloji: sistemik demir eksikliği (eski: mutlak), demir kısıtlı eritropoez (eski: fonksiyonel). Mineral metabolizma için KDIGO 2024 CKD-MBD kılavuzunu kullan. Tüm değerlendirmeyi Türkçe yap.\n\nHasta: ${hasta.ad} | TC: ${hasta.tc}\n\nLAB SONUÇLARI:\n${labOzet}\n\n3-4 cümle klinik değerlendirme, ardından öncelikli tedavi önerileri madde madde. Net ve pratik ol.` }]
+ })
+ });
+ const data = await res.json();
+ const metin = data.content?.map(c => c.text || '').join('') || 'Yorum alınamadı.';
+ document.getElementById('ai-metin').textContent = metin;
+ document.getElementById('ai-sonuc').style.display = 'block';
+ } catch(e) {
+ document.getElementById('ai-metin').textContent = 'AI yorumu alınamadı: ' + e.message;
+ document.getElementById('ai-sonuc').style.display = 'block';
+ }
 
-  btn.disabled = false;
-  btn.textContent = '🧠 AI Klinik Yorum Al';
+ btn.disabled = false;
+ btn.textContent = '🧠 AI Klinik Yorum Al';
 }
 
 // Direkt çağrı - DOMContentLoaded bekleme
