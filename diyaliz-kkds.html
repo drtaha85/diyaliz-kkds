@@ -539,11 +539,11 @@ function analizEt(sonuclar) {
       v > 11 ? ['Sinakalseti (Mimpara) 30mg 1x1 başla', 'Kalsiyum karbonatı kes'] :
                ['Kalsiyum karbonat dozunu yarıya indir'],
       '1 ay sonra kontrol',
-      ['Diyalizat Ca konsantrasyonunu 1.25 mmol/L'e düşür']);
+      ["Diyalizat Ca konsantrasyonunu 1.25 mmol/L degerine duşür"]);
     else if (v < 8.4) ekle('🦴 Mineral', 'Kalsiyum', v + ' mg/dL', 'low', 'DÜŞÜK',
       ['Semptom değerlendir (Trousseau, Chvostek)', 'Aktif D vitamini başla/artır'],
       ['Kalsitriol 0.25 mcg 1x1 başla', 'Kalsiyum karbonat 500mg 3x1 (yemekle)'],
-      '1 ay sonra kontrol', ['Diyalizat Ca konsantrasyonunu 1.5 mmol/L'e yükselt']);
+      '1 ay sonra kontrol', ["Diyalizat Ca konsantrasyonunu 1.5 mmol/L degerine yükselt"]);
     else ekle('🦴 Mineral', 'Kalsiyum', v + ' mg/dL', 'normal', 'NORMAL', [], [], '3 ay sonra kontrol', []);
   }
 
@@ -604,12 +604,12 @@ function analizEt(sonuclar) {
       v > 6.5 ? ['Ca glukonat %10 10mL IV yavaş', 'İnsülin 10Ü + Dekstroz %10 500mL IV', 'Kayeksalat 15g 3x1'] :
                 ['Kayeksalat 15g 2x1', 'Diyet: meyve/sebze kısıtla'],
       '2 hafta sonra kontrol',
-      ['Diyalizat K konsantrasyonunu 2.0 mEq/L'e düşür', 'Diyaliz süresini uzat']);
+      ['Diyalizat K konsantrasyonunu 2.0 mEq/L degerini duşur', 'Diyaliz süresini uzat']);
     else if (v < 3.5) ekle('⚡ Elektrolit', 'Potasyum', v + ' mEq/L', 'low', 'HİPOKALEMİ',
       ['Oral/IV potasyum replasmanı', 'Diyalizat K artır'],
       ['KCl oral 1g 3x1', 'veya IV KCl 40 mEq/gün (yavaş infüzyon)'],
       '1 hafta sonra kontrol',
-      ['Diyalizat K konsantrasyonunu 3.0 mEq/L'e yükselt']);
+      ['Diyalizat K konsantrasyonunu 3.0 mEq/L degerini yukselt']);
     else ekle('⚡ Elektrolit', 'Potasyum', v + ' mEq/L', 'normal', 'NORMAL', [], [], '3 ay sonra kontrol', []);
   }
 
@@ -621,7 +621,7 @@ function analizEt(sonuclar) {
       ['Sıvı kısıtlaması değerlendir'],
       ['Sıvı kısıtlaması 500-750 mL/gün'],
       '1 ay sonra kontrol',
-      ['Diyalizat Na 140 mEq/L'e ayarla']);
+      ['Diyalizat Na 140 mEq/L degerine ayarla']);
     else if (v > 145) ekle('⚡ Elektrolit', 'Sodyum', v + ' mEq/L', 'high', 'HİPERNATREMİ',
       ['Sıvı alımını değerlendir'],
       ['Serbest su alımını artır'],
