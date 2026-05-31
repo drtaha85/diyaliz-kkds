@@ -762,6 +762,9 @@ async function aiYorumAl() {
   btn.disabled = false;
   btn.textContent = '🧠 AI Klinik Yorum Al';
 }
+
+// Direkt çağrı - DOMContentLoaded bekleme
+try { renderHastaListesi(HASTALAR); } catch(e) { console.log('Liste hatası:', e); }
 </script>
 </body>
 </html>
