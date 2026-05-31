@@ -340,8 +340,8 @@ document.getElementById('btn-giris').onclick = function() {
 };
 
 // Sayfa yüklenince hasta listesini göster
-window.addEventListener('load', function() {
-  renderHastaListesi(HASTALAR);
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() { renderHastaListesi(HASTALAR); }, 100);
 });
 
 document.getElementById('inp-tc').addEventListener('keydown', function(e) {
