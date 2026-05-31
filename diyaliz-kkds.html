@@ -567,7 +567,7 @@ function analizEt(sonuclar) {
         ['Fosfor bağlayıcıyı kes veya yarıya indir'],
         '1 ay kontrol', []);
     } else {
-      ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+      ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'normal', 'HEDEF ARALIKTA (3.5-5.5 mg/dL)', [], [], '3 ay kontrol', []);
     }
   }
 
@@ -616,7 +616,7 @@ function analizEt(sonuclar) {
       ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'low', 'DÜŞÜK', oneri, ilac, '1 ay kontrol',
         ['Diyalizat Ca 1.5 mmol/L değerine yükselt']);
     } else {
-      ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+      ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'normal', 'HEDEF ARALIKTA (8.4-10.2 mg/dL)', [], [], '3 ay kontrol', []);
     }
   }
 
@@ -682,7 +682,7 @@ function analizEt(sonuclar) {
         ['EPO dozunu %25 azalt veya 2 hafta durdur'],
         '1 ay kontrol', []);
     } else {
-      ekle('🩸 Anemi', 'Hemoglobin', hgb+' g/dL', 'normal', 'HEDEF (10-12)', [], [], '3 ay kontrol', []);
+      ekle('🩸 Anemi', 'Hemoglobin', hgb+' g/dL', 'normal', 'HEDEF ARALIKTA (10-12 g/dL)', [], [], '3 ay kontrol', []);
     }
   }
 
@@ -705,7 +705,7 @@ function analizEt(sonuclar) {
       ekle('🩸 Anemi', 'Ferritin', ferr+' ng/mL', 'high', 'YÜKSELMİŞ', oneri,
         ['IV demir tedavisini durdur veya azalt'], '1 ay kontrol', []);
     } else {
-      ekle('🩸 Anemi', 'Ferritin', ferr+' ng/mL', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+      ekle('🩸 Anemi', 'Ferritin', ferr+' ng/mL', 'normal', 'HEDEF ARALIKTA (200-500 ng/mL)', [], [], '3 ay kontrol', []);
     }
   }
 
@@ -735,7 +735,7 @@ function analizEt(sonuclar) {
         '1 hafta kontrol',
         ['Diyalizat K 3.0 mEq/L değerine yükselt']);
     } else {
-      ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+      ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'normal', 'HEDEF ARALIKTA (3.5-5.5 mEq/L)', [], [], '3 ay kontrol', []);
     }
   }
 
@@ -749,7 +749,7 @@ function analizEt(sonuclar) {
       ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'high', 'HİPERNATREMİ',
         ['Su alımını artır'], ['Serbest su replasmanı'], '1 ay kontrol', []);
     } else {
-      ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+      ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'normal', 'HEDEF ARALIKTA (135-145 mEq/L)', [], [], '3 ay kontrol', []);
     }
   }
 
@@ -767,7 +767,7 @@ function analizEt(sonuclar) {
       ekle('🔬 Beslenme', 'Albumin', alb+' g/dL', 'low', 'DÜŞÜK',
         oneri, ilac, '1 ay kontrol', []);
     } else {
-      ekle('🔬 Beslenme', 'Albumin', alb+' g/dL', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+      ekle('🔬 Beslenme', 'Albumin', alb+' g/dL', 'normal', 'HEDEF ARALIKTA (>3.8 g/dL)', [], [], '3 ay kontrol', []);
     }
   }
 
