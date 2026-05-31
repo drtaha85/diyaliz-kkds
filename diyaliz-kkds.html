@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diyaliz KKDS — Yaşam Lab</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; min-height: 100vh; }
+
+  /* GİRİŞ */
+  #giris { min-height: 100vh; background: #0f172a; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .giris-kart { background: #1e293b; border-radius: 20px; padding: 32px; width: 100%; max-width: 420px; box-shadow: 0 24px 80px rgba(0,0,0,0.5); }
+  .giris-baslik { text-align: center; margin-bottom: 28px; }
+  .giris-baslik .ikon { font-size: 52px; display: block; margin-bottom: 10px; }
+  .giris-baslik h1 { color: #f8fafc; font-size: 26px; font-weight: 900; letter-spacing: -1px; }
+  .giris-baslik p { color: #475569; font-size: 12px; margin-top: 6px; }
+  .form-grup { margin-bottom: 14px; }
+  .form-grup label { display: block; font-size: 11px; font-weight: 700; color: #475569; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; }
+  .form-grup input { width: 100%; padding: 11px 14px; background: #0f172a; border: 1.5px solid #334155; border-radius: 10px; font-size: 15px; color: #f1f5f9; outline: none; font-family: inherit; transition: border-color 0.2s; }
+  .form-grup input:focus { border-color: #3b82f6; }
+  .form-grup input.mono { font-family: monospace; letter-spacing: 2px; }
+  .btn-ana { width: 100%; padding: 13px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; margin-top: 6px; transition: opacity 0.2s; }
+  .btn-ana:disabled { background: #334155; cursor: not-allowed; }
+  .btn-ayar { width: 100%; margin-top: 10px; padding: 8px; background: transparent; color: #475569; border: 1px solid #334155; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .ayar-panel { margin-top: 10px; padding: 14px; background: #0f172a; border-radius: 10px; border: 1px solid #334155; display: none; }
+  .ayar-panel.acik { display: block; }
+  .ayar-panel label { font-size: 11px; color: #475569; display: block; margin-bottom: 3px; margin-top: 8px; }
+  .ayar-panel input { width: 100%; padding: 7px 10px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; font-size: 13px; color: #f1f5f9; outline: none; font-family: monospace; }
+
+  /* HEADER */
+  #header { background: #0f172a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  #header .sol .etiket { color: #3b82f6; font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; }
+  #header .sol .hasta-ad { color: #f8fafc; font-size: 20px; font-weight: 900; margin-top: 1px; }
+  #header .sol .hasta-alt { color: #475569; font-size: 11px; margin-top: 1px; }
+  #header .sag { display: flex; gap: 8px; align-items: center; }
+  .anomali-badge { background: #ef4444; color: #fff; border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 800; }
+  .btn-geri { background: #1e293b; color: #94a3b8; border: 1px solid #334155; border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: inherit; }
+
+  /* TABS */
+  #tabs { background: #e2e8f0; padding: 0 24px; display: flex; gap: 3px; }
+  .tab { padding: 10px 18px; border: none; border-radius: 8px 8px 0 0; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 700; background: #e2e8f0; color: #64748b; position: relative; transition: all 0.15s; }
+  .tab.aktif { background: #0f172a; color: #fff; }
+  .tab .tab-badge { position: absolute; top: 4px; right: 4px; background: #ef4444; color: #fff; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+
+  /* İÇERİK */
+  #icerik { padding: 20px 24px; max-width: 960px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.aktif { display: block; }
+
+  /* LAB PANELİ */
+  .cekme-kutu { background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+  .tarih-grup label { display: block; font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 1px; margin-bottom: 4px; }
+  .tarih-grup input { padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; color: #1e293b; }
+  .btn-cek { padding: 10px 24px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; transition: opacity 0.2s; }
+  .btn-cek:disabled { background: #94a3b8; cursor: not-allowed; }
+  .hata-kutu { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; color: #991b1b; font-size: 13px; }
+  .bos-kutu { background: #fff; border-radius: 14px; padding: 48px; text-align: center; color: #94a3b8; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .bos-kutu .bos-ikon { font-size: 40px; margin-bottom: 10px; }
+  .bos-kutu .bos-baslik { font-weight: 700; color: #64748b; margin-bottom: 4px; }
+
+  /* LAB TABLO */
+  .lab-tablo { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .lab-baslik { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 10px 12px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+  .lab-baslik span { font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
+  .lab-satir { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; align-items: center; }
+  .lab-satir.high { background: #fff7ed; }
+  .lab-satir.low { background: #eff6ff; }
+  .lab-satir .test-ad { font-size: 13px; color: #334155; }
+  .lab-satir.high .test-ad, .lab-satir.low .test-ad { font-weight: 700; }
+  .lab-satir .sonuc-deger { font-size: 14px; font-weight: 700; }
+  .lab-satir.high .sonuc-deger { color: #9a3412; }
+  .lab-satir.low .sonuc-deger { color: #1e3a8a; }
+  .lab-satir.normal .sonuc-deger { color: #334155; }
+  .sonuc-birim { font-size: 11px; font-weight: 400; color: #94a3b8; }
+  .ref-deger { font-size: 12px; color: #94a3b8; }
+
+  /* BADGE */
+  .badge { border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 800; white-space: nowrap; color: #fff; }
+  .badge.normal { background: #16a34a; }
+  .badge.high { background: #ea580c; }
+  .badge.low { background: #2563eb; }
+
+  /* TEDAVİ PANELİ */
+  .grup-baslik { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 8px; margin-top: 16px; }
+  .oneri-kart { border-radius: 10px; padding: 12px 16px; margin-bottom: 8px; border-width: 1.5px; border-style: solid; }
+  .oneri-kart.normal { background: #f0fdf4; border-color: #bbf7d0; }
+  .oneri-kart.high { background: #fff7ed; border-color: #fed7aa; }
+  .oneri-kart.low { background: #eff6ff; border-color: #bfdbfe; }
+  .oneri-ust { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .oneri-param { font-weight: 700; color: #1e293b; font-size: 14px; }
+  .oneri-sag { display: flex; gap: 8px; align-items: center; }
+  .oneri-deger { font-weight: 700; font-size: 15px; }
+  .oneri-kart.high .oneri-deger { color: #9a3412; }
+  .oneri-kart.low .oneri-deger { color: #1e3a8a; }
+  .oneri-kart.normal .oneri-deger { color: #166534; }
+  .oneri-liste { margin: 4px 0 0; padding-left: 18px; }
+  .oneri-liste li { font-size: 13px; margin-bottom: 2px; }
+  .oneri-kart.high .oneri-liste li { color: #9a3412; }
+  .oneri-kart.low .oneri-liste li { color: #1e3a8a; }
+  .onay-kutu { background: #fff; border-radius: 14px; padding: 20px; margin-top: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .onay-satir { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; font-size: 13px; color: #475569; }
+  textarea.not-alani { width: 100%; margin-top: 12px; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; outline: none; }
+  textarea.not-alani:focus { border-color: #2563eb; }
+
+  /* AI PANELİ */
+  .ai-kutu { background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .btn-ai { width: 100%; padding: 13px; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; font-family: inherit; }
+  .btn-ai:disabled { background: #94a3b8; cursor: not-allowed; }
+  .ai-sonuc { background: #faf5ff; border: 1.5px solid #d8b4fe; border-radius: 14px; padding: 20px; }
+  .ai-sonuc-baslik { font-size: 13px; font-weight: 800; color: #6d28d9; margin-bottom: 12px; }
+  .ai-metin { font-size: 14px; color: #374151; line-height: 1.8; white-space: pre-wrap; }
+  .ai-uyari { margin-top: 12px; padding: 8px 12px; background: #fff7ed; border-radius: 8px; font-size: 11px; color: #9a3412; }
+
+  #ana { display: none; }
+  #ana.goster { display: block; }
+  #giris.gizli { display: none; }
+</style>
+</head>
+<body>
+
+<!-- GİRİŞ EKRANI -->
+<div id="giris">
+  <div class="giris-kart">
+    <div class="giris-baslik">
+      <span class="ikon">🫀</span>
+      <h1>Diyaliz KKDS</h1>
+      <p>Yaşam Lab Otomatik Entegrasyon</p>
+    </div>
+    <div class="form-grup">
+      <label>TC Kimlik No</label>
+      <input class="mono" id="inp-tc" type="text" maxlength="11" placeholder="12345678901">
+    </div>
+    <div class="form-grup">
+      <label>Hasta Adı Soyadı</label>
+      <input id="inp-ad" type="text" placeholder="Ad Soyad">
+    </div>
+    <button class="btn-ana" id="btn-giris">HASTAYA GEÇ →</button>
+    <button class="btn-ayar" onclick="toggleAyar()">⚙️ Bağlantı Ayarları ▼</button>
+    <div class="ayar-panel" id="ayar-panel">
+      <div style="font-size:10px;color:#64748b;font-weight:700;letter-spacing:1px">YAŞAM LAB KREDENSİYELLERİ</div>
+      <label>Kullanıcı Adı</label>
+      <input id="inp-kullanici" value="YasamLab">
+      <label>Şifre</label>
+      <input id="inp-sifre" value="Yas*88amX48_">
+    </div>
+  </div>
+</div>
+
+<!-- ANA EKRAN -->
+<div id="ana">
+  <div id="header">
+    <div class="sol">
+      <div class="etiket">Diyaliz KKDS · Yaşam Lab</div>
+      <div class="hasta-ad" id="goster-ad">—</div>
+      <div class="hasta-alt" id="goster-alt">—</div>
+    </div>
+    <div class="sag">
+      <span class="anomali-badge" id="anomali-badge" style="display:none"></span>
+      <button class="btn-geri" onclick="geriDon()">← Geri</button>
+    </div>
+  </div>
+
+  <div id="tabs">
+    <button class="tab aktif" onclick="sekmeAc('lab',this)">🔬 Laboratuvar</button>
+    <button class="tab" onclick="sekmeAc('tedavi',this)" id="tab-tedavi">💊 Tedavi</button>
+    <button class="tab" onclick="sekmeAc('ai',this)">🧠 AI Yorum</button>
+  </div>
+
+  <div id="icerik">
+    <!-- LAB PANELİ -->
+    <div class="panel aktif" id="panel-lab">
+      <div class="cekme-kutu">
+        <div class="tarih-grup">
+          <label>Başlangıç</label>
+          <input type="date" id="tarih1">
+        </div>
+        <div class="tarih-grup">
+          <label>Bitiş</label>
+          <input type="date" id="tarih2">
+        </div>
+        <button class="btn-cek" id="btn-cek" onclick="labCek()">🔄 Lab Sonuçlarını Çek</button>
+      </div>
+      <div class="hata-kutu" id="hata-kutu" style="display:none"></div>
+      <div class="bos-kutu" id="bos-kutu">
+        <div class="bos-ikon">🔬</div>
+        <div class="bos-baslik">Lab sonucu yok</div>
+        <div style="font-size:13px">Tarih aralığı seçip butona tıklayın</div>
+      </div>
+      <div class="lab-tablo" id="lab-tablo" style="display:none">
+        <div class="lab-baslik">
+          <span>Test Adı</span><span>Sonuç</span><span>Referans</span><span>Durum</span>
+        </div>
+        <div id="lab-satirlar"></div>
+      </div>
+    </div>
+
+    <!-- TEDAVİ PANELİ -->
+    <div class="panel" id="panel-tedavi">
+      <div class="bos-kutu" id="tedavi-bos" style="display:none">
+        <div class="bos-ikon">💊</div>
+        <div class="bos-baslik">Önce lab sonuçlarını çekin</div>
+      </div>
+      <div id="oneri-icerik"></div>
+      <div class="onay-kutu" id="onay-kutu" style="display:none">
+        <div style="font-size:13px;font-weight:800;color:#1e293b;margin-bottom:12px">✅ Hekim Onayı</div>
+        <div id="onay-satirlar"></div>
+        <textarea class="not-alani" rows="4" placeholder="Tedavi planı notu..."></textarea>
+      </div>
+    </div>
+
+    <!-- AI PANELİ -->
+    <div class="panel" id="panel-ai">
+      <div class="ai-kutu">
+        <p style="font-size:13px;color:#64748b;margin-bottom:14px">Mevcut lab sonuçlarına göre KDIGO bazlı AI klinik yorum alın.</p>
+        <button class="btn-ai" id="btn-ai" onclick="aiYorumAl()">🧠 AI Klinik Yorum Al</button>
+      </div>
+      <div class="ai-sonuc" id="ai-sonuc" style="display:none">
+        <div class="ai-sonuc-baslik">🧠 AI Klinik Değerlendirme</div>
+        <div class="ai-metin" id="ai-metin"></div>
+        <div class="ai-uyari">⚠️ Bu yorum karar desteği amaçlıdır. Nihai klinik karar hekime aittir.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── GLOBAL DURUM ─────────────────────────────────────────────────────────────
+let hasta = null;
+let labSonuclari = [];
+
+// ── TARİH BAŞLAT ─────────────────────────────────────────────────────────────
+const bugun = new Date().toISOString().split('T')[0];
+const birAyOnce = new Date(Date.now() - 30*24*60*60*1000).toISOString().split('T')[0];
+document.getElementById('tarih1').value = birAyOnce;
+document.getElementById('tarih2').value = bugun;
+
+// ── YARDIMCILAR ──────────────────────────────────────────────────────────────
+function toggleAyar() {
+  const p = document.getElementById('ayar-panel');
+  p.classList.toggle('acik');
+}
+
+function geriDon() {
+  document.getElementById('giris').classList.remove('gizli');
+  document.getElementById('ana').classList.remove('goster');
+  labSonuclari = [];
+}
+
+function sekmeAc(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('aktif'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('aktif'));
+  document.getElementById('panel-' + id).classList.add('aktif');
+  el.classList.add('aktif');
+}
+
+// ── GİRİŞ ────────────────────────────────────────────────────────────────────
+document.getElementById('btn-giris').onclick = function() {
+  const tc = document.getElementById('inp-tc').value.trim();
+  const ad = document.getElementById('inp-ad').value.trim() || 'Hasta';
+  if (!tc) return;
+  hasta = { tc, ad };
+  document.getElementById('goster-ad').textContent = ad;
+  document.getElementById('goster-alt').textContent = 'TC: ' + tc;
+  document.getElementById('giris').classList.add('gizli');
+  document.getElementById('ana').classList.add('goster');
+};
+
+document.getElementById('inp-tc').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('btn-giris').click();
+});
+
+// ── SOAP İSTEK ───────────────────────────────────────────────────────────────
+function buildSoap(kullanici, sifre, tc, t1, t2) {
+  return '<?xml version="1.0" encoding="utf-8"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://www.w3.org/2003/05/soap-envelope" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><SOAP-ENV:Header><NS1:AuthHeader xmlns:NS1="http://tempuri.org/"><Username xmlns="http://tempuri.org/">' + kullanici + '</Username><Password xmlns="http://tempuri.org/">' + sifre + '</Password></NS1:AuthHeader></SOAP-ENV:Header><SOAP-ENV:Body><HastaSonuclariKimlikNO xmlns="http://tempuri.org/"><KimlikNO>' + tc + '</KimlikNO><Tarih1>' + t1 + 'T00:00:00.000Z</Tarih1><Tarih2>' + t2 + 'T23:59:59.000Z</Tarih2></HastaSonuclariKimlikNO></SOAP-ENV:Body></SOAP-ENV:Envelope>';
+}
+
+// ── XML PARSE ────────────────────────────────────────────────────────────────
+function hesaplaDurum(sonuc, min, max) {
+  const s = parseFloat(sonuc), mn = parseFloat(min), mx = parseFloat(max);
+  if (isNaN(s)) return 'normal';
+  if (!isNaN(mn) && s < mn) return 'low';
+  if (!isNaN(mx) && s > mx) return 'high';
+  return 'normal';
+}
+
+function parseXml(xmlText) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlText, 'text/xml');
+  const sonuclar = [];
+  const seen = new Set();
+
+  doc.querySelectorAll('TestSonuc').forEach(node => {
+    const get = tag => node.querySelector(tag)?.textContent?.trim() || '';
+    const kisaAdi = get('KisaAdi') || get('UzunAdi');
+    const sonuc = get('Sonuc');
+    const key = kisaAdi + sonuc;
+    if (seen.has(key)) return;
+    seen.add(key);
+    sonuclar.push({ kisaAdi, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
+  });
+
+  if (sonuclar.length === 0) {
+    doc.querySelectorAll('*').forEach(node => {
+      const kisaAd = node.querySelector('KisaAd')?.textContent?.trim();
+      const sonuc = node.querySelector('Sonuc')?.textContent?.trim();
+      if (!kisaAd || !sonuc || isNaN(parseFloat(sonuc))) return;
+      const key = kisaAd + sonuc;
+      if (seen.has(key)) return;
+      seen.add(key);
+      const get = tag => node.querySelector(tag)?.textContent?.trim() || '';
+      sonuclar.push({ kisaAd, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
+    });
+  }
+  return sonuclar;
+}
+
+// ── LAB ÇEK ──────────────────────────────────────────────────────────────────
+async function labCek() {
+  if (!hasta) return;
+  const kullanici = document.getElementById('inp-kullanici').value;
+  const sifre = document.getElementById('inp-sifre').value;
+  const tarih1 = document.getElementById('tarih1').value;
+  const tarih2 = document.getElementById('tarih2').value;
+
+  const btn = document.getElementById('btn-cek');
+  btn.disabled = true;
+  btn.textContent = '⏳ Çekiliyor...';
+  document.getElementById('hata-kutu').style.display = 'none';
+  document.getElementById('bos-kutu').style.display = 'none';
+  document.getElementById('lab-tablo').style.display = 'none';
+
+  const soap = buildSoap(kullanici, sifre, hasta.tc, tarih1, tarih2);
+
+  try {
+    const res = await fetch('https://yasamlab.iltelis.com/Integration/Integration.asmx', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/soap+xml; charset=utf-8',
+        'SOAPAction': 'http://tempuri.org/HastaSonuclariKimlikNO'
+      },
+      body: soap
+    });
+
+    if (!res.ok) throw new Error('Sunucu hatası: ' + res.status);
+    const xmlText = await res.text();
+    const sonuclar = parseXml(xmlText);
+
+    if (sonuclar.length === 0) {
+      gosterHata('Bu tarih aralığında sonuç bulunamadı. Aralığı genişletip tekrar deneyin.');
+    } else {
+      labSonuclari = sonuclar;
+      renderLabTablo(sonuclar);
+      renderTedavi(sonuclar);
+      const tarih = new Date().toLocaleString('tr-TR');
+      document.getElementById('goster-alt').textContent = 'TC: ' + hasta.tc + ' · ' + tarih;
+    }
+  } catch(e) {
+    if (e.message.includes('fetch') || e.message.includes('CORS') || e.message.includes('Failed')) {
+      gosterHata('CORS hatası: Tarayıcı bu isteği engelledi.\n\n✅ Çözüm: Bu HTML dosyasını bir web sunucusundan açın veya Chrome\'u şu komutla başlatın:\nchrome.exe --disable-web-security --user-data-dir="C:/temp"');
+    } else {
+      gosterHata('Hata: ' + e.message);
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🔄 Lab Sonuçlarını Çek';
+}
+
+function gosterHata(mesaj) {
+  const kutu = document.getElementById('hata-kutu');
+  kutu.textContent = '❌ ' + mesaj;
+  kutu.style.display = 'block';
+  document.getElementById('bos-kutu').style.display = 'none';
+}
+
+// ── LAB TABLO RENDER ─────────────────────────────────────────────────────────
+function renderLabTablo(sonuclar) {
+  const konteyner = document.getElementById('lab-satirlar');
+  konteyner.innerHTML = '';
+  const anomali = sonuclar.filter(s => s.durum !== 'normal').length;
+
+  sonuclar.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'lab-satir ' + s.durum;
+    const badgeLabel = s.durum === 'high' ? '↑ YÜK' : s.durum === 'low' ? '↓ DÜŞ' : '✓ N';
+    div.innerHTML = `
+      <span class="test-ad">${s.kisaAdi || s.uzunAdi || "?"}</span>
+      <span class="sonuc-deger">${s.sonuc} <span class="sonuc-birim">${s.birim}</span></span>
+      <span class="ref-deger">${s.minDeger && s.maxDeger ? s.minDeger + ' – ' + s.maxDeger : '—'}</span>
+      <span class="badge ${s.durum}">${badgeLabel}</span>
+    `;
+    konteyner.appendChild(div);
+  });
+
+  document.getElementById('lab-tablo').style.display = 'block';
+  document.getElementById('bos-kutu').style.display = 'none';
+
+  // Anomali badge
+  const badge = document.getElementById('anomali-badge');
+  if (anomali > 0) { badge.textContent = '⚠️ ' + anomali + ' ANOMALİ'; badge.style.display = 'inline-block'; }
+  else badge.style.display = 'none';
+
+  // Tab badge
+  const tabTedavi = document.getElementById('tab-tedavi');
+  if (anomali > 0) tabTedavi.innerHTML = `💊 Tedavi <span class="tab-badge">${anomali}</span>`;
+  else tabTedavi.textContent = '💊 Tedavi';
+}
+
+// ── TEDAVİ ANALİZ ────────────────────────────────────────────────────────────
+function bul(sonuclar, ...terms) {
+  for (const t of terms) {
+    const found = sonuclar.find(s =>
+      s.kisaAdi?.toLowerCase().includes(t.toLowerCase()) ||
+      s.uzunAd?.toLowerCase().includes(t.toLowerCase())
+    );
+    if (found) return found;
+  }
+  return null;
+}
+
+function analizEt(sonuclar) {
+  const oneriler = [];
+  const ekle = (grup, param, deger, durum, label, liste) =>
+    oneriler.push({ grup, param, deger, durum, label, liste: liste.filter(Boolean) });
+
+  const p = bul(sonuclar, 'fosfor', 'fosfat', 'phosph');
+  if (p) {
+    const v = parseFloat(p.sonuc);
+    if (v > 5.5) ekle('🦴 Mineral', 'Fosfat', v + ' mg/dL', 'high', 'YÜKSELMİŞ',
+      ['Düşük fosfatlı diyet (<800 mg/gün)', v > 7 ? 'Fosfor bağlayıcı dozu artır (sevelamer/Ca-karbonat)' : 'Fosfor bağlayıcı başlamayı değerlendir', 'Diyaliz yeterliliğini gözden geçir']);
+    else if (v < 3.5) ekle('🦴 Mineral', 'Fosfat', v + ' mg/dL', 'low', 'DÜŞÜK',
+      ['Beslenme değerlendirmesi', 'Fosfor bağlayıcı dozunu azalt/kes', 'Malnütrisyon değerlendir']);
+    else ekle('🦴 Mineral', 'Fosfat', v + ' mg/dL', 'normal', 'NORMAL', []);
+  }
+
+  const ca = bul(sonuclar, 'kalsiyum', 'calcium');
+  if (ca) {
+    const v = parseFloat(ca.sonuc);
+    if (v > 10.2) ekle('🦴 Mineral', 'Kalsiyum', v + ' mg/dL', 'high', 'YÜKSELMİŞ',
+      ['Ca içeren fosfor bağlayıcıyı kes/azalt', 'Aktif D vitamini dozunu azalt', v > 11 ? 'Sinakalseti değerlendir' : 'Diyalizat Ca 1.25 mmol/L düşür']);
+    else if (v < 8.4) ekle('🦴 Mineral', 'Kalsiyum', v + ' mg/dL', 'low', 'DÜŞÜK',
+      ['Semptom değerlendir (Trousseau, Chvostek)', 'Ca karbonat/glukonat ver', 'Aktif D vitamini başla/artır']);
+    else ekle('🦴 Mineral', 'Kalsiyum', v + ' mg/dL', 'normal', 'NORMAL', []);
+  }
+
+  const pth = bul(sonuclar, 'pth', 'parathormon', 'paratiroi');
+  if (pth) {
+    const v = parseFloat(pth.sonuc);
+    if (v > 585) ekle('🦴 Mineral', 'PTH', v + ' pg/mL', 'high', 'YÜKSELMİŞ (>3-9x)',
+      ['Aktif D vitamini başla/artır', v > 800 ? 'Sinakalseti değerlendir' : 'Ca-P düzelince yeniden değerlendir', v > 1000 ? 'Paratiroidektomi konsültasyonu düşün' : '']);
+    else if (v < 130) ekle('🦴 Mineral', 'PTH', v + ' pg/mL', 'low', 'DÜŞÜK (<2x)',
+      ['Aktif D vitamini dozunu azalt/kes', 'Adynamic kemik hastalığı riski']);
+    else ekle('🦴 Mineral', 'PTH', v + ' pg/mL', 'normal', 'HEDEF ARALIKTA', []);
+  }
+
+  const hgb = bul(sonuclar, 'hemoglobin', 'hgb', 'hb');
+  if (hgb) {
+    const v = parseFloat(hgb.sonuc);
+    if (v < 10) ekle('🩸 Anemi', 'Hemoglobin', v + ' g/dL', 'low', 'DÜŞÜK',
+      ['Demir durumunu değerlendir (ferritin, TSAT)', v < 8 ? 'EPO dozu artır, transfüzyon değerlendir' : 'EPO/darbepoetin başla veya artır']);
+    else if (v > 12) ekle('🩸 Anemi', 'Hemoglobin', v + ' g/dL', 'high', 'HEDEF ÜSTÜ',
+      ['EPO/darbepoetin dozunu azalt veya durdur', 'Tromboz riski artar']);
+    else ekle('🩸 Anemi', 'Hemoglobin', v + ' g/dL', 'normal', 'HEDEF (10-12)', []);
+  }
+
+  const ferritin = bul(sonuclar, 'ferritin');
+  if (ferritin) {
+    const v = parseFloat(ferritin.sonuc);
+    if (v < 200) ekle('🩸 Anemi', 'Ferritin', v + ' ng/mL', 'low', 'DÜŞÜK',
+      ['IV demir replasmanı başla', 'Hedef: 200-500 ng/mL']);
+    else if (v > 800) ekle('🩸 Anemi', 'Ferritin', v + ' ng/mL', 'high', 'YÜKSELMİŞ',
+      [v > 1200 ? 'Demir birikimi dışla' : 'TSAT değerine göre karar ver']);
+    else ekle('🩸 Anemi', 'Ferritin', v + ' ng/mL', 'normal', 'NORMAL', []);
+  }
+
+  const k = bul(sonuclar, 'potasyum', 'kalium');
+  if (k) {
+    const v = parseFloat(k.sonuc);
+    if (v > 5.5) ekle('⚡ Elektrolit', 'Potasyum', v + ' mEq/L', 'high', 'HİPERKALEMİ',
+      ['Acil EKG değerlendirmesi', v > 6.5 ? 'ACİL: Ca glukonat + insülin-dekstroz' : 'Diyet kısıtlaması', 'Kayeksalat başla']);
+    else if (v < 3.5) ekle('⚡ Elektrolit', 'Potasyum', v + ' mEq/L', 'low', 'HİPOKALEMİ',
+      ['Oral/IV potasyum replasmanı', 'Diyalizat K artır']);
+    else ekle('⚡ Elektrolit', 'Potasyum', v + ' mEq/L', 'normal', 'NORMAL', []);
+  }
+
+  const na = bul(sonuclar, 'sodyum', 'sodium');
+  if (na) {
+    const v = parseFloat(na.sonuc);
+    if (v < 135) ekle('⚡ Elektrolit', 'Sodyum', v + ' mEq/L', 'low', 'HİPONATREMİ', ['Sıvı kısıtlaması değerlendir']);
+    else if (v > 145) ekle('⚡ Elektrolit', 'Sodyum', v + ' mEq/L', 'high', 'HİPERNATREMİ', ['Sıvı alımını değerlendir']);
+    else ekle('⚡ Elektrolit', 'Sodyum', v + ' mEq/L', 'normal', 'NORMAL', []);
+  }
+
+  const alb = bul(sonuclar, 'albumin');
+  if (alb) {
+    const v = parseFloat(alb.sonuc);
+    if (v < 3.5) ekle('🔬 Diğer', 'Albumin', v + ' g/dL', 'low', 'DÜŞÜK',
+      ['Beslenme değerlendirmesi', 'Diyetisyen konsültasyonu', 'Enfeksiyon dışla']);
+    else ekle('🔬 Diğer', 'Albumin', v + ' g/dL', 'normal', 'NORMAL', []);
+  }
+
+  return oneriler;
+}
+
+function renderTedavi(sonuclar) {
+  const oneriler = analizEt(sonuclar);
+  const konteyner = document.getElementById('oneri-icerik');
+  const onaylar = document.getElementById('onay-satirlar');
+  konteyner.innerHTML = '';
+  onaylar.innerHTML = '';
+
+  if (oneriler.length === 0) {
+    document.getElementById('tedavi-bos').style.display = 'block';
+    document.getElementById('onay-kutu').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('tedavi-bos').style.display = 'none';
+
+  const gruplar = {};
+  oneriler.forEach(o => { if (!gruplar[o.grup]) gruplar[o.grup] = []; gruplar[o.grup].push(o); });
+
+  Object.entries(gruplar).forEach(([grup, items]) => {
+    const baslik = document.createElement('div');
+    baslik.className = 'grup-baslik';
+    baslik.textContent = grup;
+    konteyner.appendChild(baslik);
+
+    items.forEach(item => {
+      const kart = document.createElement('div');
+      kart.className = 'oneri-kart ' + item.durum;
+      const badgeClass = 'badge ' + item.durum;
+      const listeHtml = item.liste.length ? '<ul class="oneri-liste">' + item.liste.map(l => '<li>' + l + '</li>').join('') + '</ul>' : '';
+      kart.innerHTML = `
+        <div class="oneri-ust">
+          <span class="oneri-param">${item.param}</span>
+          <div class="oneri-sag">
+            <span class="oneri-deger">${item.deger}</span>
+            <span class="${badgeClass}">${item.label}</span>
+          </div>
+        </div>${listeHtml}`;
+      konteyner.appendChild(kart);
+
+      if (item.liste.length > 0) {
+        const satir = document.createElement('label');
+        satir.className = 'onay-satir';
+        satir.innerHTML = `<input type="checkbox"> <span><strong>${item.param}</strong> önerileri incelendi</span>`;
+        onaylar.appendChild(satir);
+      }
+    });
+  });
+
+  document.getElementById('onay-kutu').style.display = 'block';
+}
+
+// ── AI YORUM ──────────────────────────────────────────────────────────────────
+async function aiYorumAl() {
+  if (labSonuclari.length === 0) return;
+  const btn = document.getElementById('btn-ai');
+  btn.disabled = true;
+  btn.textContent = '⏳ Yorum alınıyor...';
+  document.getElementById('ai-sonuc').style.display = 'none';
+
+  const labOzet = labSonuclari.slice(0, 30).map(s => `${s.kisaAdi || s.uzunAdi || "?"}: ${s.sonuc} ${s.birim} (ref: ${s.minDeger}-${s.maxDeger})`).join('\n');
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        messages: [{ role: 'user', content: `Sen bir nefroloji uzmanısın. Diyaliz hastasının lab sonuçlarını KDIGO kılavuzu çerçevesinde Türkçe değerlendir.\n\nHasta: ${hasta.ad} | TC: ${hasta.tc}\n\nLAB SONUÇLARI:\n${labOzet}\n\n3-4 cümle klinik değerlendirme, ardından öncelikli tedavi önerileri madde madde. Net ve pratik ol.` }]
+      })
+    });
+    const data = await res.json();
+    const metin = data.content?.map(c => c.text || '').join('') || 'Yorum alınamadı.';
+    document.getElementById('ai-metin').textContent = metin;
+    document.getElementById('ai-sonuc').style.display = 'block';
+  } catch(e) {
+    document.getElementById('ai-metin').textContent = 'AI yorumu alınamadı: ' + e.message;
+    document.getElementById('ai-sonuc').style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🧠 AI Klinik Yorum Al';
+}
+</script>
+</body>
+</html>
