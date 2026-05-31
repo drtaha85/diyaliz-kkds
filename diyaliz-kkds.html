@@ -650,66 +650,251 @@ function analizEt(sonuclar) {
     }
   }
 
-  // ── 2. ANEMİ (Hgb + Ferritin + TSAT kombine) ─────────────────────────────
-  if (hgb !== null) {
-    const ilac = [];
-    const oneri = [];
-    const demir_eksik = (ferr !== null && ferr < 200) || (tsat !== null && tsat < 20);
-    const demir_yeterli = (ferr !== null && ferr >= 200) || (tsat !== null && tsat >= 20);
+  // ── 2. ANEMİ — KDIGO 2026 CKD G5HD ──────────────────────────────────────
 
-    if (hgb < 10) {
-      if (demir_eksik) {
-        oneri.push('Demir eksikliği + anemi: önce demir replasmanı');
-        ilac.push('IV demir sükroz 200mg/seans x 5 seans');
-        ilac.push('Demir replasmanı sonrası EPO yanıtı değerlendir');
-        if (hgb < 8) ilac.push('Epoetin alfa 4000 IU SC haftada 3x (acil)');
-        else ilac.push('Epoetin alfa 2000-4000 IU SC haftada 3x');
-      } else if (demir_yeterli) {
-        oneri.push('Demir yeterli, EPO yanıtsızlığı değerlendir');
-        oneri.push('İnflamasyon/enfeksiyon dışla (CRP bak)');
-        ilac.push('Epoetin alfa 4000 IU SC haftada 3x veya doz artır');
-        if (crp !== null && crp > 10) ilac.push('CRP yüksek — enfeksiyon tedavisi önce!');
-      } else {
-        oneri.push('Ferritin ve TSAT ölçüm yapılmamış — demir durumu belirsiz');
-        ilac.push('Ferritin ve TSAT ölçümü yaptır');
-        ilac.push('Epoetin alfa 2000-4000 IU SC haftada 3x');
-      }
-      ekle('🩸 Anemi', 'Hemoglobin', hgb+' g/dL', 'low', hgb<8?'KRİTİK DÜŞÜK (<8 g/dL)':'DÜŞÜK (<10 g/dL)',
-        oneri, ilac, '1 ay kontrol', []);
-    } else if (hgb > 12) {
-      ekle('🩸 Anemi', 'Hemoglobin', hgb+' g/dL', 'high', 'HEDEF ÜSTÜ (>12 g/dL)',
-        ['EPO dozu azalt veya durdur', 'Tromboz riski artar'],
-        ['EPO dozunu %25 azalt veya 2 hafta durdur'],
-        '1 ay kontrol', []);
+// === DEMİR DURUM KATEGORİLERİ (KDIGO 2026, HD hastası) ===
+// Profund demir eksikliği (PP 2.11)  : ferritin <30  VE TSAT <20%
+// Sistemik demir eksikliği            : ferritin <200 VE TSAT <20%
+// Demir kısıtlı eritropoez            : ferritin ≥200 AMA TSAT <20%
+// Demir başlama eşiği HD (Rek. 2.1)  : ferritin ≤500 VE TSAT ≤30%
+// Demir askıya alma (PP 2.2)          : ferritin >700 VEYA TSAT ≥40%
+// === ESA EŞİKLERİ (KDIGO 2026) ===
+// Başlama (Rek. 3.2.1) : Hb ≤9.0–10.0 g/dL
+// Üst hedef (Rek. 3.3.1): Hb < 11.5 g/dL — HİÇBİR ZAMAN ≥11.5 hedefleme
+
+const k26_profund   = (ferr !== null && ferr < 30)  && (tsat !== null && tsat < 20);
+const k26_sistemik  = (ferr !== null && ferr < 200) && (tsat !== null && tsat < 20);
+const k26_kisitli   = (ferr !== null && ferr >= 200)&& (tsat !== null && tsat < 20);
+const k26_askiya    = (ferr !== null && ferr > 700) || (tsat !== null && tsat >= 40);
+const k26_baslama   = (ferr === null || ferr <= 500) && (tsat === null || tsat <= 30);
+const k26_demir_txt = ferr !== null
+    ? (tsat !== null ? `Ferritin ${ferr} ng/mL | TSAT ${tsat}%`
+                     : `Ferritin ${ferr} ng/mL | TSAT ölçülmedi`)
+    : (tsat !== null ? `Ferritin ölçülmedi | TSAT ${tsat}%` : '');
+
+// ── Hemoglobin Değerlendirmesi (KDIGO 2026) ─────────────────────────────
+if (hgb !== null) {
+
+    if (hgb < 8.0) {
+        // KRİTİK — ESA ACİL (Rek. 3.2.1 + Rek. 3.1.1)
+        const ilac = []; const oneri = [
+            'Rek. 3.2.1: Hb ≤9.0–10.0 g/dL eşiği — ESA acil başlama endike',
+            'Rek. 3.1.1: Birinci basamak tedavi ESA (HIF-PHI değil)'
+        ];
+        if (k26_askiya) {
+            oneri.push('PP 2.2: Ferritin >700 veya TSAT ≥40% → IV demir YOK');
+            ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil (Tablo 7, KDIGO 2026)');
+            ilac.push('PP 3.4.1.2: 4 haftada Hb <1 g/dL artış → doz %25 artır; >2 g/dL artış → %25–50 azalt');
+        } else if (k26_baslama) {
+            oneri.push('Rek. 2.1: Ferritin ≤500 + TSAT ≤30% → IV demir ENDİKE');
+            oneri.push('Rek. 2.2: IV demir oral demire TERCÜH EDİLİR (HD hastası)');
+            oneri.push('PP 2.1: Proaktif IV demir protokolü (PIVOTAL çalışması, N=2141)');
+            ilac.push('IV Demir Sükroz 200 mg IV her seans — proaktif (PP 2.1)');
+            ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil (Rek. 3.2.1)');
+            ilac.push('PP 3.4.3.2: Her 2–4 haftada Hb ölç; >1 g/dL/4 hafta → doz %25–50 azalt');
+        } else {
+            oneri.push('PP 3.7.1: Demir yeterli → ESA hiporesponsvitesi nedenlerini araştır');
+            oneri.push('Nedenler: inflamasyon, yetersiz diyaliz (Kt/V), hiperpara­tiroidizm, B12/folat');
+            ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil');
+            if (crp !== null && crp > 10) {
+                ilac.push('⚠️ CRP >10: Aktif inflamasyon — önce tedavi et (PP 2.8: inf. sırasında IV demir askıya al)');
+            }
+            ilac.push('Ferritin, TSAT, PTH, Kt/V, CRP kontrol — ESA direnci araştır');
+        }
+        ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'low',
+            'KRİTİK ANEMI (<8.0 g/dL) — ESA + DEMİR ACİL',
+            oneri, ilac, '2–4 hafta Hb takibi (PP 3.4.3.2)', []);
+
+    } else if (hgb < 10.0) {
+        // DÜŞÜK — ESA başlama bölgesi (Rek. 3.2.1)
+        const ilac = []; const oneri = [
+            hgb < 9.0
+                ? 'Rek. 3.2.1: Hb <9.0 g/dL → ESA başlama kuvvetle endike'
+                : 'Rek. 3.2.1: Hb 9–10 g/dL → ESA semptomlar ve risk faktörlerine göre bireyselleştir'
+        ];
+        if (!k26_askiya && k26_baslama) {
+            oneri.push('Rek. 2.1: Ferritin ≤500 + TSAT ≤30% → IV demir ENDİKE (önce demir optimizasyonu)');
+            oneri.push('PP 2.1: Proaktif IV demir stratejisi — reaktif değil');
+            ilac.push('IV Demir Sükroz 200 mg IV her seans — proaktif (Rek. 2.1, 2.2)');
+        } else if (k26_askiya) {
+            oneri.push('PP 2.2: Ferritin >700 veya TSAT ≥40% → IV demir DURDUR');
+        }
+        if (hgb < 9.0) {
+            ilac.push('Epoetin alfa 50–100 IU/kg SC/IV 3×/hafta (Rek. 3.2.1, Tablo 7)');
+        } else {
+            ilac.push('ESA başlama: semptomlar + transfüzyon riski + hasta tercihi (PP 3.1.1)');
+            ilac.push('Başlanırsa → Epoetin alfa 50 IU/kg SC/IV 3×/hafta (Tablo 7)');
+        }
+        ilac.push('⚠️ HEDEF: Hb < 11.5 g/dL — HİÇBİR ZAMAN ≥11.5 g/dL hedefleme (Rek. 3.3.1)');
+        ilac.push('PP 3.4.3.2: Her 2–4 haftada Hb ölç; >1 g/dL hızlı artışta doz %25–50 azalt');
+        ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'low',
+            hgb < 9.0 ? 'DÜŞÜK (8–9 g/dL) — ESA ENDİKE' : 'SINIRDA DÜŞÜK (9–10 g/dL) — ESA Değerlendir',
+            oneri, ilac, '2–4 hafta Hb takibi (PP 3.4.3.2)', []);
+
+    } else if (hgb < 11.5) {
+        // HEDEF ARALIK (Rek. 3.3.1)
+        const iron_note = k26_baslama && !k26_askiya
+            ? 'IV demir devam (Rek. 2.1: ferritin ≤500 + TSAT ≤30%)'
+            : k26_askiya ? 'PP 2.2: Ferritin >700 veya TSAT ≥40% → demir askıya al'
+            : 'Demir durumu takip et';
+        ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'normal',
+            'HEDEF ARALIKTA (10.0–11.5 g/dL) ✓ — Rek. 3.3.1',
+            ['Rek. 3.3.1: Hb < 11.5 g/dL hedefi korunuyor',
+             'PP 3.4.3.3: İdame fazında en az 3 ayda bir Hb ölç',
+             iron_note,
+             'Hb 11.5 g/dL sınırına yaklaşırsa ESA dozunu proaktif azalt'],
+            [], '3 ay kontrol (PP 3.4.3.3)', []);
+
     } else {
-      ekle('🩸 Anemi', 'Hemoglobin', hgb+' g/dL', 'normal', 'HEDEF ARALIKTA (10-12 g/dL)', [], [], '3 ay kontrol', []);
+        // HEDEF ÜSTÜ — Rek. 3.3.1 İHLALİ
+        const ilac = []; const oneri = [
+            'Rek. 3.3.1 İHLAL: Hb ≥11.5 g/dL → ESA DOZU AZALT/DURDUR',
+            'İnme, tromboembolik olay, vasküler erişim trombozu riski ARTAR (TREAT, CHOIR çalışmaları)',
+            'PP 3.4.1.3: En düşük etkili ESA dozu prensibi'
+        ];
+        if (hgb >= 13.0) {
+            oneri.push('⚠️ KRİTİK: Hb ≥13 g/dL — ESA derhal durdur');
+            ilac.push('ESA DURDUR — Hb 10–11.5 g/dL hedeflene kadar bekle');
+            ilac.push('PP 3.4.3.4: İnme/vasküler tromboz varsa ESA dönüşünü bireyselleştir');
+        } else if (hgb >= 12.0) {
+            ilac.push('ESA dozunu %25 azalt (Tablo 7: >2 g/dL/4 hafta artışında %25 azalt kuralı)');
+            ilac.push('PP 3.4.3.2: Doz tutmak yerine azaltmayı tercih et');
+        } else {
+            ilac.push('ESA dozunu %10–25 azalt — hedef Hb < 11.5 g/dL (Rek. 3.3.1)');
+            ilac.push('PP 3.4.1.2: Doz ayarı en az 4 haftada bir; daha sık ayarlamaktan kaçın');
+        }
+        ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'high',
+            hgb >= 13.0 ? 'KRİTİK YÜKSEK (≥13 g/dL) — ESA DURDUR' :
+            hgb >= 12.0 ? 'YÜKSEK (≥12 g/dL) — ESA DOZU AZALT (%25)' :
+                          'HEDEF ÜSTÜ (≥11.5 g/dL) — Rek. 3.3.1: ESA AZALT',
+            oneri, ilac, '2–4 hafta Hb takibi (PP 3.4.3.2)', []);
     }
-  }
+}
 
-  if (ferr !== null) {
-    if (ferr < 200) {
-      const ilac = ['IV demir sükroz 200mg/seans x 5 seans', 'veya IV demir karboksimaltoz 500mg x 2 doz'];
-      // Hgb ile kombine
-      if (hgb !== null && hgb >= 10) ilac.push('Hgb hedefte — demir replasmanı yeterli, EPO gerekmeyebilir');
-      ekle('🩸 Anemi', 'Ferritin', ferr+' ng/mL', 'low', 'DÜŞÜK (<3.5 mg/dL)',
-        ['IV demir replasmanı endike', 'Hedef ferritin: 200-500 ng/mL'], ilac, '1 ay kontrol', []);
-    } else if (ferr > 800) {
-      const oneri = [ferr > 1200 ? 'Demir birikimi/hemokromatoz dışla' : 'TSAT değerine göre karar ver'];
-      // TSAT ile kombine
-      if (tsat !== null && tsat < 20) {
-        oneri.push('Ferritin yüksek ama TSAT düşük: fonksiyonel demir eksikliği');
-        oneri.push('Enfeksiyon/inflamasyon ferritini yükseltmiş olabilir');
-      } else {
-        oneri.push('IV demir tedavisini durdur');
-      }
-      ekle('🩸 Anemi', 'Ferritin', ferr+' ng/mL', 'high', 'YÜKSELMİŞ (>5.5 mg/dL)', oneri,
-        ['IV demir tedavisini durdur veya azalt'], '1 ay kontrol', []);
+// ── Ferritin Değerlendirmesi — KDIGO 2026 HD Eşikleri ──────────────────
+if (ferr !== null) {
+    const ts = tsat !== null ? ` | TSAT: ${tsat}%` : ' | TSAT: ölçülmedi';
+
+    if (ferr < 30) {
+        // Profund sistemik demir eksikliği — PP 2.11
+        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'low',
+            `PROFund SİSTEMİK DEMİR EKSİKLİĞİ${ts}`,
+            ['PP 2.11: Anemi olmasa dahi IV/oral demir değerlendir (ferritin <30 + TSAT <20%)',
+             'Sistemik demir eksikliği: depolar kritik düzeyde boş',
+             'Kanama kaynağı araştır: GIS, üroloji, jinekoloji'],
+            ['IV Demir Sükroz 200 mg IV her seans — proaktif (Rek. 2.1, 2.2)',
+             'PP 2.5: Hb, ferritin, TSAT 1–3 ayda kontrol',
+             'Hedef: ferritin 200–500 ng/mL, TSAT %20–30'],
+            '1 ay kontrol (PP 2.5)', []);
+
+    } else if (ferr <= 200) {
+        // Sistemik demir eksikliği bölgesi
+        const tsat_yorum = tsat !== null
+            ? (tsat <= 30 ? ' → Rek. 2.1: IV demir ENDİKE (TSAT ≤30%)' :
+               tsat >= 40 ? ' → PP 2.2: TSAT ≥40%, demir askıya al'
+                           : ' → TSAT yeterli, demir izle')
+            : ' → TSAT ölçülmedi (Rek. 2.1 tam değerlendirilemez)';
+        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'low',
+            `SİSTEMİK DEMİR EKSİKLİĞİ (30–200 ng/mL)${tsat_yorum}`,
+            ['Rek. 2.1: HD için ferritin ≤500 + TSAT ≤30% → IV demir başla',
+             'Rek. 2.2: IV demir oral demire tercih edilir (HD)',
+             'PP 2.1: Proaktif IV demir protokolü — reaktif değil (PIVOTAL: N=2141)'],
+            tsat !== null && tsat >= 40
+                ? ['PP 2.2: TSAT ≥40% → IV demir durdur; TSAT düşünce yeniden başla']
+                : ['IV Demir Sükroz 200 mg IV her seans (proaktif)',
+                   'PP 2.2: Ferritin >700 veya TSAT ≥40% olana dek sürdür',
+                   'PP 2.5: Hb, ferritin, TSAT 1–3 ayda kontrol'],
+            '1–3 ay kontrol (PP 2.5)', []);
+
+    } else if (ferr <= 500) {
+        // Demir yeterli — Rek. 2.1 eşiği içinde
+        const tsat_not = tsat !== null
+            ? (tsat >= 40 ? ' — PP 2.2: TSAT ≥40% → DEMİR ASKIYA AL' :
+               tsat < 20  ? ' — Demir kısıtlı eritropoez (TSAT düşük, ferritin yeterli)' : '')
+            : '';
+        const ilac_orta = tsat !== null && tsat >= 40
+            ? ['IV demir tedavisini geçici durdur (PP 2.2: TSAT ≥40%)',
+               'TSAT <30%a döndüğünde proaktif protokolü yeniden başlat']
+            : [];
+        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'normal',
+            `DEMİR YETERLI / İZLEM (200–500 ng/mL)${tsat_not}`,
+            ['Rek. 2.1 eşiği içinde: ferritin ≤500 + TSAT koşulu sağlanırsa demir sürdür',
+             'PP 2.1: Proaktif strateji — ferritin >700 veya TSAT ≥40% olmadıkça devam',
+             'PP 2.5: Hb, ferritin, TSAT 1–3 ayda bir kontrol'],
+            ilac_orta, '1–3 ay kontrol (PP 2.5)', []);
+
+    } else if (ferr <= 700) {
+        // Sınırda — Rek. 2.1 eşiğini geçti
+        const tsat_not = tsat !== null
+            ? (tsat >= 40 ? ' + TSAT ≥40%: KESİNLİKLE DURDUR (PP 2.2)' :
+               tsat < 20  ? ' + TSAT <20%: Demir kısıtlı eritropoez — dikkatli değerlendir'
+                           : '') : '';
+        const ilac_kes = tsat !== null && tsat >= 40
+            ? ['IV demir durdur (PP 2.2: ferritin >500 VE TSAT ≥40%)',
+               'Ferritin ve TSAT 1 ayda kontrol']
+            : ['IV demir dozunu azalt veya geçici durdur',
+               '1 ay sonra ferritin + TSAT yeniden değerlendir'];
+        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'high',
+            `FERRİTİN SINIRDA YÜKSEK (500–700 ng/mL)${tsat_not}`,
+            ['Rek. 2.1 eşiğini (>500 ng/mL) geçti — demir tedavisini gözden geçir',
+             'PP 2.2: 700 ng/mL sınırına yaklaşıldı — dozunu azalt veya durdur',
+             'Akut faz reaktanı olabileceğinden TSAT ile birlikte yorumla'],
+            ilac_kes, '1 ay kontrol (PP 2.5)', []);
+
     } else {
-      ekle('🩸 Anemi', 'Ferritin', ferr+' ng/mL', 'normal', 'HEDEF ARALIKTA (200-500 ng/mL)', [], [], '3 ay kontrol', []);
+        // Yüksek ferritin (>700) — PP 2.2 rutin demir durdur
+        const tsat_not = tsat !== null
+            ? (tsat >= 40 ? ' + TSAT ≥40%: Kesinlikle durdur (PP 2.2)' :
+               tsat < 20  ? ' + TSAT <20%: Demir kısıtlı eritropoez — inflamasyon araştır'
+                           : ' + TSAT normal') : '';
+        const ilac_yuk = ['PP 2.2: Ferritin >700 → rutin IV demir ASKIYA AL'];
+        const oneri_yuk = ['PP 2.2: Ferritin >700 ng/mL — rutin IV demir tedavisini durdur',
+                           'Akut faz reaktanı yüksekliği (inflamasyon?) olabilir — CRP kontrol'];
+        if (tsat !== null && tsat < 20) {
+            oneri_yuk.push('TSAT <20% + yüksek ferritin → Demir kısıtlı eritropoez (KDIGO 2026 tanımı)');
+            oneri_yuk.push('İnflamasyon hepsidini artırarak demir salınımını bloke ediyor');
+            ilac_yuk.push('ESA yanıtsızlığı + refrakter anemi varsa kısa süreli deneme IV demir değerlendir');
+        }
+        if (ferr > 1200) oneri_yuk.push('Ferritin >1200: Demir birikimi / hemokromatoz araştır');
+        ekle('🩸 Anemi — KDIGO 2026', 'Ferritin', ferr + ' ng/mL', 'high',
+            `YÜKSEK FERRİTİN (>700 ng/mL)${tsat_not}`,
+            oneri_yuk, ilac_yuk, '1 ay kontrol (PP 2.5)', []);
     }
-  }
+}
 
-  // ── 3. ELEKTROLİT (K + Na kombine) ────────────────────────────────────────
+// ── TSAT Bağımsız Değerlendirmesi (KDIGO 2026) ─────────────────────────
+if (tsat !== null) {
+    if (tsat < 20 && ferr !== null && ferr <= 700) {
+        const tip = ferr < 200
+            ? 'Sistemik demir eksikliği (ferritin↓ + TSAT↓)'
+            : 'Demir kısıtlı eritropoez (ferritin normal/↑ + TSAT↓) — hepsidin artışı?';
+        const oneriler_ts = ferr < 200
+            ? ['Rek. 2.1: IV demir başla (ferritin ≤500 + TSAT ≤30%)',
+               'Rek. 2.2: IV demir oral demire tercih edilir (HD hastası)']
+            : ['Demir kısıtlı eritropoez: İnflamasyon hepsidini artırarak TSATı düşürüyor',
+               'CRP yüksekse enfeksiyonu/inflamasyonu önce tedavi et (PP 2.8)',
+               'Proaktif IV demir protokolü ile TSAT ≥20%ye çıkmayı hedefle'];
+        ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'low',
+            `DÜŞÜK TSAT (<20%) — ${tip}`,
+            oneriler_ts,
+            ['IV Demir Sükroz 200 mg IV proaktif (PP 2.1)',
+             'Hedef TSAT: %20–30 (Rek. 2.1 eşiği)'],
+            '1–3 ay kontrol (PP 2.5)', []);
+    } else if (tsat >= 40) {
+        ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'high',
+            'YÜKSEK TSAT (≥40%) — PP 2.2: IV Demir Askıya Al',
+            ['PP 2.2: TSAT ≥40% → IV demir DURDUR (ferritin değerinden bağımsız)',
+             'Transferrin doygunluğu kritik düzeyde — serbest demir toksisitesi riski',
+             'ESA dozu değiştirilmemeli — demir sorunu'],
+            ['IV demir tedavisini durdur',
+             'TSAT <%30a düştüğünde PP 2.1 proaktif protokolünü yeniden başlat'],
+            '1 ay kontrol', []);
+    }
+}
+
+
+
+    // ── 3. ELEKTROLİT (K + Na kombine) ────────────────────────────────────────
   if (k !== null) {
     if (k > 5.5) {
       const ilac = [];
@@ -924,7 +1109,7 @@ async function aiYorumAl() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514', max_tokens: 1000,
-        messages: [{ role: 'user', content: `Sen bir nefroloji uzmanısın. Diyaliz hastasının lab sonuçlarını KDIGO kılavuzu çerçevesinde Türkçe değerlendir.\n\nHasta: ${hasta.ad} | TC: ${hasta.tc}\n\nLAB SONUÇLARI:\n${labOzet}\n\n3-4 cümle klinik değerlendirme, ardından öncelikli tedavi önerileri madde madde. Net ve pratik ol.` }]
+        messages: [{ role: 'user', content: `Sen bir diyaliz nefroloji uzmanısın. KDIGO 2026 Clinical Practice Guideline for the Management of Anemia in CKD (Kidney International 2026;109(Suppl 1S):S1–S99) kılavuzuna göre değerlendirme yapıyorsun. Anemi yönetiminde: Rek.2.1 (ferritin ≤500+TSAT≤30% → IV demir, HD), Rek.2.2 (IV>oral HD), PP 2.1 (proaktif strateji), PP 2.2 (ferritin >700 veya TSAT≥40% → durdur), Rek.3.1.1 (ESA birinci basamak), Rek.3.2.1 (Hb≤9–10→ESA başla, HD), Rek.3.3.1 (Hb<11.5 g/dL hedef), Tablo 7 (ESA dozlama). Yeni terminoloji: sistemik demir eksikliği (eski: mutlak), demir kısıtlı eritropoez (eski: fonksiyonel). Mineral metabolizma için KDIGO 2024 CKD-MBD kılavuzunu kullan. Tüm değerlendirmeyi Türkçe yap.\n\nHasta: ${hasta.ad} | TC: ${hasta.tc}\n\nLAB SONUÇLARI:\n${labOzet}\n\n3-4 cümle klinik değerlendirme, ardından öncelikli tedavi önerileri madde madde. Net ve pratik ol.` }]
       })
     });
     const data = await res.json();
