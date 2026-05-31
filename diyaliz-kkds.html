@@ -499,8 +499,6 @@ function bul(sonuclar, ...terms) {
 
 function analizEt(sonuclar) {
   const oneriler = [];
-  const ekle = (grup, param, deger, durum, label, liste, ilaclar, kontrol, diyaliz) =>
-    oneriler.push({ grup, param, deger, durum, label, liste: liste.filter(Boolean), ilaclar: (ilaclar||[]).filter(Boolean), kontrol: kontrol||'', diyaliz: (diyaliz||[]).filter(Boolean) });
 
   const bul = (...terms) => {
     for (const t of terms) {
@@ -513,146 +511,288 @@ function analizEt(sonuclar) {
     return null;
   };
 
-  // FOSFAT
-  const p = bul('fosfor', 'fosfat', 'phosph');
-  if (p) {
-    const v = parseFloat(p.sonuc);
-    if (v > 5.5) ekle('🦴 Mineral', 'Fosfat', v + ' mg/dL', 'high', 'YÜKSELMİŞ',
-      ['Düşük fosfatlı diyet (<800 mg/gün)', v > 7 ? 'Fosfor bağlayıcı dozu artır' : 'Fosfor bağlayıcı başla/artır'],
-      v > 7 ? ['Sevelamer karbonat 1600mg 3x1 (yemekle)', 'veya Kalsiyum karbonat 1000mg 3x1 (yemekle)'] :
-              ['Sevelamer karbonat 800mg 3x1 (yemekle)', 'veya Kalsiyum karbonat 500mg 3x1 (yemekle)'],
-      '1 ay sonra kontrol',
-      ['Diyaliz süresini değerlendir', 'Yüksek akışlı membran kullan']);
-    else if (v < 3.5) ekle('🦴 Mineral', 'Fosfat', v + ' mg/dL', 'low', 'DÜŞÜK',
-      ['Beslenme değerlendirmesi', 'Fosfor bağlayıcı dozu azalt/kes'],
-      ['Fosfor bağlayıcı dozunu yarıya indir veya kes'],
-      '1 ay sonra kontrol', []);
-    else ekle('🦴 Mineral', 'Fosfat', v + ' mg/dL', 'normal', 'NORMAL', [], [], '3 ay sonra kontrol', []);
+  const val = (parametre) => {
+    const s = bul(...parametre);
+    return s ? parseFloat(s.sonuc) : null;
+  };
+
+  const ekle = (grup, param, deger, durum, label, liste, ilaclar, kontrol, diyaliz) =>
+    oneriler.push({
+      grup, param, deger, durum, label,
+      liste: (liste||[]).filter(Boolean),
+      ilaclar: (ilaclar||[]).filter(Boolean),
+      kontrol: kontrol||'',
+      diyaliz: (diyaliz||[]).filter(Boolean)
+    });
+
+  // ── DEĞERLER ──────────────────────────────────────────────────────────────
+  const ca    = val(['kalsiyum','calcium']);
+  const p     = val(['fosfor','fosfat','phosph']);
+  const pth   = val(['pth','parathormon','paratiroi']);
+  const alb   = val(['albumin']);
+  const hgb   = val(['hemoglobin','hgb','hb']);
+  const ferr  = val(['ferritin']);
+  const tsat  = val(['transferrin sat','tsat','demir saturasyon']);
+  const k     = val(['potasyum','kalium']);
+  const na    = val(['sodyum','sodium']);
+  const gluk  = val(['glukoz','glucose']);
+  const crp   = val(['crp','c-reaktif']);
+  const bun   = val(['bun','kan uresi','blood urea n']);
+  const krea  = val(['kreatinin','creatinine']);
+
+  // Düzeltilmiş kalsiyum (albumin varsa)
+  const caDuz = (ca !== null && alb !== null) ? ca + 0.8*(4 - alb) : ca;
+
+  // ── 1. MİNERAL METABOLİZMA (Ca + P + PTH kombine) ────────────────────────
+  if (p !== null) {
+    if (p > 5.5) {
+      const oneri = ['Düşük fosfatlı diyet (<800 mg/gün)'];
+      const ilac = [];
+      const diy = ['Diyaliz süresini değerlendir', 'Yüksek akışlı membran kullan'];
+
+      if (p > 7) {
+        ilac.push('Sevelamer karbonat 1600mg 3x1 (yemekle)');
+        if (caDuz !== null && caDuz > 9.5) {
+          ilac.push('Kalsiyum içeren bağlayıcı kullanma — hiperkalsemi riski');
+        } else {
+          ilac.push('veya Kalsiyum karbonat 1000mg 3x1 (yemekle)');
+        }
+      } else {
+        ilac.push('Sevelamer karbonat 800mg 3x1 (yemekle)');
+      }
+      ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'high', 'YÜKSELMİŞ', oneri, ilac, '1 ay kontrol', diy);
+    } else if (p < 3.5) {
+      ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'low', 'DÜŞÜK',
+        ['Beslenme değerlendirmesi yap', 'Fosfor bağlayıcı dozunu azalt veya kes'],
+        ['Fosfor bağlayıcıyı kes veya yarıya indir'],
+        '1 ay kontrol', []);
+    } else {
+      ekle('🦴 Mineral Metabolizma', 'Fosfat', p+' mg/dL', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+    }
   }
 
-  // KALSİYUM
-  const ca = bul('kalsiyum', 'calcium');
-  if (ca) {
-    const v = parseFloat(ca.sonuc);
-    if (v > 10.2) ekle('🦴 Mineral', 'Kalsiyum', v + ' mg/dL', 'high', 'YÜKSELMİŞ',
-      ['Ca içeren fosfor bağlayıcıyı kes/azalt', 'Aktif D vitamini dozunu azalt'],
-      v > 11 ? ['Sinakalseti (Mimpara) 30mg 1x1 başla', 'Kalsiyum karbonatı kes'] :
-               ['Kalsiyum karbonat dozunu yarıya indir'],
-      '1 ay sonra kontrol',
-      ["Diyalizat Ca konsantrasyonunu 1.25 mmol/L degerine duşür"]);
-    else if (v < 8.4) ekle('🦴 Mineral', 'Kalsiyum', v + ' mg/dL', 'low', 'DÜŞÜK',
-      ['Semptom değerlendir (Trousseau, Chvostek)', 'Aktif D vitamini başla/artır'],
-      ['Kalsitriol 0.25 mcg 1x1 başla', 'Kalsiyum karbonat 500mg 3x1 (yemekle)'],
-      '1 ay sonra kontrol', ["Diyalizat Ca konsantrasyonunu 1.5 mmol/L degerine yükselt"]);
-    else ekle('🦴 Mineral', 'Kalsiyum', v + ' mg/dL', 'normal', 'NORMAL', [], [], '3 ay sonra kontrol', []);
+  if (caDuz !== null) {
+    if (caDuz > 10.2) {
+      const ilac = ['Kalsiyum içeren fosfor bağlayıcıyı kes'];
+      // PTH ile kombine
+      if (pth !== null && pth < 130) {
+        ilac.push('Aktif D vitamini kes — hem hiperkalsemi hem düşük PTH var');
+        ilac.push('Sinakalseti dikkatli — PTH zaten baskılı');
+      } else if (pth !== null && pth > 585) {
+        ilac.push('Aktif D vitamini dozu azalt');
+        ilac.push('Sinakalseti (Mimpara) 30mg 1x1 değerlendir');
+      } else {
+        ilac.push('Aktif D vitamini dozu azalt');
+      }
+      ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'high', 'YÜKSELMİŞ',
+        ['Ca içeren fosfor bağlayıcıyı kes/azalt'],
+        ilac, '1 ay kontrol',
+        ['Diyalizat Ca 1.25 mmol/L değerine düşür']);
+    } else if (caDuz < 8.4) {
+      const ilac = [];
+      const oneri = ['Semptom değerlendir (Trousseau, Chvostek)'];
+      // PTH ile kombine — EN ÖNEMLİ KONTROL
+      if (pth === null) {
+        ilac.push('PTH ölçümü yapılmadan kalsitriol başlama');
+        ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
+        oneri.push('PTH ölçümü yapılmadan D vitamini başlatma');
+      } else if (pth > 585) {
+        // Ca düşük + PTH yüksek → kalsitriol mantıklı
+        ilac.push('Kalsitriol 0.25-0.5 mcg 1x1 başla (PTH yüksek, Ca düşük — endike)');
+        ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
+        oneri.push('Ca düşük + PTH yüksek: aktif D vitamini endike');
+      } else if (pth < 130) {
+        // Ca düşük + PTH düşük → kalsitriol KONTRENDİKE
+        ilac.push('KALSİTROL VERİLMEZ — PTH baskılı, adynamic kemik riski var');
+        ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
+        ilac.push('Diyalizat Ca 1.5 mmol/L değerine yükselt');
+        oneri.push('Ca düşük + PTH düşük: D vitamini kontrendike!');
+      } else {
+        // Ca düşük + PTH normal
+        ilac.push('Kalsiyum karbonat 500mg 3x1 (yemekle)');
+        ilac.push('Kalsitriol 0.25 mcg 1x1 dikkatli başla (PTH normal, Ca düşük)');
+        oneri.push('Ca-P-PTH birlikte takip et');
+      }
+      ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'low', 'DÜŞÜK', oneri, ilac, '1 ay kontrol',
+        ['Diyalizat Ca 1.5 mmol/L değerine yükselt']);
+    } else {
+      ekle('🦴 Mineral Metabolizma', 'Kalsiyum (düz.)', caDuz.toFixed(1)+' mg/dL', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+    }
   }
 
-  // PTH
-  const pth = bul('pth', 'parathormon', 'paratiroi');
-  if (pth) {
-    const v = parseFloat(pth.sonuc);
-    if (v > 585) ekle('🦴 Mineral', 'PTH', v + ' pg/mL', 'high', 'YÜKSELMİŞ (>3-9x)',
-      ['Aktif D vitamini başla/artır', v > 800 ? 'Sinakalseti değerlendir' : 'Ca-P düzelince yeniden değerlendir'],
-      v > 800 ? ['Parikalsitriol (Zemplar) 1-2 mcg IV her seans', 'Sinakalseti (Mimpara) 30mg 1x1'] :
-                ['Kalsitriol 0.25-0.5 mcg 1x1', 'veya Parikalsitriol 1 mcg IV her seans'],
-      v > 1000 ? 'Paratiroidektomi konsültasyonu' : '3 ay sonra kontrol',
-      []);
-    else if (v < 130) ekle('🦴 Mineral', 'PTH', v + ' pg/mL', 'low', 'DÜŞÜK (<2x)',
-      ['Aktif D vitamini dozunu azalt/kes', 'Adynamic kemik hastalığı riski'],
-      ['Kalsitriol/parikalsitriol dozunu yarıya indir veya kes'],
-      '3 ay sonra kontrol', []);
-    else ekle('🦴 Mineral', 'PTH', v + ' pg/mL', 'normal', 'HEDEF ARALIKTA', [], [], '3 ay sonra kontrol', []);
+  if (pth !== null) {
+    if (pth > 585) {
+      const ilac = [];
+      const oneri = ['Sekonder hiperparatiroidizm'];
+      // Ca ile kombine
+      if (caDuz !== null && caDuz > 10.2) {
+        ilac.push('Sinakalseti (Mimpara) 30mg 1x1 — Ca yüksek, PTH yüksek');
+        ilac.push('Aktif D vitamini KULLANMA — hiperkalsemi riski');
+      } else if (caDuz !== null && caDuz < 8.4) {
+        ilac.push('Kalsitriol 0.25-0.5 mcg 1x1 başla — Ca düşük, PTH yüksek');
+        ilac.push('veya Parikalsitriol (Zemplar) 1-2 mcg IV her seans');
+      } else {
+        ilac.push('Parikalsitriol (Zemplar) 1 mcg IV her seans');
+        ilac.push('veya Kalsitriol 0.25 mcg 1x1');
+        if (pth > 800) ilac.push('Sinakalseti (Mimpara) 30mg 1x1 ekle');
+      }
+      if (pth > 1000) oneri.push('Paratiroidektomi konsültasyonu değerlendir');
+      ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'high', 'YÜKSELMİŞ (>3-9x)',
+        oneri, ilac, pth > 1000 ? 'Paratiroidektomi konsültasyonu' : '3 ay kontrol', []);
+    } else if (pth < 130) {
+      ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'low', 'DÜŞÜK (<2x)',
+        ['Adynamic kemik hastalığı riski', 'Aktif D vitamini kesme/azaltma'],
+        ['Kalsitriol/parikalsitriol dozunu yarıya indir veya kes',
+         'Sinakalseti kullanıyorsa doz azalt veya kes'],
+        '3 ay kontrol', []);
+    } else {
+      ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'normal', 'HEDEF ARALIKTA (130-585)', [], [], '3 ay kontrol', []);
+    }
   }
 
-  // HEMOGLOBİN
-  const hgb = bul('hemoglobin', 'hgb', 'hb');
-  if (hgb) {
-    const v = parseFloat(hgb.sonuc);
-    if (v < 10) ekle('🩸 Anemi', 'Hemoglobin', v + ' g/dL', 'low', 'DÜŞÜK',
-      ['Demir durumunu değerlendir (ferritin, TSAT)', v < 8 ? 'EPO dozu artır, transfüzyon değerlendir' : 'EPO/darbepoetin başla veya artır'],
-      v < 8 ? ['Epoetin alfa 4000 IU SC haftada 3x veya doz artır', 'IV demir sükroz 200mg (ferritin <200 ise)'] :
-              ['Epoetin alfa 2000-4000 IU SC haftada 3x', 'IV demir sükroz 100mg/seans (ferritin <500 ise)'],
-      '1 ay sonra kontrol', []);
-    else if (v > 12) ekle('🩸 Anemi', 'Hemoglobin', v + ' g/dL', 'high', 'HEDEF ÜSTÜ',
-      ['EPO/darbepoetin dozunu azalt veya durdur', 'Tromboz riski artar'],
-      ['EPO dozunu %25 azalt veya 2 hafta durdur'],
-      '1 ay sonra kontrol', []);
-    else ekle('🩸 Anemi', 'Hemoglobin', v + ' g/dL', 'normal', 'HEDEF (10-12)', [], [], '3 ay sonra kontrol', []);
+  // ── 2. ANEMİ (Hgb + Ferritin + TSAT kombine) ─────────────────────────────
+  if (hgb !== null) {
+    const ilac = [];
+    const oneri = [];
+    const demir_eksik = (ferr !== null && ferr < 200) || (tsat !== null && tsat < 20);
+    const demir_yeterli = (ferr !== null && ferr >= 200) || (tsat !== null && tsat >= 20);
+
+    if (hgb < 10) {
+      if (demir_eksik) {
+        oneri.push('Demir eksikliği + anemi: önce demir replasmanı');
+        ilac.push('IV demir sükroz 200mg/seans x 5 seans');
+        ilac.push('Demir replasmanı sonrası EPO yanıtı değerlendir');
+        if (hgb < 8) ilac.push('Epoetin alfa 4000 IU SC haftada 3x (acil)');
+        else ilac.push('Epoetin alfa 2000-4000 IU SC haftada 3x');
+      } else if (demir_yeterli) {
+        oneri.push('Demir yeterli, EPO yanıtsızlığı değerlendir');
+        oneri.push('İnflamasyon/enfeksiyon dışla (CRP bak)');
+        ilac.push('Epoetin alfa 4000 IU SC haftada 3x veya doz artır');
+        if (crp !== null && crp > 10) ilac.push('CRP yüksek — enfeksiyon tedavisi önce!');
+      } else {
+        oneri.push('Ferritin ve TSAT ölçüm yapılmamış — demir durumu belirsiz');
+        ilac.push('Ferritin ve TSAT ölçümü yaptır');
+        ilac.push('Epoetin alfa 2000-4000 IU SC haftada 3x');
+      }
+      ekle('🩸 Anemi', 'Hemoglobin', hgb+' g/dL', 'low', hgb<8?'KRİTİK DÜŞÜK':'DÜŞÜK',
+        oneri, ilac, '1 ay kontrol', []);
+    } else if (hgb > 12) {
+      ekle('🩸 Anemi', 'Hemoglobin', hgb+' g/dL', 'high', 'HEDEF ÜSTÜ',
+        ['EPO dozu azalt veya durdur', 'Tromboz riski artar'],
+        ['EPO dozunu %25 azalt veya 2 hafta durdur'],
+        '1 ay kontrol', []);
+    } else {
+      ekle('🩸 Anemi', 'Hemoglobin', hgb+' g/dL', 'normal', 'HEDEF (10-12)', [], [], '3 ay kontrol', []);
+    }
   }
 
-  // FERRİTİN
-  const ferritin = bul('ferritin');
-  if (ferritin) {
-    const v = parseFloat(ferritin.sonuc);
-    if (v < 200) ekle('🩸 Anemi', 'Ferritin', v + ' ng/mL', 'low', 'DÜŞÜK',
-      ['IV demir replasmanı başla', 'Hedef: 200-500 ng/mL'],
-      ['IV demir sükroz 200mg/seans × 5 seans', 'veya IV demir karboksimaltoz 500mg × 2 doz'],
-      '1 ay sonra kontrol', []);
-    else if (v > 800) ekle('🩸 Anemi', 'Ferritin', v + ' ng/mL', 'high', 'YÜKSELMİŞ',
-      [v > 1200 ? 'Demir birikimi dışla' : 'TSAT değerine göre karar ver', 'IV demir ver'],
-      ['IV demir tedavisini durdur veya azalt'],
-      '1 ay sonra kontrol', []);
-    else ekle('🩸 Anemi', 'Ferritin', v + ' ng/mL', 'normal', 'NORMAL', [], [], '3 ay sonra kontrol', []);
+  if (ferr !== null) {
+    if (ferr < 200) {
+      const ilac = ['IV demir sükroz 200mg/seans x 5 seans', 'veya IV demir karboksimaltoz 500mg x 2 doz'];
+      // Hgb ile kombine
+      if (hgb !== null && hgb >= 10) ilac.push('Hgb hedefte — demir replasmanı yeterli, EPO gerekmeyebilir');
+      ekle('🩸 Anemi', 'Ferritin', ferr+' ng/mL', 'low', 'DÜŞÜK',
+        ['IV demir replasmanı endike', 'Hedef ferritin: 200-500 ng/mL'], ilac, '1 ay kontrol', []);
+    } else if (ferr > 800) {
+      const oneri = [ferr > 1200 ? 'Demir birikimi/hemokromatoz dışla' : 'TSAT değerine göre karar ver'];
+      // TSAT ile kombine
+      if (tsat !== null && tsat < 20) {
+        oneri.push('Ferritin yüksek ama TSAT düşük: fonksiyonel demir eksikliği');
+        oneri.push('Enfeksiyon/inflamasyon ferritini yükseltmiş olabilir');
+      } else {
+        oneri.push('IV demir tedavisini durdur');
+      }
+      ekle('🩸 Anemi', 'Ferritin', ferr+' ng/mL', 'high', 'YÜKSELMİŞ', oneri,
+        ['IV demir tedavisini durdur veya azalt'], '1 ay kontrol', []);
+    } else {
+      ekle('🩸 Anemi', 'Ferritin', ferr+' ng/mL', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+    }
   }
 
-  // POTASYUM
-  const k = bul('potasyum', 'kalium');
-  if (k) {
-    const v = parseFloat(k.sonuc);
-    if (v > 5.5) ekle('⚡ Elektrolit', 'Potasyum', v + ' mEq/L', 'high', 'HİPERKALEMİ',
-      ['Acil EKG değerlendirmesi', v > 6.5 ? 'ACİL: Ca glukonat + insülin-dekstroz' : 'Diyet kısıtlaması'],
-      v > 6.5 ? ['Ca glukonat %10 10mL IV yavaş', 'İnsülin 10Ü + Dekstroz %10 500mL IV', 'Kayeksalat 15g 3x1'] :
-                ['Kayeksalat 15g 2x1', 'Diyet: meyve/sebze kısıtla'],
-      '2 hafta sonra kontrol',
-      ['Diyalizat K konsantrasyonunu 2.0 mEq/L degerini duşur', 'Diyaliz süresini uzat']);
-    else if (v < 3.5) ekle('⚡ Elektrolit', 'Potasyum', v + ' mEq/L', 'low', 'HİPOKALEMİ',
-      ['Oral/IV potasyum replasmanı', 'Diyalizat K artır'],
-      ['KCl oral 1g 3x1', 'veya IV KCl 40 mEq/gün (yavaş infüzyon)'],
-      '1 hafta sonra kontrol',
-      ['Diyalizat K konsantrasyonunu 3.0 mEq/L degerini yukselt']);
-    else ekle('⚡ Elektrolit', 'Potasyum', v + ' mEq/L', 'normal', 'NORMAL', [], [], '3 ay sonra kontrol', []);
+  // ── 3. ELEKTROLİT (K + Na kombine) ────────────────────────────────────────
+  if (k !== null) {
+    if (k > 5.5) {
+      const ilac = [];
+      const diy = ['Diyalizat K 2.0 mEq/L değerine düşür', 'Diyaliz süresini uzat'];
+      if (k > 6.5) {
+        ilac.push('ACİL: Ca glukonat %10 10mL IV yavaş (kardiak koruma)');
+        ilac.push('İnsülin 10Ü + Dekstroz %10 500mL IV');
+        ilac.push('Kayeksalat 15g 3x1 oral');
+        diy.unshift('ACIL DİYALİZ değerlendir');
+      } else {
+        ilac.push('Kayeksalat 15g 2x1 oral');
+        ilac.push('Diyet: meyve/sebze/kuru baklagil kısıtla');
+      }
+      // Dijital kullananlar için ek uyarı
+      ilac.push('Dijital/antiaritmik ilaç kullanıyorsa EKG zorunlu');
+      ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'high', k>6.5?'KRİTİK HİPERKALEMİ':'HİPERKALEMİ',
+        ['Acil EKG değerlendirmesi', 'Diyet kısıtlaması'], ilac,
+        k>6.5 ? 'Acil değerlendirme' : '2 hafta kontrol', diy);
+    } else if (k < 3.5) {
+      ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'low', 'HİPOKALEMİ',
+        ['Oral/IV potasyum replasmanı', 'Diyalizat K artır'],
+        ['KCl oral 1g 3x1', 'veya IV KCl 40 mEq/gün yavaş infüzyon'],
+        '1 hafta kontrol',
+        ['Diyalizat K 3.0 mEq/L değerine yükselt']);
+    } else {
+      ekle('⚡ Elektrolit', 'Potasyum', k+' mEq/L', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+    }
   }
 
-  // SODYUM
-  const na = bul('sodyum', 'sodium');
-  if (na) {
-    const v = parseFloat(na.sonuc);
-    if (v < 135) ekle('⚡ Elektrolit', 'Sodyum', v + ' mEq/L', 'low', 'HİPONATREMİ',
-      ['Sıvı kısıtlaması değerlendir'],
-      ['Sıvı kısıtlaması 500-750 mL/gün'],
-      '1 ay sonra kontrol',
-      ['Diyalizat Na 140 mEq/L degerine ayarla']);
-    else if (v > 145) ekle('⚡ Elektrolit', 'Sodyum', v + ' mEq/L', 'high', 'HİPERNATREMİ',
-      ['Sıvı alımını değerlendir'],
-      ['Serbest su alımını artır'],
-      '1 ay sonra kontrol', []);
-    else ekle('⚡ Elektrolit', 'Sodyum', v + ' mEq/L', 'normal', 'NORMAL', [], [], '3 ay sonra kontrol', []);
+  if (na !== null) {
+    if (na < 135) {
+      ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'low', 'HİPONATREMİ',
+        ['Sıvı kısıtlaması değerlendir', 'Dilüsyonel hiponatremi olabilir'],
+        ['Sıvı kısıtlaması 500-750 mL/gün'],
+        '1 ay kontrol', ['Diyalizat Na 140 mEq/L değerine ayarla']);
+    } else if (na > 145) {
+      ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'high', 'HİPERNATREMİ',
+        ['Su alımını artır'], ['Serbest su replasmanı'], '1 ay kontrol', []);
+    } else {
+      ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+    }
   }
 
-  // ALBUMİN
-  const alb = bul('albumin');
-  if (alb) {
-    const v = parseFloat(alb.sonuc);
-    if (v < 3.5) ekle('🔬 Diğer', 'Albumin', v + ' g/dL', 'low', 'DÜŞÜK',
-      ['Beslenme değerlendirmesi', 'Diyetisyen konsültasyonu'],
-      ['Oral beslenme desteği (Nepro, Renilon)', 'Protein alımı: 1.2g/kg/gün hedefle'],
-      '1 ay sonra kontrol', []);
-    else ekle('🔬 Diğer', 'Albumin', v + ' g/dL', 'normal', 'NORMAL', [], [], '3 ay sonra kontrol', []);
+  // ── 4. BESLENME/İNFLAMASYON (Albumin + CRP + Glukoz kombine) ──────────────
+  if (alb !== null) {
+    if (alb < 3.5) {
+      const oneri = ['Beslenme değerlendirmesi', 'Diyetisyen konsültasyonu'];
+      const ilac = ['Oral beslenme desteği: Nepro veya Renilon (1-2 şişe/gün)', 'Protein alımı: 1.2 g/kg/gün hedefle'];
+      // CRP ile kombine — inflamasyon albumini düşürüyor olabilir
+      if (crp !== null && crp > 10) {
+        oneri.push('CRP yüksek — inflamasyon albumini düşürüyor olabilir');
+        oneri.push('Enfeksiyon/inflamasyon kaynağı araştır');
+        ilac.push('Enfeksiyon tedavisi albumini düzeltebilir');
+      }
+      ekle('🔬 Beslenme', 'Albumin', alb+' g/dL', 'low', 'DÜŞÜK',
+        oneri, ilac, '1 ay kontrol', []);
+    } else {
+      ekle('🔬 Beslenme', 'Albumin', alb+' g/dL', 'normal', 'NORMAL', [], [], '3 ay kontrol', []);
+    }
   }
 
-  // GLUKOZ
-  const glukoz = bul('glukoz', 'glucose');
-  if (glukoz) {
-    const v = parseFloat(glukoz.sonuc);
-    if (v > 200) ekle('🔬 Diğer', 'Glukoz', v + ' mg/dL', 'high', 'YÜKSELMİŞ',
-      ['Diyabet kontrolünü gözden geçir', 'Endokrin konsültasyonu'],
-      ['HbA1c ölçümü planla', 'Antidiyabetik tedaviyi gözden geçir'],
-      '1 ay sonra kontrol', []);
-    else ekle('🔬 Diğer', 'Glukoz', v + ' mg/dL', 'normal', 'NORMAL', [], [], '3 ay sonra kontrol', []);
+  if (gluk !== null && gluk > 200) {
+    const ilac = ['HbA1c ölçümü planla'];
+    // Albumin ile kombine — diyabetik nefropati?
+    if (alb !== null && alb < 3.5) ilac.push('Diyabetik nefropati açısından değerlendir');
+    ilac.push('Antidiyabetik tedaviyi gözden geçir — diyalizde metformin kullanma');
+    ekle('🔬 Beslenme', 'Glukoz', gluk+' mg/dL', 'high', 'YÜKSELMİŞ',
+      ['Diyabet kontrolü yetersiz', 'Endokrin konsültasyonu'],
+      ilac, '1 ay kontrol', []);
+  }
+
+  // ── 5. DİYALİZ YETERLİLİĞİ (BUN + Kreatinin) ────────────────────────────
+  if (bun !== null && bun > 80) {
+    ekle('⚙️ Diyaliz Yeterliliği', 'BUN', bun+' mg/dL', 'high', 'YÜKSELMİŞ',
+      ['Diyaliz yeterliliği yetersiz olabilir', 'Kt/V hesapla'],
+      ['Diyaliz süresini uzat (minimum 4 saat)', 'Kan akım hızını (Qb) artır: hedef >300 mL/dk'],
+      '1 ay kontrol',
+      ['Diyaliz süresi artır', 'Qb artır', 'Diyalizat akım hızı artır']);
   }
 
   return oneriler;
 }
+
 
 function renderTedavi(sonuclar) {
   const oneriler = analizEt(sonuclar);
