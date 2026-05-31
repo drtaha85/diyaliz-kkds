@@ -121,22 +121,50 @@
 
 <!-- GİRİŞ EKRANI -->
 <div id="giris">
-  <div class="giris-kart">
-    <div class="giris-baslik">
-      <span class="ikon">🫀</span>
-      <h1>Diyaliz KKDS</h1>
-      <p>Yaşam Lab Otomatik Entegrasyon</p>
+  <div style="width:100%;max-width:700px;margin:0 auto;padding:20px;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <span style="font-size:48px">🫀</span>
+      <h1 style="color:#f8fafc;font-size:24px;font-weight:900;margin:8px 0 4px;letter-spacing:-1px">Diyaliz KKDS</h1>
+      <p style="color:#475569;font-size:12px">Yaşam Lab Otomatik Entegrasyon — 205 Hasta</p>
     </div>
-    <div class="form-grup">
-      <label>TC Kimlik No</label>
-      <input class="mono" id="inp-tc" type="text" maxlength="11" placeholder="12345678901">
+
+    <!-- Arama -->
+    <div style="background:#1e293b;border-radius:14px;padding:16px;margin-bottom:16px;">
+      <input id="inp-arama" type="text" placeholder="🔍  Hasta adı veya TC ile ara..."
+        style="width:100%;padding:12px 16px;background:#0f172a;border:1.5px solid #334155;border-radius:10px;font-size:15px;color:#f1f5f9;outline:none;font-family:inherit;box-sizing:border-box;"
+        oninput="aramaYap(this.value)"
+        onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
     </div>
-    <div class="form-grup">
-      <label>Hasta Adı Soyadı</label>
-      <input id="inp-ad" type="text" placeholder="Ad Soyad">
+
+    <!-- Manuel TC girişi -->
+    <div style="background:#1e293b;border-radius:14px;padding:16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+      <div style="flex:1;min-width:160px;">
+        <label style="display:block;font-size:10px;font-weight:700;color:#475569;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">TC Kimlik No</label>
+        <input class="mono" id="inp-tc" type="text" maxlength="11" placeholder="12345678901"
+          style="width:100%;padding:10px 14px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;font-size:14px;color:#f1f5f9;outline:none;font-family:monospace;letter-spacing:2px;box-sizing:border-box;"
+          onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
+      </div>
+      <div style="flex:2;min-width:160px;">
+        <label style="display:block;font-size:10px;font-weight:700;color:#475569;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">Adı Soyadı</label>
+        <input id="inp-ad" type="text" placeholder="Ad Soyad"
+          style="width:100%;padding:10px 14px;background:#0f172a;border:1.5px solid #334155;border-radius:8px;font-size:14px;color:#f1f5f9;outline:none;font-family:inherit;box-sizing:border-box;"
+          onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
+      </div>
+      <button class="btn-ana" id="btn-giris" style="padding:10px 20px;white-space:nowrap;flex-shrink:0">GEÇ →</button>
     </div>
-    <button class="btn-ana" id="btn-giris">HASTAYA GEÇ →</button>
-    <button class="btn-ayar" onclick="toggleAyar()">⚙️ Bağlantı Ayarları ▼</button>
+
+    <!-- Hasta Listesi -->
+    <div style="background:#1e293b;border-radius:14px;overflow:hidden;max-height:55vh;overflow-y:auto;" id="hasta-liste-konteyner">
+      <div style="padding:10px 16px;background:#0f172a;border-bottom:1px solid #334155;display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;">
+        <span style="font-size:10px;font-weight:800;color:#475569;letter-spacing:1px;text-transform:uppercase">TC</span>
+        <span style="font-size:10px;font-weight:800;color:#475569;letter-spacing:1px;text-transform:uppercase">AD SOYAD</span>
+        <span style="font-size:10px;font-weight:800;color:#475569;letter-spacing:1px;text-transform:uppercase">YAŞ</span>
+      </div>
+      <div id="hasta-liste"></div>
+    </div>
+
+    <!-- Ayarlar -->
+    <button class="btn-ayar" onclick="toggleAyar()" style="margin-top:12px">⚙️ Bağlantı Ayarları ▼</button>
     <div class="ayar-panel" id="ayar-panel">
       <div style="font-size:10px;color:#64748b;font-weight:700;letter-spacing:1px">YAŞAM LAB KREDENSİYELLERİ</div>
       <label>Kullanıcı Adı</label>
@@ -225,6 +253,55 @@
 </div>
 
 <script>
+// ── HASTA VERİTABANI ─────────────────────────────────────────────────────────
+const HASTALAR = [{"tc": "39067178292", "ad": "ABDULAZİZ ÜREY", "yas": "51", "tip": "Aktif"}, {"tc": "27412557250", "ad": "ABDULGAFUR YAĞCI", "yas": "76", "tip": "Aktif"}, {"tc": "38977155140", "ad": "ABDULHALİM EKİN", "yas": "51", "tip": "Aktif"}, {"tc": "43606008704", "ad": "ABDULLAH ATAY", "yas": "75", "tip": "Aktif"}, {"tc": "38908166146", "ad": "ABDULSELAM EVRAN", "yas": "46", "tip": "Aktif"}, {"tc": "39778154936", "ad": "ABDURRAHMAN CAN", "yas": "73", "tip": "Aktif"}, {"tc": "23968676704", "ad": "ABDURRAHMAN TAŞDEMİR", "yas": "78", "tip": "Aktif"}, {"tc": "32566376930", "ad": "ABDURRAHMAN YALÇIN", "yas": "45", "tip": "Aktif"}, {"tc": "22546714708", "ad": "ADEM KARAMAN", "yas": "70", "tip": "Aktif"}, {"tc": "27130568934", "ad": "ADİLE TAŞ", "yas": "75", "tip": "Aktif"}, {"tc": "38776183788", "ad": "AHMET ÇİFTÇİ", "yas": "82", "tip": "Aktif"}, {"tc": "40966103650", "ad": "AHMET GÖREN", "yas": "74", "tip": "Aktif"}, {"tc": "29995478700", "ad": "AHMET İPEK", "yas": "57", "tip": "Aktif"}, {"tc": "16546913780", "ad": "AHMET BARAN GÜZEL", "yas": "72", "tip": "Aktif"}, {"tc": "26965566870", "ad": "ALİ ERGÜN", "yas": "70", "tip": "Aktif"}, {"tc": "23581683196", "ad": "ALİ YAĞMUR", "yas": "55", "tip": "Aktif"}, {"tc": "38443182700", "ad": "ANBER YILDIZ", "yas": "50", "tip": "Aktif"}, {"tc": "43006030466", "ad": "ASIM KARAKAŞ", "yas": "78", "tip": "Aktif"}, {"tc": "42001080544", "ad": "ASIM KAYA", "yas": "64", "tip": "Aktif"}, {"tc": "15064976536", "ad": "AYNUR ASOROĞLU", "yas": "56", "tip": "Aktif"}, {"tc": "37654214002", "ad": "AYŞAN ARIK", "yas": "75", "tip": "Aktif"}, {"tc": "11852073906", "ad": "AYŞE AVAR", "yas": "55", "tip": "Aktif"}, {"tc": "17743870838", "ad": "AZİZ BİRKAN", "yas": "37", "tip": "Aktif"}, {"tc": "41653091694", "ad": "AZİZE BARAN", "yas": "63", "tip": "Aktif"}, {"tc": "21781752070", "ad": "BAYRAM KARACADAĞ", "yas": "75", "tip": "Aktif"}, {"tc": "21043779104", "ad": "BAYRAM YÜZEN", "yas": "46", "tip": "Aktif"}, {"tc": "34003345394", "ad": "BEHİYE ARTİL", "yas": "79", "tip": "Aktif"}, {"tc": "18658857648", "ad": "CANDAN YILDIZ", "yas": "65", "tip": "Aktif"}, {"tc": "30502439220", "ad": "CELAL ALTINKILIÇ", "yas": "71", "tip": "Aktif"}, {"tc": "43639024450", "ad": "CELAL ÇANKARA", "yas": "48", "tip": "Aktif"}, {"tc": "16966893716", "ad": "CEMİL DÜZÜN", "yas": "69", "tip": "Aktif"}, {"tc": "15220951308", "ad": "CEYLAN SAKALLI", "yas": "41", "tip": "Aktif"}, {"tc": "58591595962", "ad": "CRISTİNA YILDIZ", "yas": "40", "tip": "Aktif"}, {"tc": "11990059688", "ad": "ÇİÇEK KAYMAZ", "yas": "74", "tip": "Aktif"}, {"tc": "18661859172", "ad": "DAVUT ÖZBEK", "yas": "42", "tip": "Aktif"}, {"tc": "18376866038", "ad": "DİCLE FİLİZ", "yas": "56", "tip": "Aktif"}, {"tc": "74140025766", "ad": "DİLFURUŞ BEDİRHANOĞLU", "yas": "70", "tip": "Aktif"}, {"tc": "19471816546", "ad": "EKREM KAYA", "yas": "63", "tip": "Aktif"}, {"tc": "38854174134", "ad": "EMİNE KAYA", "yas": "75", "tip": "Aktif"}, {"tc": "13625025914", "ad": "EMİNE YILDIRIM", "yas": "46", "tip": "Misafir"}, {"tc": "37675222352", "ad": "EMRE KURTOĞLU", "yas": "40", "tip": "Aktif"}, {"tc": "30928450236", "ad": "ENSARİ ATLI", "yas": "68", "tip": "Aktif"}, {"tc": "27925556214", "ad": "ERCAN BÜLBÜL", "yas": "34", "tip": "Aktif"}, {"tc": "12353072474", "ad": "ERDAL MEDENİ", "yas": "49", "tip": "Aktif"}, {"tc": "38479192698", "ad": "FADLİ ARSLAN", "yas": "64", "tip": "Aktif"}, {"tc": "25144634638", "ad": "FAHRİ MEHDİ AYDIN", "yas": "71", "tip": "Aktif"}, {"tc": "12578058994", "ad": "FAHRİYE TEKEŞ", "yas": "84", "tip": "Aktif"}, {"tc": "39766135404", "ad": "FARUK ALTUNTAŞ", "yas": "43", "tip": "Misafir"}, {"tc": "27106559386", "ad": "FARUK KAN", "yas": "57", "tip": "Aktif"}, {"tc": "12815042328", "ad": "FARUK ZENGİN", "yas": "50", "tip": "Aktif"}, {"tc": "35779261796", "ad": "FATMA AKYILDIZ", "yas": "79", "tip": "Aktif"}, {"tc": "26506597066", "ad": "FAYSAL AYDIN", "yas": "51", "tip": "Aktif"}, {"tc": "28742535826", "ad": "FERSENDE DURAN", "yas": "58", "tip": "Aktif"}, {"tc": "32917367952", "ad": "FİKRET ÇETİNKAYA", "yas": "57", "tip": "Aktif"}, {"tc": "30094470366", "ad": "FİKRİYE ÇİÇEK", "yas": "78", "tip": "Aktif"}, {"tc": "42901048996", "ad": "GEVRİ ESİN", "yas": "81", "tip": "Aktif"}, {"tc": "16705921304", "ad": "GÜLLÜ GÜZ", "yas": "96", "tip": "Aktif"}, {"tc": "34252339472", "ad": "GÜLNAZ ÇELİK", "yas": "52", "tip": "Aktif"}, {"tc": "27277272848", "ad": "GÜNAY AKŞİT", "yas": "82", "tip": "Misafir"}, {"tc": "50269537298", "ad": "HACİRE BEBE", "yas": "39", "tip": "Aktif"}, {"tc": "19501562672", "ad": "HACİRE ELALDI", "yas": "62", "tip": "Aktif"}, {"tc": "30733454122", "ad": "HAFİFE GÖR", "yas": "72", "tip": "Aktif"}, {"tc": "13342767968", "ad": "HALİSE BÖRÜTEÇENE", "yas": "73", "tip": "Aktif"}, {"tc": "26821564880", "ad": "HALİT AÇIL", "yas": "59", "tip": "Misafir"}, {"tc": "18997829542", "ad": "HAMİRE DOĞAN", "yas": "76", "tip": "Aktif"}, {"tc": "26338586146", "ad": "HANIM AYGÜN", "yas": "71", "tip": "Aktif"}, {"tc": "22363713748", "ad": "HANIM GÜNDOĞDU", "yas": "81", "tip": "Aktif"}, {"tc": "30565446340", "ad": "HANİFE GÜLSÜN", "yas": "75", "tip": "Aktif"}, {"tc": "19036828366", "ad": "HAYRİ KARAMAN", "yas": "40", "tip": "Aktif"}, {"tc": "23578683260", "ad": "HAYRİ YAĞMUR", "yas": "53", "tip": "Aktif"}, {"tc": "30541461206", "ad": "HAYRİYE BARAN", "yas": "75", "tip": "Aktif"}, {"tc": "43423031718", "ad": "HAYRULLAH TÜRKER", "yas": "43", "tip": "Aktif"}, {"tc": "10229140234", "ad": "HEDİYE POLAT", "yas": "61", "tip": "Aktif"}, {"tc": "20059797188", "ad": "HIDIR ARTEN", "yas": "54", "tip": "Aktif"}, {"tc": "22219739892", "ad": "HİLMİ AKYOL", "yas": "65", "tip": "Aktif"}, {"tc": "41662086520", "ad": "HORİYE GÖKMEN", "yas": "64", "tip": "Aktif"}, {"tc": "20935765096", "ad": "HÜSEYİN ARIKAN", "yas": "77", "tip": "Aktif"}, {"tc": "15112955650", "ad": "HÜSEYİN BOYLU", "yas": "57", "tip": "Aktif"}, {"tc": "39091162922", "ad": "HÜSEYİN PINAR", "yas": "69", "tip": "Aktif"}, {"tc": "40084144016", "ad": "HÜSNA LALE", "yas": "59", "tip": "Aktif"}, {"tc": "11840064442", "ad": "HÜSNİYE ARSLAN", "yas": "64", "tip": "Aktif"}, {"tc": "33655334664", "ad": "İBRAHİM GÜLER", "yas": "89", "tip": "Aktif"}, {"tc": "38830186502", "ad": "İSA SOYSAL", "yas": "73", "tip": "Aktif"}, {"tc": "12107809592", "ad": "İSMAİL DEMİR", "yas": "23", "tip": "Misafir"}, {"tc": "13801752658", "ad": "KADER ELHAMAN", "yas": "28", "tip": "Aktif"}, {"tc": "37489213096", "ad": "KADRİYE EVSEN", "yas": "57", "tip": "Aktif"}, {"tc": "34003330994", "ad": "KAMİL ÇETİNKAYA", "yas": "70", "tip": "Aktif"}, {"tc": "39148153712", "ad": "KEMAL AĞIRBAŞ", "yas": "62", "tip": "Aktif"}, {"tc": "35230335172", "ad": "KENAN KAPLAN", "yas": "58", "tip": "Misafir"}, {"tc": "43669019648", "ad": "KUTBETTİN UÇAN", "yas": "71", "tip": "Aktif"}, {"tc": "33628348254", "ad": "LEYLA KAYHAN", "yas": "63", "tip": "Aktif"}, {"tc": "20572783330", "ad": "LEYLA ÜNAL", "yas": "85", "tip": "Aktif"}, {"tc": "18187873812", "ad": "MAHMUT DUMLUPINAR", "yas": "72", "tip": "Aktif"}, {"tc": "15400965842", "ad": "MAKBULE TUNÇ", "yas": "74", "tip": "Aktif"}, {"tc": "60949459130", "ad": "MAŞALLAH KÜNKÜR", "yas": "60", "tip": "Misafir"}, {"tc": "63784207850", "ad": "MEDENİ LALE", "yas": "77", "tip": "Aktif"}, {"tc": "18862583562", "ad": "MEDİNE BÜDÜŞ", "yas": "45", "tip": "Aktif"}, {"tc": "22141731438", "ad": "MEDİNE ÜRKÜT", "yas": "55", "tip": "Aktif"}, {"tc": "17578893682", "ad": "MEHMET ATLI", "yas": "80", "tip": "Misafir"}, {"tc": "19094587182", "ad": "MEHMET AYKAL", "yas": "45", "tip": "Aktif"}, {"tc": "21067760874", "ad": "MEHMET CENGİZ", "yas": "77", "tip": "Aktif"}, {"tc": "18262871252", "ad": "MEHMET ÇELİK", "yas": "61", "tip": "Aktif"}, {"tc": "42136082062", "ad": "MEHMET EK", "yas": "86", "tip": "Aktif"}, {"tc": "33901388410", "ad": "MEHMET KELEŞ", "yas": "67", "tip": "Aktif"}, {"tc": "29257506028", "ad": "MEHMET KÖPRÜ", "yas": "59", "tip": "Aktif"}, {"tc": "15673958060", "ad": "MEHMET ONUR", "yas": "71", "tip": "Aktif"}, {"tc": "24292654420", "ad": "MEHMET ÖZGEN", "yas": "65", "tip": "Aktif"}, {"tc": "22825717598", "ad": "MEHMET AKİF ELCAN", "yas": "58", "tip": "Aktif"}, {"tc": "63958112386", "ad": "MEHMET ALİ GÜMÜŞ", "yas": "80", "tip": "Aktif"}, {"tc": "23743695302", "ad": "MEHMET ALİ OĞUZSOY", "yas": "42", "tip": "Aktif"}, {"tc": "37309232122", "ad": "MEHMET ALİ ÖNLÜ", "yas": "83", "tip": "Aktif"}, {"tc": "32584373140", "ad": "MEHMET BEŞİR AKYÜZ", "yas": "63", "tip": "Aktif"}, {"tc": "42790052234", "ad": "MEHMET EMİN KAN", "yas": "80", "tip": "Aktif"}, {"tc": "42424066996", "ad": "MEHMET KADRİ KARDAŞ", "yas": "69", "tip": "Aktif"}, {"tc": "16930916038", "ad": "MEHMET SAİT AKTAŞ", "yas": "62", "tip": "Aktif"}, {"tc": "23158708802", "ad": "MEHMET SELİM TANRIKULU", "yas": "76", "tip": "Aktif"}, {"tc": "32698391382", "ad": "MEHMET ŞAH YOLDAŞ", "yas": "58", "tip": "Aktif"}, {"tc": "34931332480", "ad": "MEHMET VEDAT SAYIN", "yas": "76", "tip": "Aktif"}, {"tc": "16927916102", "ad": "MEHMET ZÜLFİ AKTAŞ", "yas": "56", "tip": "Aktif"}, {"tc": "31612426476", "ad": "MEKİYE SÜGÜCİ", "yas": "79", "tip": "Aktif"}, {"tc": "41785073926", "ad": "MELEK KARADUMAN", "yas": "24", "tip": "Aktif"}, {"tc": "34351061182", "ad": "MESİH BABAYİĞİT", "yas": "63", "tip": "Aktif"}, {"tc": "38764173302", "ad": "MEŞEDİYE İZ", "yas": "65", "tip": "Aktif"}, {"tc": "15937941616", "ad": "METİN AY", "yas": "60", "tip": "Aktif"}, {"tc": "13520025132", "ad": "MEVLÜDE ALDAN", "yas": "76", "tip": "Aktif"}, {"tc": "42943048756", "ad": "MEYASE DOSTER", "yas": "83", "tip": "Aktif"}, {"tc": "32590372168", "ad": "MEYMO GEZER", "yas": "87", "tip": "Aktif"}, {"tc": "11546100772", "ad": "MİRAY ÇAKIRCA", "yas": "20", "tip": "Aktif"}, {"tc": "11090094442", "ad": "MURAT YOKUŞ", "yas": "50", "tip": "Aktif"}, {"tc": "53380195408", "ad": "MUSTAFA ARICA", "yas": "66", "tip": "Aktif"}, {"tc": "22094160712", "ad": "MUSTAFA ÇELİK", "yas": "23", "tip": "Aktif"}, {"tc": "37375219928", "ad": "MÜNİRE YERLİKAYA", "yas": "74", "tip": "Aktif"}, {"tc": "16033944280", "ad": "MÜRSEL AYDIN", "yas": "68", "tip": "Aktif"}, {"tc": "34204335194", "ad": "MÜRVET ALTAŞ", "yas": "45", "tip": "Aktif"}, {"tc": "21697750030", "ad": "MÜRVET EFE", "yas": "76", "tip": "Aktif"}, {"tc": "40948097304", "ad": "NACİ ATEŞ", "yas": "50", "tip": "Aktif"}, {"tc": "17698873144", "ad": "NACİYE BURAN", "yas": "66", "tip": "Aktif"}, {"tc": "35086310040", "ad": "NASRETTİN TOLAT", "yas": "65", "tip": "Aktif"}, {"tc": "28699508928", "ad": "NAZİME ERGİN", "yas": "60", "tip": "Aktif"}, {"tc": "48931582066", "ad": "NEDİME KARDAŞ", "yas": "67", "tip": "Aktif"}, {"tc": "40375112878", "ad": "NEJLA DİNÇ", "yas": "66", "tip": "Aktif"}, {"tc": "21232770936", "ad": "NESİME ÖZEKİNCİ", "yas": "81", "tip": "Aktif"}, {"tc": "11228100342", "ad": "NURHAYAT AY", "yas": "24", "tip": "Aktif"}, {"tc": "28813502290", "ad": "NURİYE ASLAN", "yas": "71", "tip": "Aktif"}, {"tc": "41647070582", "ad": "NURİYE GÜZEL", "yas": "72", "tip": "Aktif"}, {"tc": "39328153464", "ad": "NURSULTAN KAYHAN", "yas": "28", "tip": "Aktif"}, {"tc": "10274123190", "ad": "NUSRET TÜRK", "yas": "74", "tip": "Aktif"}, {"tc": "12344052720", "ad": "ÖMER ÖZDEMİR", "yas": "65", "tip": "Aktif"}, {"tc": "42382056886", "ad": "ÖMER VAR", "yas": "61", "tip": "Aktif"}, {"tc": "29464488780", "ad": "RAİF EKİCİ", "yas": "72", "tip": "Aktif"}, {"tc": "41572069576", "ad": "RAMAZAN KARDEŞOĞLU", "yas": "55", "tip": "Aktif"}, {"tc": "12896051912", "ad": "REMZİYE ALKAÇ", "yas": "48", "tip": "Aktif"}, {"tc": "18388867290", "ad": "REMZİYE POLAT", "yas": "55", "tip": "Aktif"}, {"tc": "62245418866", "ad": "REYHAN EKMEN", "yas": "53", "tip": "Aktif"}, {"tc": "43504026060", "ad": "RİHAN TAŞKAYA", "yas": "60", "tip": "Aktif"}, {"tc": "33358100856", "ad": "SABAHATTİN ŞEREN", "yas": "35", "tip": "Aktif"}, {"tc": "29242500598", "ad": "SABİHA ALPARSLAN", "yas": "43", "tip": "Aktif"}, {"tc": "18997845696", "ad": "SABİHA ENGİN", "yas": "76", "tip": "Aktif"}, {"tc": "28786499306", "ad": "SADET TAŞKURA", "yas": "58", "tip": "Aktif"}, {"tc": "38746184630", "ad": "SAİDE BAŞAK", "yas": "32", "tip": "Aktif"}, {"tc": "24124671748", "ad": "SAİP BORA", "yas": "46", "tip": "Aktif"}, {"tc": "25366635758", "ad": "SAİT DÜNDAR", "yas": "56", "tip": "Aktif"}, {"tc": "26881582640", "ad": "SALAHATTİN BORAHAN", "yas": "71", "tip": "Aktif"}, {"tc": "17509887308", "ad": "SALİHA YENER", "yas": "71", "tip": "Aktif"}, {"tc": "15529688318", "ad": "SARİYE GÖZEGEÇ", "yas": "63", "tip": "Aktif"}, {"tc": "27325559952", "ad": "SEBİHA ERGÖRMÜŞ", "yas": "70", "tip": "Aktif"}, {"tc": "23215689242", "ad": "SEDİRYE ENSARİ", "yas": "79", "tip": "Aktif"}, {"tc": "35338288066", "ad": "SELAHADDİN ALP", "yas": "74", "tip": "Aktif"}, {"tc": "20614791774", "ad": "SELAHAT UZEL", "yas": "64", "tip": "Aktif"}, {"tc": "35152300920", "ad": "SELCA EREN", "yas": "53", "tip": "Aktif"}, {"tc": "20014812918", "ad": "SELMA UZUNBOY", "yas": "64", "tip": "Aktif"}, {"tc": "21787749050", "ad": "SENİHA KIRINFIL", "yas": "35", "tip": "Aktif"}, {"tc": "17557893566", "ad": "SERDAR BAYDAN", "yas": "28", "tip": "Aktif"}, {"tc": "19585827476", "ad": "SERDAR DEMİR", "yas": "47", "tip": "Misafir"}, {"tc": "15647067118", "ad": "SERKAN ALDEMİR", "yas": "46", "tip": "Aktif"}, {"tc": "43990002760", "ad": "SERVET OBİ", "yas": "55", "tip": "Aktif"}, {"tc": "32371400134", "ad": "SEVİNÇ GÖRCEĞİZ", "yas": "58", "tip": "Misafir"}, {"tc": "40750117498", "ad": "SIDDIKA MARAL", "yas": "70", "tip": "Misafir"}, {"tc": "17470892974", "ad": "SİTTİ YERLİKAYA", "yas": "66", "tip": "Aktif"}, {"tc": "13328723278", "ad": "SONGÜL BAYIR", "yas": "36", "tip": "Aktif"}, {"tc": "37372233910", "ad": "SULTAN NERGİZ", "yas": "85", "tip": "Aktif"}, {"tc": "35731282562", "ad": "SÜLEYMAN YAZICI", "yas": "75", "tip": "Aktif"}, {"tc": "39184172050", "ad": "ŞABAN TİNTE", "yas": "42", "tip": "Aktif"}, {"tc": "46738654924", "ad": "ŞAHİDE KILINÇER", "yas": "53", "tip": "Aktif"}, {"tc": "42967031710", "ad": "ŞAHİN KARAKAŞ", "yas": "60", "tip": "Aktif"}, {"tc": "37636218646", "ad": "ŞAİZE ÇELİK", "yas": "65", "tip": "Misafir"}, {"tc": "10139142472", "ad": "ŞEHMUS AKBA", "yas": "44", "tip": "Aktif"}, {"tc": "33628344812", "ad": "ŞERİFE YILDIZ", "yas": "73", "tip": "Aktif"}, {"tc": "24559659960", "ad": "ŞÜKRAN BALDAN", "yas": "68", "tip": "Aktif"}, {"tc": "26884563158", "ad": "TALİA MECİTOĞLU", "yas": "59", "tip": "Aktif"}, {"tc": "23276247856", "ad": "TANSU TETİK", "yas": "59", "tip": "Aktif"}, {"tc": "18079876938", "ad": "TUHFETULLAH İLER", "yas": "82", "tip": "Aktif"}, {"tc": "37267233452", "ad": "VESİLE ETYEMEZ", "yas": "66", "tip": "Aktif"}, {"tc": "22819719706", "ad": "VEYSİ DONAT", "yas": "31", "tip": "Aktif"}, {"tc": "10154147452", "ad": "VEYSİ EKİN", "yas": "28", "tip": "Aktif"}, {"tc": "37522215018", "ad": "YAKUP BAYAR", "yas": "63", "tip": "Aktif"}, {"tc": "22147736956", "ad": "YAŞAR BALAMİR", "yas": "59", "tip": "Aktif"}, {"tc": "37399228586", "ad": "YUSUF ÇARIK", "yas": "48", "tip": "Aktif"}, {"tc": "11087092604", "ad": "YUSUF BİLAL AYDENİZ", "yas": "35", "tip": "Aktif"}, {"tc": "33457360090", "ad": "YÜKSEL KARHAN", "yas": "66", "tip": "Aktif"}, {"tc": "17194908166", "ad": "ZAHAT ÇAKIR", "yas": "33", "tip": "Aktif"}, {"tc": "18205871394", "ad": "ZEKİYE TELAL", "yas": "78", "tip": "Aktif"}, {"tc": "19006852810", "ad": "ZEYNEP SERT", "yas": "62", "tip": "Aktif"}, {"tc": "27736281602", "ad": "ZÜBEYDE ÇERİOĞLU", "yas": "64", "tip": "Aktif"}, {"tc": "10004128938", "ad": "ZÜLFİYE BİLGİN", "yas": "48", "tip": "Aktif"}];
+
+function renderHastaListesi(liste) {
+  const konteyner = document.getElementById('hasta-liste');
+  if (!konteyner) return;
+  konteyner.innerHTML = '';
+  liste.forEach(h => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;padding:10px 16px;border-bottom:1px solid #1e293b;cursor:pointer;transition:background 0.15s;align-items:center;';
+    div.innerHTML = `
+      <span style="font-size:12px;color:#64748b;font-family:monospace">${h.tc}</span>
+      <span style="font-size:14px;font-weight:700;color:#f1f5f9">${h.ad}</span>
+      <span style="font-size:13px;color:#94a3b8">${h.yas} yaş</span>
+    `;
+    div.onmouseenter = () => div.style.background = '#334155';
+    div.onmouseleave = () => div.style.background = 'transparent';
+    div.onclick = () => {
+      document.getElementById('inp-tc').value = h.tc;
+      document.getElementById('inp-ad').value = h.ad;
+      hastaGir(h.tc, h.ad);
+    };
+    konteyner.appendChild(div);
+  });
+  if (liste.length === 0) {
+    konteyner.innerHTML = '<div style="padding:24px;text-align:center;color:#475569;font-size:13px">Hasta bulunamadı</div>';
+  }
+}
+
+function aramaYap(aramaText) {
+  const q = aramaText.toLowerCase().trim();
+  if (!q) {
+    renderHastaListesi(HASTALAR);
+    return;
+  }
+  const sonuclar = HASTALAR.filter(h =>
+    h.ad.toLowerCase().includes(q) || h.tc.includes(q)
+  );
+  renderHastaListesi(sonuclar);
+}
+
+function hastaGir(tc, ad) {
+  hasta = { tc, ad };
+  document.getElementById('goster-ad').textContent = ad;
+  document.getElementById('goster-alt').textContent = 'TC: ' + tc;
+  document.getElementById('giris').classList.add('gizli');
+  document.getElementById('ana').classList.add('goster');
+}
+
 // ── GLOBAL DURUM ─────────────────────────────────────────────────────────────
 let hasta = null;
 let labSonuclari = [];
@@ -259,12 +336,13 @@ document.getElementById('btn-giris').onclick = function() {
   const tc = document.getElementById('inp-tc').value.trim();
   const ad = document.getElementById('inp-ad').value.trim() || 'Hasta';
   if (!tc) return;
-  hasta = { tc, ad };
-  document.getElementById('goster-ad').textContent = ad;
-  document.getElementById('goster-alt').textContent = 'TC: ' + tc;
-  document.getElementById('giris').classList.add('gizli');
-  document.getElementById('ana').classList.add('goster');
+  hastaGir(tc, ad);
 };
+
+// Sayfa yüklenince hasta listesini göster
+window.addEventListener('load', function() {
+  renderHastaListesi(HASTALAR);
+});
 
 document.getElementById('inp-tc').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') document.getElementById('btn-giris').click();
