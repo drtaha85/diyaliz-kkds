@@ -15,7 +15,7 @@ def ana():
     # HTML'deki Yaşam Lab URL'sini proxy URL'siyle değiştir
     icerik = icerik.replace(
         'https://yasamlab.iltelis.com/Integration/Integration.asmx',
-        'http://localhost:5000/proxy/lab'
+        '/proxy/lab'
     )
     return icerik
 
