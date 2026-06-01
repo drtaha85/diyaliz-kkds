@@ -308,8 +308,8 @@ let labSonuclari = [];
 
 // ── TARİH BAŞLAT ─────────────────────────────────────────────────────────────
 const bugun = new Date().toISOString().split('T')[0];
-const birAyOnce = new Date(Date.now() - 30*24*60*60*1000).toISOString().split('T')[0];
-document.getElementById('tarih1').value = birAyOnce;
+const birYilOnce = new Date(Date.now() - 365*24*60*60*1000).toISOString().split('T')[0];
+document.getElementById('tarih1').value = birYilOnce;
 document.getElementById('tarih2').value = bugun;
 
 // ── YARDIMCILAR ──────────────────────────────────────────────────────────────
@@ -1093,6 +1093,182 @@ function renderTedavi(sonuclar) {
 }
 
 // ── AI YORUM ──────────────────────────────────────────────────────────────────
+// ── GRAFİK FONKSİYONLARI ──────────────────────────────────────────────────
+const GRAFIK_PARAMS = [
+  { aramaTerim: ['hemoglobin','hgb','hb'], ad: 'Hemoglobin', birim: 'g/dL', min: 10.0, max: 11.5, renk: '#ef4444' },
+  { aramaTerim: ['fosfor','fosfat','phosph'], ad: 'Fosfat', birim: 'mg/dL', min: 3.5, max: 5.5, renk: '#f97316' },
+  { aramaTerim: ['kalsiyum','calcium'], ad: 'Kalsiyum', birim: 'mg/dL', min: 8.4, max: 10.2, renk: '#eab308' },
+  { aramaTerim: ['pth','parathormon'], ad: 'PTH', birim: 'pg/mL', min: 130, max: 585, renk: '#8b5cf6' },
+  { aramaTerim: ['ferritin'], ad: 'Ferritin', birim: 'ng/mL', min: 200, max: 500, renk: '#ec4899' },
+  { aramaTerim: ['potasyum','kalium'], ad: 'Potasyum', birim: 'mEq/L', min: 3.5, max: 5.5, renk: '#06b6d4' },
+  { aramaTerim: ['albumin'], ad: 'Albumin', birim: 'g/dL', min: 3.8, max: 5.0, renk: '#10b981' },
+];
+
+function bulSonuc(kisaAdi, ...terms) {
+  for (const t of terms) {
+    if (kisaAdi?.toLowerCase().includes(t.toLowerCase())) return true;
+  }
+  return false;
+}
+
+function renderGrafik(sonuclar) {
+  const konteyner = document.getElementById('grafik-icerik');
+  const bos = document.getElementById('grafik-bos');
+  konteyner.innerHTML = '';
+
+  if (!sonuclar || sonuclar.length === 0) {
+    bos.style.display = 'block';
+    return;
+  }
+  bos.style.display = 'none';
+
+  // Tarihe göre sırala
+  const sirali = [...sonuclar].sort((a, b) => {
+    const ta = parseTarih(a.tarih), tb = parseTarih(b.tarih);
+    return ta - tb;
+  });
+
+  GRAFIK_PARAMS.forEach(param => {
+    // Bu parametreye ait tüm sonuçları bul
+    const veri = sirali.filter(s => bulSonuc(s.kisaAdi, ...param.aramaTerim) && !isNaN(parseFloat(s.sonuc)));
+    if (veri.length < 2) return; // En az 2 nokta lazım
+
+    const noktalar = veri.map(s => ({
+      deger: parseFloat(s.sonuc),
+      tarih: s.tarih ? formatTarih(s.tarih) : '?',
+      durum: hesaplaDurum(s.sonuc, String(param.min), String(param.max))
+    }));
+
+    // Trend hesapla
+    const ilk = noktalar[0].deger;
+    const son = noktalar[noktalar.length - 1].deger;
+    const fark = son - ilk;
+    const trendOk = fark > 0.3 ? '↑' : fark < -0.3 ? '↓' : '→';
+    const trendClass = fark > 0.3 ? 'trend-yukari' : fark < -0.3 ? 'trend-asagi' : 'trend-sabit';
+
+    const kart = document.createElement('div');
+    kart.className = 'grafik-kart';
+
+    // SVG grafik çiz
+    const svg = cizGrafik(noktalar, param);
+
+    kart.innerHTML = `
+      <div class="grafik-baslik">
+        <span>${param.ad}</span>
+        <span class="${trendClass}">${trendOk} ${son} ${param.birim}</span>
+      </div>
+      <div class="grafik-alt">
+        Hedef: ${param.min}–${param.max} ${param.birim} &nbsp;|&nbsp; 
+        ${noktalar.length} ölçüm &nbsp;|&nbsp;
+        ${noktalar[0].tarih} → ${noktalar[noktalar.length-1].tarih}
+      </div>
+      ${svg}
+    `;
+    konteyner.appendChild(kart);
+  });
+
+  if (konteyner.children.length === 0) {
+    bos.style.display = 'block';
+    bos.querySelector('.bos-baslik').textContent = 'Grafik için yeterli veri yok';
+    bos.querySelector('div:last-child').textContent = 'Her parametre için en az 2 ölçüm gerekli';
+  }
+}
+
+function parseTarih(tarihStr) {
+  if (!tarihStr) return 0;
+  // "06.05.2026 22:43:00" veya "2026-05-06" formatları
+  const parts = tarihStr.split(' ')[0];
+  if (parts.includes('.')) {
+    const [g, a, y] = parts.split('.');
+    return new Date(`${y}-${a}-${g}`).getTime();
+  }
+  return new Date(parts).getTime();
+}
+
+function formatTarih(tarihStr) {
+  if (!tarihStr) return '?';
+  const parts = tarihStr.split(' ')[0];
+  if (parts.includes('.')) {
+    const [g, a, y] = parts.split('.');
+    return `${g}.${a}.${y.slice(2)}`;
+  }
+  return parts;
+}
+
+function cizGrafik(noktalar, param) {
+  const W = 800, H = 160;
+  const pad = { top: 20, right: 20, bottom: 40, left: 50 };
+  const iW = W - pad.left - pad.right;
+  const iH = H - pad.top - pad.bottom;
+
+  const degerler = noktalar.map(n => n.deger);
+  const minD = Math.min(...degerler, param.min * 0.85);
+  const maxD = Math.max(...degerler, param.max * 1.15);
+  const aralik = maxD - minD || 1;
+
+  const x = (i) => pad.left + (i / (noktalar.length - 1)) * iW;
+  const y = (d) => pad.top + iH - ((d - minD) / aralik) * iH;
+
+  // Hedef bant Y koordinatları
+  const yMin = y(param.min);
+  const yMax = y(param.max);
+
+  // Çizgi path
+  const path = noktalar.map((n, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(n.deger).toFixed(1)}`).join(' ');
+
+  // Noktalar
+  const circles = noktalar.map((n, i) => {
+    const cx = x(i).toFixed(1);
+    const cy = y(n.deger).toFixed(1);
+    const renk = n.durum === 'high' ? '#ef4444' : n.durum === 'low' ? '#3b82f6' : '#16a34a';
+    return `<circle cx="${cx}" cy="${cy}" r="5" fill="${renk}" stroke="#fff" stroke-width="2">
+      <title>${n.tarih}: ${n.deger} ${param.birim}</title>
+    </circle>`;
+  }).join('');
+
+  // X ekseni tarihleri - sadece ilk, orta ve son
+  const xLabels = [];
+  if (noktalar.length > 0) {
+    xLabels.push({ i: 0, t: noktalar[0].tarih });
+    if (noktalar.length > 2) xLabels.push({ i: Math.floor(noktalar.length / 2), t: noktalar[Math.floor(noktalar.length / 2)].tarih });
+    xLabels.push({ i: noktalar.length - 1, t: noktalar[noktalar.length - 1].tarih });
+  }
+
+  // Y ekseni değerleri
+  const yLabels = [minD, param.min, param.max, maxD]
+    .filter((v, i, arr) => arr.indexOf(v) === i)
+    .sort((a, b) => a - b);
+
+  return `<svg class="grafik-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    <!-- Hedef bant -->
+    <rect x="${pad.left}" y="${yMax.toFixed(1)}" width="${iW}" height="${(yMin - yMax).toFixed(1)}" 
+          fill="#16a34a" fill-opacity="0.08" stroke="#16a34a" stroke-opacity="0.3" stroke-width="1" stroke-dasharray="4,4"/>
+    
+    <!-- Hedef çizgileri -->
+    <line x1="${pad.left}" y1="${yMin.toFixed(1)}" x2="${pad.left + iW}" y2="${yMin.toFixed(1)}" 
+          stroke="#16a34a" stroke-width="1" stroke-dasharray="6,3" opacity="0.6"/>
+    <line x1="${pad.left}" y1="${yMax.toFixed(1)}" x2="${pad.left + iW}" y2="${yMax.toFixed(1)}" 
+          stroke="#16a34a" stroke-width="1" stroke-dasharray="6,3" opacity="0.6"/>
+    
+    <!-- Hedef etiketleri -->
+    <text x="${pad.left - 4}" y="${(yMin + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#16a34a" opacity="0.8">${param.min}</text>
+    <text x="${pad.left - 4}" y="${(yMax + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#16a34a" opacity="0.8">${param.max}</text>
+
+    <!-- Çizgi -->
+    <path d="${path}" fill="none" stroke="${param.renk}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    
+    <!-- Noktalar -->
+    ${circles}
+    
+    <!-- X ekseni -->
+    <line x1="${pad.left}" y1="${pad.top + iH}" x2="${pad.left + iW}" y2="${pad.top + iH}" stroke="#e2e8f0" stroke-width="1"/>
+    ${xLabels.map(l => `<text x="${x(l.i).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#94a3b8">${l.t}</text>`).join('')}
+    
+    <!-- Y ekseni -->
+    <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${pad.top + iH}" stroke="#e2e8f0" stroke-width="1"/>
+  </svg>`;
+}
+
 async function aiYorumAl() {
  if (labSonuclari.length === 0) return;
  const btn = document.getElementById('btn-ai');
