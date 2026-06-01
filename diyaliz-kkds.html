@@ -192,6 +192,7 @@
  <div id="tabs">
  <button class="tab aktif" onclick="sekmeAc('lab',this)">🔬 Laboratuvar</button>
  <button class="tab" onclick="sekmeAc('tedavi',this)" id="tab-tedavi">💊 Tedavi</button>
+ <button class="tab" onclick="sekmeAc('grafik',this)">📈 Trend</button>
  <button class="tab" onclick="sekmeAc('ai',this)">🧠 AI Yorum</button>
  </div>
 
@@ -237,6 +238,15 @@
  </div>
  </div>
 
+ <!-- GRAFİK PANELİ -->
+    <div class="panel" id="panel-grafik">
+      <div class="bos-kutu" id="grafik-bos">
+        <div class="bos-ikon">📈</div>
+        <div class="bos-baslik">Trend grafiği yok</div>
+        <div style="font-size:13px">Önce lab sonuçlarını çekin</div>
+      </div>
+      <div id="grafik-icerik"></div>
+    </div>
  <!-- AI PANELİ -->
  <div class="panel" id="panel-ai">
  <div class="ai-kutu">
