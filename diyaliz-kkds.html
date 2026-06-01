@@ -484,6 +484,8 @@ function renderLabTablo(sonuclar) {
  document.getElementById('lab-tablo').style.display = 'block';
  document.getElementById('bos-kutu').style.display = 'none';
 
+ // Grafik render
+  renderGrafik(sonuclar);
  // Anomali badge
  const badge = document.getElementById('anomali-badge');
  if (anomali > 0) { badge.textContent = '⚠️ ' + anomali + ' ANOMALİ'; badge.style.display = 'inline-block'; }
