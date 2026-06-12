@@ -544,7 +544,7 @@ function renderLabTablo(sonuclar) {
  sonuclar.forEach(s => {
  const div = document.createElement('div');
  div.className = 'lab-satir ' + s.durum;
- div.setAttribute('data-ara', ((s.kisaAdi || '') + ' ' + (s.uzunAdi || '')).toLowerCase());
+ div.setAttribute('data-ara', (s.kisaAdi || s.uzunAdi || '').toLowerCase());
  const badgeLabel = s.durum === 'high' ? '↑ YÜK' : s.durum === 'low' ? '↓ DÜŞ' : '✓ N';
  div.innerHTML = `
  <span class="test-ad">${s.kisaAdi || s.uzunAdi || "?"}</span>
