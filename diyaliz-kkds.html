@@ -856,27 +856,25 @@ if (hgb !== null) {
  [], '3 ay kontrol(.3)', []);
 
  } else {
- // HEDEF ÜSTÜ — İHLALİ
+ // HEDEF ÜSTÜ — Hb ≥11.5 → ESA DURDUR (KDIGO 2026: 11.5 aşıldıysa durdur)
  const ilac = []; const oneri = [
- 'İHLAL: Hb ≥11.5 g/dL → ESA DOZU AZALT/DURDUR',
- 'İnme, tromboembolik olay, vasküler erişim trombozu riski ARTAR ',
+ 'Hb ≥11.5 g/dL → hedef aşıldı, ESA DURDUR',
+ 'İnme, tromboembolik olay, vasküler erişim trombozu riski ARTAR',
  'En düşük etkili ESA dozu prensibi'
  ];
  if (hgb >= 13.0) {
- oneri.push('⚠️ KRİTİK: Hb ≥13 g/dL — ESA derhal durdur');
- ilac.push('ESA DURDUR — Hb 10–11.5 g/dL hedeflene kadar bekle');
- ilac.push('.4: İnme/vasküler tromboz varsa ESA dönüşünü bireyselleştir');
- } else if (hgb >= 12.0) {
- ilac.push('ESA dozunu %25 azalt (>2 g/dL/4 hafta artışında %25 azalt kuralı)');
- ilac.push('.2: Doz tutmak yerine azaltmayı tercih et');
+ oneri.push('⚠️ KRİTİK: Hb ≥13 g/dL — çok yüksek tromboz riski');
+ ilac.push('ESA DERHAL DURDUR — Hb 10–11.5 g/dL aralığına inene kadar bekle');
+ ilac.push('İnme/vasküler tromboz öyküsü varsa ESA dönüşünü bireyselleştir');
  } else {
- ilac.push('ESA dozunu %10–25 azalt — hedef Hb < 11.5 g/dL ');
- ilac.push('Doz ayarı en az 4 haftada bir; daha sık ayarlamaktan kaçın');
+ // Hb 11.5–13 arası → durdur
+ ilac.push('ESA DURDUR — Hb < 11.5 g/dL indiğinde en düşük dozla yeniden başla');
+ ilac.push('Hb hedefin üstünde — doz azaltmak yerine durdurmak gerekir (KDIGO 2026)');
+ ilac.push('Doz ayarı en az 4 haftada bir; Hb 2-4 haftada izle');
  }
  ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'high',
- hgb >= 13.0 ? 'KRİTİK YÜKSEK (≥13 g/dL) — ESA DURDUR' :
- hgb >= 12.0 ? 'YÜKSEK (≥12 g/dL) — ESA DOZU AZALT (%25)' :
- 'HEDEF ÜSTÜ (≥11.5 g/dL) — ESA AZALT',
+ hgb >= 13.0 ? 'KRİTİK YÜKSEK (≥13 g/dL) — ESA DERHAL DURDUR' :
+ 'HEDEF ÜSTÜ (≥11.5 g/dL) — ESA DURDUR',
  oneri, ilac, '2–4 hafta Hb takibi', []);
  }
 }
