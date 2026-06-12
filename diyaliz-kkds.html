@@ -191,6 +191,7 @@
  </div>
 
  <div id="tabs">
+ <button class="tab" onclick="geriDon()" style="background:#1e293b;color:#fff">👥 Hasta Listesi</button>
  <button class="tab aktif" onclick="sekmeAc('lab',this)">🔬 Laboratuvar</button>
  <button class="tab" onclick="sekmeAc('tedavi',this)" id="tab-tedavi">💊 Tedavi</button>
  <button class="tab" onclick="sekmeAc('grafik',this)">📈 Trend</button>
@@ -392,6 +393,12 @@ function geriDon() {
  document.getElementById('giris').classList.remove('gizli');
  document.getElementById('ana').classList.remove('goster');
  labSonuclari = [];
+ // Hasta arama kutusunu temizle ve tam listeyi göster
+ const aramaInput = document.querySelector('#giris input');
+ if (aramaInput) aramaInput.value = '';
+ if (typeof renderHastaListesi !== 'undefined' && typeof HASTALAR !== 'undefined') {
+   renderHastaListesi(HASTALAR);
+ }
 }
 
 function sekmeAc(id, el) {
