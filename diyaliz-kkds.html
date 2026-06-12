@@ -748,25 +748,25 @@ const k26_demir_txt = ferr !== null
 if (hgb !== null) {
 
  if (hgb < 8.0) {
- // KRİTİK — ESA ACİL (+ )
+ // KRİTİK — ESA ACİL + IV DEMİR
  const ilac = []; const oneri = [
  'Hb ≤9.0–10.0 g/dL eşiği — ESA acil başlama endike',
  'Birinci basamak tedavi ESA (HIF-PHI değil)'
  ];
  if (k26_askiya) {
  oneri.push('Ferritin >700 veya TSAT ≥40% → IV demir YOK');
- ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil ');
- ilac.push('.2: 4 haftada Hb <1 g/dL artış → doz %25 artır; >2 g/dL artış → %25–50 azalt');
+ ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil');
+ ilac.push('4 haftada Hb <1 g/dL artış → doz %25 artır; >2 g/dL artış → %25–50 azalt');
  } else if (k26_baslama) {
  oneri.push('Ferritin ≤500 + TSAT ≤30% → IV demir ENDİKE');
- oneri.push('IV demir oral demire TERCÜH EDİLİR (HD hastası)');
- oneri.push('Proaktif IV demir protokolü ');
- ilac.push('IV Demir Sükroz 200 mg IV her seans — proaktif ');
- ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil ');
- ilac.push('.2: Her 2–4 haftada Hb ölç; >1 g/dL/4 hafta → doz %25–50 azalt');
+ oneri.push('IV demir oral demire TERCİH EDİLİR (HD hastası)');
+ oneri.push('Proaktif IV demir protokolü');
+ ilac.push('IV Demir Sükroz 200 mg IV her seans — proaktif');
+ ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil');
+ ilac.push('Her 2–4 haftada Hb ölç; >1 g/dL/4 hafta → doz %25–50 azalt');
  } else {
- oneri.push('Demir yeterli → ESA hiporesponsvitesi nedenlerini araştır');
- oneri.push('Nedenler: inflamasyon, yetersiz diyaliz (Kt/V), hiperpara­tiroidizm, B12/folat');
+ oneri.push('Demir yeterli → ESA hiporesponsivitesi nedenlerini araştır');
+ oneri.push('Nedenler: inflamasyon, yetersiz diyaliz (Kt/V), hiperparatiroidizm, B12/folat');
  ilac.push('Epoetin alfa 100 IU/kg SC/IV 3×/hafta — acil');
  if (crp !== null && crp > 10) {
  ilac.push('⚠️ CRP >10: Aktif inflamasyon — önce tedavi et (inf. sırasında IV demir askıya al)');
@@ -775,7 +775,7 @@ if (hgb !== null) {
  }
  ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'low',
  'KRİTİK ANEMI (<8.0 g/dL) — ESA + DEMİR ACİL',
- oneri, ilac, '2–4 hafta Hb takibi (.2)', []);
+ oneri, ilac, '2–4 hafta Hb takibi', []);
 
  } else if (hgb < 10.0) {
  // DÜŞÜK — ESA başlama bölgesi 
@@ -798,10 +798,10 @@ if (hgb !== null) {
  ilac.push('Başlanırsa → Epoetin alfa 50 IU/kg SC/IV 3×/hafta ');
  }
  ilac.push('⚠️ HEDEF: Hb < 11.5 g/dL — HİÇBİR ZAMAN ≥11.5 g/dL hedefleme ');
- ilac.push('.2: Her 2–4 haftada Hb ölç; >1 g/dL hızlı artışta doz %25–50 azalt');
+ ilac.push('Her 2–4 haftada Hb ölç; >1 g/dL hızlı artışta doz %25–50 azalt');
  ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'low',
  hgb < 9.0 ? 'DÜŞÜK (8–9 g/dL) — ESA ENDİKE' : 'SINIRDA DÜŞÜK (9–10 g/dL) — ESA Değerlendir',
- oneri, ilac, '2–4 hafta Hb takibi (.2)', []);
+ oneri, ilac, '2–4 hafta Hb takibi', []);
 
  } else if (hgb < 11.5) {
  // HEDEF ARALIK 
@@ -822,7 +822,7 @@ if (hgb !== null) {
  const ilac = []; const oneri = [
  'İHLAL: Hb ≥11.5 g/dL → ESA DOZU AZALT/DURDUR',
  'İnme, tromboembolik olay, vasküler erişim trombozu riski ARTAR ',
- '.3: En düşük etkili ESA dozu prensibi'
+ 'En düşük etkili ESA dozu prensibi'
  ];
  if (hgb >= 13.0) {
  oneri.push('⚠️ KRİTİK: Hb ≥13 g/dL — ESA derhal durdur');
@@ -833,13 +833,13 @@ if (hgb !== null) {
  ilac.push('.2: Doz tutmak yerine azaltmayı tercih et');
  } else {
  ilac.push('ESA dozunu %10–25 azalt — hedef Hb < 11.5 g/dL ');
- ilac.push('.2: Doz ayarı en az 4 haftada bir; daha sık ayarlamaktan kaçın');
+ ilac.push('Doz ayarı en az 4 haftada bir; daha sık ayarlamaktan kaçın');
  }
  ekle('🩸 Anemi — KDIGO 2026', 'Hemoglobin', hgb + ' g/dL', 'high',
  hgb >= 13.0 ? 'KRİTİK YÜKSEK (≥13 g/dL) — ESA DURDUR' :
  hgb >= 12.0 ? 'YÜKSEK (≥12 g/dL) — ESA DOZU AZALT (%25)' :
  'HEDEF ÜSTÜ (≥11.5 g/dL) — ESA AZALT',
- oneri, ilac, '2–4 hafta Hb takibi (.2)', []);
+ oneri, ilac, '2–4 hafta Hb takibi', []);
  }
 }
 
@@ -942,9 +942,9 @@ if (tsat !== null) {
  const oneriler_ts = ferr < 200
  ? ['IV demir başla (ferritin ≤500 + TSAT ≤30%)',
  'IV demir oral demire tercih edilir (HD hastası)']
- : ['Demir kısıtlı eritropoez: İnflamasyon hepsidini artırarak TSATı düşürüyor',
+ : ['Demir kısıtlı eritropoez: İnflamasyon hepsidini artırarak TSAT degerini düşürüyor',
  'CRP yüksekse enfeksiyonu/inflamasyonu önce tedavi et ',
- 'Proaktif IV demir protokolü ile TSAT ≥20%ye çıkmayı hedefle'];
+ 'Proaktif IV demir protokolü ile TSAT ≥%20 hedefe çıkmayı hedefle'];
  ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'low',
  `DÜŞÜK TSAT (<20%) — ${tip}`,
  oneriler_ts,
