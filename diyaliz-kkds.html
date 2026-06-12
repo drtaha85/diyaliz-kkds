@@ -1097,6 +1097,29 @@ if (tsat !== null) {
  ['IV demir tedavisini durdur',
  'TSAT <%30a düştüğünde proaktif protokolünü yeniden başlat'],
  '1 ay kontrol', []);
+ } else if (tsat < 20) {
+ // TSAT <20 ama ferritin >700 (yukarıdaki kombine bloğa girmedi) → demir kısıtlı + aşırı depo
+ ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'low',
+ 'DÜŞÜK TSAT (<20%) — ferritin yüksek (>700)',
+ ['Demir kısıtlı eritropoez: TSAT düşük ama ferritin >700',
+  'Depolar dolu ama demir eritropoeze ulaşmıyor — hepsidin/inflamasyon',
+  'CRP yüksekse enfeksiyon/inflamasyonu önce araştır',
+  'Ferritin >700 olduğu için rutin IV demir önerilmez'],
+ ['Rutin IV demir verme (ferritin >700)',
+  'Dirençli anemi/yüksek ESA ihtiyacı varsa deneme demir kürü düşünülebilir',
+  'CRP, Hb, TSAT 1 ay kontrol'],
+ '1 ay kontrol', []);
+ } else {
+ // TSAT %20–40 arası → HEDEF ARALIK
+ const tsat_idame = (tsat >= 30)
+   ? ' (üst-normal, %40 tavanına dikkat)'
+   : ' (ideal aralık)';
+ ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'normal',
+ `HEDEF ARALIKTA (%20–40)${tsat_idame}`,
+ ['TSAT hedef aralıkta — dolaşımdaki demir yeterli',
+  'Demir alıyorsa idame sürdür; almıyorsa izlem',
+  'TSAT ≥40% olursa demiri askıya al'],
+ [], '1–3 ay kontrol', []);
  }
 }
 
