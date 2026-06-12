@@ -113,16 +113,6 @@
  .ai-metin { font-size: 14px; color: #374151; line-height: 1.8; white-space: pre-wrap; }
  .ai-uyari { margin-top: 12px; padding: 8px 12px; background: #fff7ed; border-radius: 8px; font-size: 11px; color: #9a3412; }
 
- /* TREND / GRAFİK */
- .grafik-kart { background: #fff; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
- .grafik-baslik { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 10px; }
- .grafik-baslik > span:first-child { font-size: 15px; font-weight: 800; color: #1e293b; }
- .grafik-baslik .trend-yukari { font-size: 14px; font-weight: 800; color: #ea580c; white-space: nowrap; }
- .grafik-baslik .trend-asagi { font-size: 14px; font-weight: 800; color: #2563eb; white-space: nowrap; }
- .grafik-baslik .trend-sabit { font-size: 14px; font-weight: 800; color: #64748b; white-space: nowrap; }
- .grafik-alt { font-size: 11px; color: #94a3b8; margin-bottom: 8px; }
- .grafik-svg { width: 100%; height: auto; display: block; }
-
  /* TOPLU TARAMA */
  #tarama { position: fixed; inset: 0; background: #f1f5f9; z-index: 100; display: none; flex-direction: column; }
  #tarama.acik { display: flex; }
@@ -331,6 +321,16 @@
  <div class="bos-ikon">💊</div>
  <div class="bos-baslik">Önce lab sonuçlarını çekin</div>
  </div>
+ <div id="kilo-girisi-kutu" style="display:none;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;margin-bottom:16px">
+   <label style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#1e40af">
+     ⚖️ Hasta kilosu (kg):
+     <input type="number" id="hasta-kilo" min="20" max="250" step="0.5" placeholder="örn. 70"
+       oninput="renderTedavi(window.sonLabSonuclari||[])"
+       style="width:110px;padding:7px 10px;border:1.5px solid #bfdbfe;border-radius:8px;font-size:14px;outline:none;font-family:inherit">
+     <span id="kilo-uyari" style="font-size:12px;color:#dc2626;font-weight:600"></span>
+   </label>
+   <div style="font-size:11px;color:#1e40af;margin-top:6px">Kilo girilince EPO (IU/kg) ve IV demir (Ganzoni) dozları otomatik hesaplanır. Hesaplamalar karar desteği amaçlıdır; hekim onayı gerekir.</div>
+ </div>
  <div id="demir-tedavi-secim" style="display:none;background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:16px">
    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;font-weight:600;color:#92400e">
      <input type="checkbox" id="demir-tedavi-aliyor" onchange="renderTedavi(window.sonLabSonuclari||[])" style="width:18px;height:18px;cursor:pointer">
@@ -447,6 +447,13 @@ function ekraniTemizle() {
  if (demirSecim) demirSecim.style.display = 'none';
  const demirAliyor = document.getElementById('demir-tedavi-aliyor');
  if (demirAliyor) demirAliyor.checked = false;
+ // Kilo girişi (yeni hastada sıfırla)
+ const kiloKutu = document.getElementById('kilo-girisi-kutu');
+ if (kiloKutu) kiloKutu.style.display = 'none';
+ const kiloInp = document.getElementById('hasta-kilo');
+ if (kiloInp) kiloInp.value = '';
+ const kiloUyari = document.getElementById('kilo-uyari');
+ if (kiloUyari) kiloUyari.textContent = '';
  // Grafik
  const grafikIcerik = document.getElementById('grafik-icerik');
  if (grafikIcerik) grafikIcerik.innerHTML = '';
@@ -961,7 +968,120 @@ function bul(sonuclar, ...terms) {
  return null;
 }
 
-function analizEt(sonuclar, demirAliyor) {
+// ════════════════════════════════════════════════════════════════════════════
+// KİLO BAZLI DOZ HESAPLAMA (EPO + IV DEMİR)
+// ────────────────────────────────────────────────────────────────────────────
+// ⚠️ Bu hesaplamalar yalnızca KLİNİK KARAR DESTEĞİ amaçlıdır; uygulanmadan önce
+//    mutlaka HEKİM ONAYI gerektirir.
+//
+// Kaynaklar:
+//  • Epoetin alfa (FDA/EMA prospektüsü, KDIGO anemi kılavuzu):
+//      Başlangıç dozu = 50–100 IU/kg, haftada 3 kez (SC veya IV).
+//      HD hastasında IV yol tercih edilebilir; SC %15–50 daha verimlidir.
+//  • Ganzoni formülü — toplam demir açığı:
+//      Açık(mg) = vücut ağırlığı(kg) × (HedefHb − MevcutHb)(g/dL) × 2.4 + depo demiri(mg)
+//      Katsayı 2.4 = 0.0034 (Hb'nin demir oranı %0.34) × 0.07 (kan hacmi ≈ ağırlığın %7'si)
+//                    × 10000 (g/dL → mg/L birim dönüşümü)
+//      Depo demiri: erişkin ve ≥35 kg için 500 mg.
+//  • Demir sukroz (Venofer): maks. tekil doz 200 mg, maks. haftalık 500 mg;
+//      HD hastasında sıklıkla seans başına 100–200 mg.
+//  • Ferrik karboksimaltoz (FCM): 15 mg/kg, tek seferde maks. 1000 mg;
+//      ≥50 kg için kür başına maks. 1500 mg, dozlar ≥7 gün arayla.
+// ────────────────────────────────────────────────────────────────────────────
+
+// Kilo doğrulama: pozitif ve makul fizyolojik aralıkta (20–250 kg) olmalı
+function kiloGecerliMi(kiloKg) {
+  return typeof kiloKg === 'number' && isFinite(kiloKg) && kiloKg >= 20 && kiloKg <= 250;
+}
+
+// EPO (epoetin alfa) — kilo bazlı doz. iuPerKg: başlangıç için 50 veya 100 IU/kg.
+// Döner: { seansDoz (IU, tek seans), haftalik (IU, 3×/hafta), iuPerKg }
+function epoDozHesapla(kiloKg, iuPerKg) {
+  if (!kiloGecerliMi(kiloKg)) return null;
+  if (typeof iuPerKg !== 'number' || iuPerKg <= 0) return null;
+  const seansDoz = Math.round(kiloKg * iuPerKg);   // IU / seans
+  const haftalik = seansDoz * 3;                    // IU / hafta (3 seans)
+  return { seansDoz, haftalik, iuPerKg };
+}
+
+// Ganzoni — toplam demir açığı (mg).
+// hedefHb varsayılan 11.0 g/dL (KDIGO hedef aralığı 10–11.5; üst sınıra dayanmadan).
+// depoMg varsayılan 500 mg (≥35 kg erişkin).
+function ganzoniDemirAcigi(kiloKg, mevcutHb, hedefHb, depoMg) {
+  if (!kiloGecerliMi(kiloKg)) return null;
+  if (typeof mevcutHb !== 'number' || !isFinite(mevcutHb) || mevcutHb <= 0) return null;
+  hedefHb = (typeof hedefHb === 'number' && hedefHb > 0) ? hedefHb : 11.0;
+  depoMg  = (typeof depoMg  === 'number' && depoMg  >= 0) ? depoMg  : 500;
+  const fark = hedefHb - mevcutHb;                  // g/dL
+  // Mevcut Hb hedefin üstündeyse açık yok; yalnızca depo demiri önerilir.
+  if (fark <= 0) return { acikMg: depoMg, fark: 0, sadeceDepo: true, hedefHb };
+  const acikMg = Math.round(kiloKg * fark * 2.4 + depoMg);
+  return { acikMg, fark: +fark.toFixed(1), sadeceDepo: false, hedefHb };
+}
+
+// Demir sukroz seans planı — toplam açığı 200 mg'lık seanslara böl (haftalık maks. 500 mg)
+function demirSukrozPlani(toplamMg) {
+  const seansDoz = 200;                             // maks. tekil doz (mg)
+  const seansSayisi = Math.max(1, Math.ceil(toplamMg / seansDoz));
+  return { seansDoz, seansSayisi, toplamMg, haftalikMaks: 500 };
+}
+
+// Sayıyı binlik ayraçla biçimle (tr-TR)
+function _tr(n) { return Number(n).toLocaleString('tr-TR'); }
+
+// ── POST-PROCESS: önerilerdeki EPO/IV demir satırlarına hesaplanan dozu ekle ──
+// oneriler: analizEt çıktısı | kiloKg: hasta kilosu | mevcutHb: güncel Hb (g/dL)
+// Kilo geçersizse hiçbir şey eklenmez (özellik sessizce devre dışı kalır).
+function kiloBazliDozEkle(oneriler, kiloKg, mevcutHb) {
+  if (!kiloGecerliMi(kiloKg)) return;
+  oneriler.forEach(o => {
+    if (!o.ilaclar || !o.ilaclar.length) return;
+    const ekRows = [];
+    o.ilaclar.forEach(satir => {
+      // — EPO satırları: "... 50–100 IU/kg ..." veya "... 100 IU/kg ..." —
+      const epoMatch = /([0-9]+)\s*(?:–|-)\s*([0-9]+)\s*IU\/kg|([0-9]+)\s*IU\/kg/i.exec(satir);
+      if (epoMatch && /epoetin|IU\/kg/i.test(satir)) {
+        let lo, hi;
+        if (epoMatch[1] && epoMatch[2]) { lo = +epoMatch[1]; hi = +epoMatch[2]; }
+        else { lo = hi = +epoMatch[3]; }
+        const dLo = epoDozHesapla(kiloKg, lo);
+        const dHi = epoDozHesapla(kiloKg, hi);
+        if (dLo && dHi) {
+          const seans = (lo === hi)
+            ? `${_tr(dLo.seansDoz)} IU/seans`
+            : `${_tr(dLo.seansDoz)}–${_tr(dHi.seansDoz)} IU/seans`;
+          const hafta = (lo === hi)
+            ? `${_tr(dLo.haftalik)} IU/hafta`
+            : `${_tr(dLo.haftalik)}–${_tr(dHi.haftalik)} IU/hafta`;
+          ekRows.push(`⚖️ ${kiloKg} kg için hesaplanan: ≈ ${seans}  (3×/hafta = ${hafta})`);
+        }
+      }
+      // — IV demir satırları (demir sukroz) → Ganzoni açığı —
+      if (/demir s[üu]kroz|iv demir/i.test(satir)) {
+        const g = ganzoniDemirAcigi(kiloKg, mevcutHb, 11.0, 500);
+        if (g) {
+          if (g.sadeceDepo) {
+            ekRows.push(`⚖️ Ganzoni (${kiloKg} kg, Hb hedefte): yalnız depo ≈ ${_tr(g.acikMg)} mg toplam demir`);
+          } else {
+            const p = demirSukrozPlani(g.acikMg);
+            ekRows.push(`⚖️ Ganzoni demir açığı (${kiloKg} kg, Hb ${mevcutHb}→${g.hedefHb} g/dL): ≈ ${_tr(g.acikMg)} mg toplam`);
+            ekRows.push(`   → Demir sukroz ${p.seansDoz} mg/seans × ${p.seansSayisi} seans (haftalık maks. ${p.haftalikMaks} mg)`);
+          }
+        } else if (mevcutHb === null || mevcutHb === undefined) {
+          ekRows.push('⚖️ Ganzoni demir açığı hesaplanamadı — güncel Hb değeri gerekli');
+        }
+      }
+    });
+    if (ekRows.length) {
+      // Tekrarı önle (aynı kart birden çok eşleşen satır içerebilir)
+      const benzersiz = ekRows.filter((v, i) => ekRows.indexOf(v) === i);
+      benzersiz.push('ℹ️ Hesaplanan dozlar karar desteği amaçlıdır; uygulama öncesi hekim onayı gerekir.');
+      o.ilaclar = o.ilaclar.concat(benzersiz);
+    }
+  });
+}
+
+function analizEt(sonuclar, demirAliyor, kiloKg) {
   demirAliyor = demirAliyor || false;
  const oneriler = [];
 
@@ -1633,6 +1753,10 @@ if (tsat !== null) {
  }
  }
 
+ // ── KİLO BAZLI DOZ: EPO/IV demir önerilerine hesaplanan dozları ekle ──
+ // (kilo geçersiz/girilmemişse fonksiyon hiçbir değişiklik yapmaz)
+ kiloBazliDozEkle(oneriler, kiloKg, hgb);
+
  return oneriler;
 }
 
@@ -1641,8 +1765,20 @@ function renderTedavi(sonuclar) {
  window.sonLabSonuclari = sonuclar; // Onay kutusu yeniden render için sakla
  const demirSecim = document.getElementById('demir-tedavi-secim');
  if (demirSecim && sonuclar && sonuclar.length > 0) demirSecim.style.display = 'block';
+ // Kilo girişi kutusunu sonuç varken göster
+ const kiloKutu = document.getElementById('kilo-girisi-kutu');
+ if (kiloKutu && sonuclar && sonuclar.length > 0) kiloKutu.style.display = 'block';
+ // Hasta kilosunu oku ve doğrula
+ const kiloRaw = document.getElementById('hasta-kilo')?.value;
+ const kiloKg = (kiloRaw !== undefined && kiloRaw !== '') ? parseFloat(kiloRaw) : null;
+ const kiloUyari = document.getElementById('kilo-uyari');
+ if (kiloUyari) {
+   kiloUyari.textContent = (kiloRaw && !kiloGecerliMi(kiloKg))
+     ? 'Geçersiz kilo — 20–250 kg arası bir değer girin'
+     : '';
+ }
  const demirAliyor = document.getElementById('demir-tedavi-aliyor')?.checked || false;
- const oneriler = analizEt(sonuclar, demirAliyor);
+ const oneriler = analizEt(sonuclar, demirAliyor, kiloKg);
  const konteyner = document.getElementById('oneri-icerik');
  const onaylar = document.getElementById('onay-satirlar');
  konteyner.innerHTML = '';
