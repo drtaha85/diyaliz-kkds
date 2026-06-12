@@ -61,13 +61,13 @@
 
  /* LAB TABLO */
  .lab-tablo { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
- .lab-baslik { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 10px 12px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+ .lab-baslik { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; gap: 8px; padding: 10px 12px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
  .lab-baslik span { font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
- .lab-satir { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; align-items: center; }
+ .lab-satir { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; align-items: center; }
  .lab-satir.high { background: #fff7ed; }
  .lab-satir.low { background: #eff6ff; }
  .lab-satir .test-ad { font-size: 13px; color: #334155; }
- .lab-satir .test-tarih { font-size: 10px; color: #94a3b8; font-weight: 400; }
+ .lab-satir .lab-tarih { font-size: 11px; color: #64748b; }
  .lab-satir.high .test-ad, .lab-satir.low .test-ad { font-weight: 700; }
  .lab-satir .sonuc-deger { font-size: 14px; font-weight: 700; }
  .lab-satir.high .sonuc-deger { color: #9a3412; }
@@ -224,7 +224,7 @@
      style="width:100%;padding:9px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box">
  </div>
  <div class="lab-baslik">
- <span>Test Adı</span><span>Sonuç</span><span>Referans</span><span>Durum</span>
+ <span>Test Adı</span><span>Lab Tarihi</span><span>Sonuç</span><span>Referans</span><span>Durum</span>
  </div>
  <div id="lab-satirlar"></div>
  <div id="lab-bulunamadi" style="display:none;padding:20px;text-align:center;color:#94a3b8;font-size:13px">Aramayla eşleşen test bulunamadı</div>
@@ -547,7 +547,8 @@ function renderLabTablo(sonuclar) {
  div.setAttribute('data-ara', ((s.kisaAdi || '') + ' ' + (s.uzunAdi || '')).toLowerCase());
  const badgeLabel = s.durum === 'high' ? '↑ YÜK' : s.durum === 'low' ? '↓ DÜŞ' : '✓ N';
  div.innerHTML = `
- <span class="test-ad">${s.kisaAdi || s.uzunAdi || "?"}${s.tarih ? `<br><span class="test-tarih">📅 ${formatTarih(s.tarih)}</span>` : ''}</span>
+ <span class="test-ad">${s.kisaAdi || s.uzunAdi || "?"}</span>
+ <span class="lab-tarih">${s.tarih ? formatTarih(s.tarih) : '—'}</span>
  <span class="sonuc-deger">${s.sonuc} <span class="sonuc-birim">${s.birim}</span></span>
  <span class="ref-deger">${s.minDeger && s.maxDeger ? s.minDeger + ' – ' + s.maxDeger : '—'}</span>
  <span class="badge ${s.durum}">${badgeLabel}</span>
@@ -578,7 +579,11 @@ function labAra(metin) {
   let bulunan = 0;
   satirlar.forEach(satir => {
     const testAdi = satir.getAttribute('data-ara') || '';
-    if (arama === '' || testAdi.includes(arama)) {
+    // Kelime başından eşleşme: "hgb" → HGB ile başlayanlar, MCH/MCHC değil
+    // Test adındaki her kelimenin başına bak
+    const kelimeler = testAdi.split(/[\s()\/,-]+/);
+    const eslesme = arama === '' || kelimeler.some(k => k.startsWith(arama));
+    if (eslesme) {
       satir.style.display = '';
       bulunan++;
     } else {
