@@ -1048,7 +1048,7 @@ if (tsat !== null) {
    } else {
      oneriler_ts.push('CRP ölçülmedi — inflamasyon durumunu değerlendir');
    }
-   ilac_ts = ['IV Demir Sükroz 200 mg IV her seans — replasman protokolü', 'Hedef TSAT: %20–30, ferritin: 200–500 ng/mL'];
+   ilac_ts = ['IV Demir Sükroz 200 mg IV her seans — replasman protokolü'];
    kontrol_ts = '1 ay kontrol';
  } else {
    // DEMİR KISITLI ERİTROPOEZ: ferritin normal/yüksek + TSAT düşük
@@ -1109,16 +1109,22 @@ if (tsat !== null) {
   'Dirençli anemi/yüksek ESA ihtiyacı varsa deneme demir kürü düşünülebilir',
   'CRP, Hb, TSAT 1 ay kontrol'],
  '1 ay kontrol', []);
- } else {
- // TSAT %20–40 arası → HEDEF ARALIK
- const tsat_idame = (tsat >= 30)
-   ? ' (üst-normal, %40 tavanına dikkat)'
-   : ' (ideal aralık)';
- ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'normal',
- `HEDEF ARALIKTA (%20–40)${tsat_idame}`,
- ['TSAT hedef aralıkta — dolaşımdaki demir yeterli',
-  'Demir alıyorsa idame sürdür; almıyorsa izlem',
+ } else if (tsat <= 30) {
+ // TSAT %20–30 → KDIGO başlatma eşiğinde (ferritin ≤500 ise demir endike)
+ ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'low',
+ `TSAT ≤30% — DEMİR BAŞLATMA EŞİĞİNDE`,
+ ['TSAT ≤30% → ferritin ≤500 ise demir başlatma kriteri (KDIGO 2026)',
+  'Dolaşımdaki demir eritropoez için optimal-altı',
+  'Ferritin değerine bak: ≤500 ise proaktif IV demir endike',
   'TSAT ≥40% olursa demiri askıya al'],
+ [], '1–3 ay kontrol', []);
+ } else {
+ // TSAT %30–40 → izlem bandı (başlatma eşiği üstü, tavan altı)
+ ekle('🩸 Anemi — KDIGO 2026', 'TSAT', tsat + ' %', 'normal',
+ `TSAT %30–40 — İZLEM (başlatma eşiği üstü)`,
+ ['TSAT %30 üstü — yeni demir başlatma eşiğinde değil',
+  'Demir alıyorsa idame sürdür; almıyorsa izlem',
+  '%40 tavanına dikkat — ≥40% olursa demiri askıya al'],
  [], '1–3 ay kontrol', []);
  }
 }
