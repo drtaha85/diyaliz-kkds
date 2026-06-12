@@ -383,22 +383,25 @@ function parseXml(xmlText) {
  const get = tag => node.querySelector(tag)?.textContent?.trim() || '';
  const kisaAdi = get('KisaAdi') || get('UzunAdi');
  const sonuc = get('Sonuc');
- const key = kisaAdi + sonuc;
+ const tarih = get('KanKabulTarihi') || get('CalismaTarihi') || get('OnayTarihi') || '';
+ // Tarihi de key'e kat - aynı testin farklı tarihlerdeki ölçümleri korunsun
+ const key = kisaAdi + '|' + sonuc + '|' + tarih;
  if (seen.has(key)) return;
  seen.add(key);
- sonuclar.push({ kisaAdi, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
+ sonuclar.push({ kisaAdi, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), tarih, durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
  });
 
  if (sonuclar.length === 0) {
  doc.querySelectorAll('*').forEach(node => {
- const kisaAd = node.querySelector('KisaAd')?.textContent?.trim();
+ const kisaAd = node.querySelector('KisaAd')?.textContent?.trim() || node.querySelector('KisaAdi')?.textContent?.trim();
  const sonuc = node.querySelector('Sonuc')?.textContent?.trim();
  if (!kisaAd || !sonuc || isNaN(parseFloat(sonuc))) return;
- const key = kisaAd + sonuc;
+ const get = tag => node.querySelector(tag)?.textContent?.trim() || '';
+ const tarih = get('KanKabulTarihi') || get('CalismaTarihi') || get('OnayTarihi') || '';
+ const key = kisaAd + '|' + sonuc + '|' + tarih;
  if (seen.has(key)) return;
  seen.add(key);
- const get = tag => node.querySelector(tag)?.textContent?.trim() || '';
- sonuclar.push({ kisaAd, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
+ sonuclar.push({ kisaAdi: kisaAd, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), tarih, durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
  });
  }
  return sonuclar;
