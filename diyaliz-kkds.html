@@ -1029,6 +1029,38 @@ function demirSukrozPlani(toplamMg) {
 // Sayıyı binlik ayraçla biçimle (tr-TR)
 function _tr(n) { return Number(n).toLocaleString('tr-TR'); }
 
+// ── Hb DEĞİŞİM HIZI (g/dL / 4 hafta) ─────────────────────────────────────────
+// KDIGO: ESA doz ayarı Hb'nin mutlak değerine DEĞİL, değişim HIZINA göre yapılır.
+// En son iki Hb ölçümünden hızı hesaplar ve 4 haftaya normalize eder.
+// HbA1c gibi "hb" içeren testleri DIŞLAR. İki farklı tarihli ölçüm gerekir.
+function hbDegisimHizi(sonuclar) {
+  if (!Array.isArray(sonuclar)) return null;
+  const hbler = sonuclar
+    .filter(s => {
+      const ad = ((s.kisaAdi || '') + ' ' + (s.uzunAdi || '')).toLowerCase();
+      const hbMi = ad.includes('hemoglobin') || ad.includes('hgb') || /(^|[^a-z])hb([^a-z]|$)/.test(ad);
+      const a1c = ad.includes('a1c') || ad.includes('hba1');     // HbA1c'yi dışla
+      return hbMi && !a1c && !isNaN(parseFloat(s.sonuc));
+    })
+    .map(s => ({ v: parseFloat(s.sonuc), t: parseTarih(s.tarih) }))
+    .filter(x => x.t > 0)
+    .sort((a, b) => a.t - b.t);
+  if (hbler.length < 2) return null;
+  const son = hbler[hbler.length - 1];
+  const onceki = hbler[hbler.length - 2];
+  const gunFark = (son.t - onceki.t) / (1000 * 60 * 60 * 24);
+  if (gunFark <= 0) return null;                                 // aynı gün / geçersiz
+  const haftaFark = gunFark / 7;
+  const deltaHb = son.v - onceki.v;
+  const hiz4hafta = (deltaHb / haftaFark) * 4;                   // g/dL / 4 hafta
+  return {
+    sonHb: son.v, oncekiHb: onceki.v,
+    gunFark: Math.round(gunFark),
+    deltaHb: +deltaHb.toFixed(1),
+    hiz4hafta: +hiz4hafta.toFixed(2)
+  };
+}
+
 // ── POST-PROCESS: önerilerdeki EPO/IV demir satırlarına hesaplanan dozu ekle ──
 // oneriler: analizEt çıktısı | kiloKg: hasta kilosu | mevcutHb: güncel Hb (g/dL)
 // Kilo geçersizse hiçbir şey eklenmez (özellik sessizce devre dışı kalır).
@@ -1036,6 +1068,8 @@ function kiloBazliDozEkle(oneriler, kiloKg, mevcutHb) {
   if (!kiloGecerliMi(kiloKg)) return;
   oneriler.forEach(o => {
     if (!o.ilaclar || !o.ilaclar.length) return;
+    // Referans kartının kendi satırları zaten hesaplanmış doz içerir → atla (çift gösterimi önle)
+    if (o.grup && o.grup.indexOf('Kilo Bazlı Doz Referansı') !== -1) return;
     const ekRows = [];
     o.ilaclar.forEach(satir => {
       // — EPO satırları: "... 50–100 IU/kg ..." veya "... 100 IU/kg ..." —
@@ -1085,13 +1119,20 @@ function analizEt(sonuclar, demirAliyor, kiloKg) {
   demirAliyor = demirAliyor || false;
  const oneriler = [];
 
+ // Terim önceliğini koruyarak EN GÜNCEL tarihli ölçümü seç.
+ // (Önceden dizideki ilk eşleşme alınıyordu; bu, sıralamaya bağlı olarak
+ //  eski bir değerin kullanılmasına yol açabiliyordu — düzeltildi.)
+ const _tarih = (s) => { try { return parseTarih(s.tarih); } catch(e) { return 0; } };
  const bul = (...terms) => {
  for (const t of terms) {
- const found = sonuclar.find(s =>
+ const eslesenler = sonuclar.filter(s =>
  s.kisaAdi?.toLowerCase().includes(t.toLowerCase()) ||
  s.uzunAdi?.toLowerCase().includes(t.toLowerCase())
  );
- if (found) return found;
+ if (eslesenler.length) {
+ // En güncel tarihli ölçümü döndür (tarih okunamazsa dizideki ilk eşleşme)
+ return eslesenler.reduce((a, b) => (_tarih(b) >= _tarih(a) ? b : a));
+ }
  }
  return null;
  };
@@ -1124,9 +1165,35 @@ function analizEt(sonuclar, demirAliyor, kiloKg) {
  const crp = val(['crp','c-reaktif']);
  const bun = val(['bun','kan uresi','blood urea n']);
  const krea = val(['kreatinin','creatinine']);
+ // Bikarbonat (total CO2 / HCO3); pCO2 ile karışmaması için spesifik terimler
+ const hco3 = val(['bikarbonat','hco3','tco2','total co2']);
 
  // Düzeltilmiş kalsiyum (albumin varsa)
  const caDuz = (ca !== null && alb !== null) ? ca + 0.8*(4 - alb) : ca;
+
+ // ── 0. KİLO BAZLI DOZ REFERANSI (kilo girildiyse her zaman göster) ───────
+ // Aktif EPO/demir endikasyonu olmasa bile hekime referans dozları sunar;
+ // böylece "kilo girdim ama bir şey çıkmadı" durumu önlenir.
+ if (kiloGecerliMi(kiloKg)) {
+   const refIlac = [];
+   const epo50 = epoDozHesapla(kiloKg, 50);
+   const epo100 = epoDozHesapla(kiloKg, 100);
+   refIlac.push(`EPO 50 IU/kg → ${_tr(epo50.seansDoz)} IU/seans  (3×/hafta = ${_tr(epo50.haftalik)} IU/hafta)`);
+   refIlac.push(`EPO 100 IU/kg → ${_tr(epo100.seansDoz)} IU/seans  (3×/hafta = ${_tr(epo100.haftalik)} IU/hafta)`);
+   if (hgb !== null) {
+     const g = ganzoniDemirAcigi(kiloKg, hgb, 11.0, 500);
+     if (g.sadeceDepo) {
+       refIlac.push(`Ganzoni: Hb hedefte (≥11) → yalnız depo ≈ ${_tr(g.acikMg)} mg toplam demir`);
+     } else {
+       const pl = demirSukrozPlani(g.acikMg);
+       refIlac.push(`Ganzoni demir açığı (Hb ${hgb}→11 g/dL) ≈ ${_tr(g.acikMg)} mg → demir sukroz ${pl.seansDoz} mg/seans × ${pl.seansSayisi} seans`);
+     }
+   } else {
+     refIlac.push('Ganzoni demir açığı için güncel Hb gerekli (ölçülmemiş)');
+   }
+   refIlac.push('ℹ️ Bu dozlar referans/karar desteği amaçlıdır; aktif endikasyon değerlendirmesi ve hekim onayı gerekir.');
+   ekle('⚖️ Kilo Bazlı Doz Referansı', `Hasta ${kiloKg} kg`, '', 'normal', 'HESAPLANAN BAŞLANGIÇ DOZLARI', [], refIlac, '', []);
+ }
 
  // ── 1. MİNERAL METABOLİZMA (Ca + P + PTH kombine) ────────────────────────
  if (p !== null) {
@@ -1232,6 +1299,26 @@ function analizEt(sonuclar, demirAliyor, kiloKg) {
  '3 ay kontrol', []);
  } else {
  ekle('🦴 Mineral Metabolizma', 'PTH', pth+' pg/mL', 'normal', 'HEDEF ARALIKTA (130-585 pg/mL)', [], [], '3 ay kontrol', []);
+ }
+ }
+
+ // ── Ca × P ÇARPIMI (CKD-MBD) ──────────────────────────────────────────────
+ // Klasik tanım toplam kalsiyum kullanır: Ca×P (mg²/dL²). Hedef <55.
+ // Yüksek çarpım vasküler/yumuşak doku kalsifikasyon riskini artırır.
+ if (ca !== null && p !== null) {
+ const caP = ca * p;
+ if (caP > 55) {
+ ekle('🦴 Mineral Metabolizma', 'Ca × P çarpımı', caP.toFixed(1)+' mg²/dL²', 'high', 'YÜKSEK (>55 mg²/dL²)',
+ ['Vasküler/yumuşak doku kalsifikasyon riski artmış',
+  'Hedef Ca×P < 55 mg²/dL² — öncelik fosfor kontrolü',
+  'Çarpım hem Ca hem P değerinden etkilenir; ikisini birlikte yönet'],
+ [p > 5.5 ? 'Fosfat bağlayıcıyı optimize et (tercihen Ca içermeyen: sevelamer karbonat)'
+          : 'Mevcut fosfor kontrolünü sürdür',
+  (caDuz !== null && caDuz > 9.5) ? 'Ca içeren bağlayıcıdan kaçın — Ca yükü çarpımı yükseltir' : null,
+  'Diyet fosfor kısıtlaması (<800–1000 mg/gün)'],
+ '1 ay kontrol', []);
+ } else {
+ ekle('🦴 Mineral Metabolizma', 'Ca × P çarpımı', caP.toFixed(1)+' mg²/dL²', 'normal', 'HEDEF ARALIKTA (<55 mg²/dL²)', [], [], '3 ay kontrol', []);
  }
  }
 
@@ -1351,6 +1438,41 @@ if (hgb !== null) {
  hgb >= 13.0 ? 'KRİTİK YÜKSEK (≥13 g/dL) — ESA DERHAL DURDUR' :
  'HEDEF ÜSTÜ (≥11.5 g/dL) — ESA DURDUR',
  oneri, ilac, '2–4 hafta Hb takibi', []);
+ }
+}
+
+// ── Hb DEĞİŞİM HIZI — ESA DOZ AYARI (KDIGO) ────────────────────────────
+// Doz ayarı en az 4 haftada bir; ayar Hb'nin hızına göre yapılır.
+{
+ const hbHiz = hbDegisimHizi(sonuclar);
+ if (hbHiz) {
+ const hiz = hbHiz.hiz4hafta;
+ const yon = hiz > 0 ? '+' : '';
+ const deger = `${yon}${hiz} g/dL / 4 hafta`;
+ const altbilgi = `Son: ${hbHiz.sonHb} g/dL, önceki: ${hbHiz.oncekiHb} g/dL (${hbHiz.gunFark} gün arayla)`;
+ let durum, label, oneri, ilac;
+ if (hiz > 2) {
+ durum = 'high'; label = 'ÇOK HIZLI YÜKSELİŞ (>2 g/dL / 4 hafta)';
+ oneri = [altbilgi, 'Hızlı Hb artışı tromboembolik/vasküler erişim riskini artırır'];
+ ilac = ['ESA dozunu %25–50 AZALT', 'Hb 11.5 g/dL hedefini aşmamaya dikkat', 'Doz ayarını en az 4 haftada bir yap'];
+ } else if (hiz > 1) {
+ durum = 'high'; label = 'HEDEF ÜSTÜ HIZ (1–2 g/dL / 4 hafta)';
+ oneri = [altbilgi, 'KDIGO: 4 haftada ~1 g/dL üstü artışta doz azaltılır'];
+ ilac = ['ESA dozunu %25 azaltmayı değerlendir', 'Hb hedefe (11.5 altı) yaklaşıyorsa proaktif azalt'];
+ } else if (hiz >= 0) {
+ durum = 'normal'; label = 'STABİL / KONTROLLÜ ARTIŞ (0–1 g/dL / 4 hafta)';
+ oneri = [altbilgi, 'İdeal yanıt bandında — mevcut ESA dozunu sürdür'];
+ ilac = [];
+ } else if (hiz >= -1) {
+ durum = 'low'; label = 'HAFİF DÜŞÜŞ (0 ile −1 g/dL / 4 hafta)';
+ oneri = [altbilgi, 'Hb geriliyor — demir durumu (ferritin/TSAT) ve ESA dozunu gözden geçir'];
+ ilac = ['Demir eksikliği dışlandıysa ESA dozunu %25 artırmayı değerlendir', 'Kanama/inflamasyon araştır'];
+ } else {
+ durum = 'low'; label = 'HIZLI DÜŞÜŞ (>1 g/dL / 4 hafta)';
+ oneri = [altbilgi, 'Hızlı Hb düşüşü — kanama, hemoliz, ESA hiporesponsivitesi araştır'];
+ ilac = ['ESA hiporesponsivite nedenlerini araştır (demir, inflamasyon, Kt/V, hiperPTH, B12/folat)', 'Aktif kan kaybı açısından değerlendir', 'ESA dozunu %25 artırmayı değerlendir'];
+ }
+ ekle('🩸 Anemi — KDIGO 2026', 'Hb değişim hızı', deger, durum, label, oneri, ilac, '4 hafta sonra Hb', []);
  }
 }
 
@@ -1676,6 +1798,33 @@ if (tsat !== null) {
  ['Su alımını artır'], ['Serbest su replasmanı'], '1 ay kontrol', []);
  } else {
  ekle('⚡ Elektrolit', 'Sodyum', na+' mEq/L', 'normal', 'HEDEF ARALIKTA (135-145 mEq/L)', [], [], '3 ay kontrol', []);
+ }
+ }
+
+ // ── ASİT-BAZ: BİKARBONAT / METABOLİK ASİDOZ ──────────────────────────────
+ // KDOQI/KDIGO: pre-diyaliz serum bikarbonatını ≥22 mEq/L hedefle.
+ // Kronik metabolik asidoz → kemik kaybı, kas yıkımı, malnütrisyon, hiperkalemi.
+ if (hco3 !== null) {
+ if (hco3 < 22) {
+ ekle('🧪 Asit-Baz Dengesi', 'Bikarbonat (HCO₃)', hco3+' mEq/L', 'low',
+ hco3 < 18 ? 'AĞIR METABOLİK ASİDOZ (<18 mEq/L)' : 'METABOLİK ASİDOZ (<22 mEq/L)',
+ ['Hedef: pre-diyaliz serum bikarbonat ≥22 mEq/L (KDOQI/KDIGO)',
+  'Kronik asidoz kemik kaybı, kas yıkımı, malnütrisyon ve hiperkalemiyi kötüleştirir'],
+ [hco3 < 18 ? 'Oral sodyum bikarbonat 2–3 g/gün başla (ağır asidoz)'
+            : 'Oral sodyum bikarbonat 1–2 g/gün değerlendir',
+  'Protein-enerji alımını ve diyalize uyumu gözden geçir'],
+ '1 ay kontrol',
+ ['Diyalizat bikarbonat konsantrasyonunu artır (ör. 35 → 37–38 mmol/L)',
+  'Yetersizse diyaliz süresi/sıklığını değerlendir']);
+ } else if (hco3 > 26) {
+ ekle('🧪 Asit-Baz Dengesi', 'Bikarbonat (HCO₃)', hco3+' mEq/L', 'high', 'METABOLİK ALKALOZ (>26 mEq/L)',
+ ['Pre-diyaliz bikarbonat >26 → diyalizat tamponu fazla olabilir',
+  'Aşırı alkaloz aritmi ve yumuşak doku kalsifikasyonu riskini artırır'],
+ ['Oral alkali (sodyum bikarbonat) alıyorsa dozu azalt veya kes'],
+ '1 ay kontrol',
+ ['Diyalizat bikarbonat konsantrasyonunu azalt']);
+ } else {
+ ekle('🧪 Asit-Baz Dengesi', 'Bikarbonat (HCO₃)', hco3+' mEq/L', 'normal', 'HEDEF ARALIKTA (22-26 mEq/L)', [], [], '3 ay kontrol', []);
  }
  }
 
