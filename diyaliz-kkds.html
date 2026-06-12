@@ -192,7 +192,6 @@
  <div id="tabs">
  <button class="tab aktif" onclick="sekmeAc('lab',this)">🔬 Laboratuvar</button>
  <button class="tab" onclick="sekmeAc('tedavi',this)" id="tab-tedavi">💊 Tedavi</button>
- <button class="tab" onclick="sekmeAc('grafik',this)">📈 Trend</button>
  <button class="tab" onclick="sekmeAc('ai',this)">🧠 AI Yorum</button>
  </div>
 
@@ -238,15 +237,6 @@
  </div>
  </div>
 
- <!-- GRAFİK PANELİ -->
-    <div class="panel" id="panel-grafik">
-      <div class="bos-kutu" id="grafik-bos">
-        <div class="bos-ikon">📈</div>
-        <div class="bos-baslik">Trend grafiği yok</div>
-        <div style="font-size:13px">Önce lab sonuçlarını çekin</div>
-      </div>
-      <div id="grafik-icerik"></div>
-    </div>
  <!-- AI PANELİ -->
  <div class="panel" id="panel-ai">
  <div class="ai-kutu">
@@ -484,8 +474,6 @@ function renderLabTablo(sonuclar) {
  document.getElementById('lab-tablo').style.display = 'block';
  document.getElementById('bos-kutu').style.display = 'none';
 
- // Grafik render
-  renderGrafik(sonuclar);
  // Anomali badge
  const badge = document.getElementById('anomali-badge');
  if (anomali > 0) { badge.textContent = '⚠️ ' + anomali + ' ANOMALİ'; badge.style.display = 'inline-block'; }
@@ -1142,7 +1130,14 @@ function renderGrafik(sonuclar) {
 
   GRAFIK_PARAMS.forEach(param => {
     // Bu parametreye ait tüm sonuçları bul
-    const veri = sirali.filter(s => bulSonuc(s.kisaAdi, ...param.aramaTerim) && !isNaN(parseFloat(s.sonuc)));
+    const tumVeri = sirali.filter(s => bulSonuc(s.kisaAdi, ...param.aramaTerim) && !isNaN(parseFloat(s.sonuc)));
+    // Aynı günden birden fazla varsa son olanı al (prediyaliz/postdiyaliz sorunu)
+    const gunMap = new Map();
+    tumVeri.forEach(s => {
+      const tarihKey = String(s.tarih).split(' ')[0];
+      gunMap.set(tarihKey, s); // Son ölçümü sakla
+    });
+    const veri = Array.from(gunMap.values());
     if (veri.length < 2) return; // En az 2 nokta lazım
 
     const noktalar = veri.map(s => ({
@@ -1188,23 +1183,49 @@ function renderGrafik(sonuclar) {
 
 function parseTarih(tarihStr) {
   if (!tarihStr) return 0;
-  // "06.05.2026 22:43:00" veya "2026-05-06" formatları
-  const parts = tarihStr.split(' ')[0];
-  if (parts.includes('.')) {
-    const [g, a, y] = parts.split('.');
-    return new Date(`${y}-${a}-${g}`).getTime();
-  }
-  return new Date(parts).getTime();
+  try {
+    // "06.05.2026 22:43:00" formatı
+    const str = String(tarihStr).trim();
+    const bolum = str.split(' ')[0];
+    if (bolum.includes('.')) {
+      const parcalar = bolum.split('.');
+      if (parcalar.length === 3) {
+        const g = parcalar[0].padStart(2,'0');
+        const a = parcalar[1].padStart(2,'0');
+        const y = parcalar[2].length === 2 ? '20' + parcalar[2] : parcalar[2];
+        const d = new Date(`${y}-${a}-${g}`);
+        if (!isNaN(d.getTime())) return d.getTime();
+      }
+    }
+    // "2026-05-06" formatı
+    if (bolum.includes('-')) {
+      const d = new Date(bolum);
+      if (!isNaN(d.getTime())) return d.getTime();
+    }
+    return 0;
+  } catch(e) { return 0; }
 }
 
 function formatTarih(tarihStr) {
   if (!tarihStr) return '?';
-  const parts = tarihStr.split(' ')[0];
-  if (parts.includes('.')) {
-    const [g, a, y] = parts.split('.');
-    return `${g}.${a}.${y.slice(2)}`;
-  }
-  return parts;
+  try {
+    const str = String(tarihStr).trim();
+    const bolum = str.split(' ')[0];
+    if (bolum.includes('.')) {
+      const parcalar = bolum.split('.');
+      if (parcalar.length === 3) {
+        const g = parcalar[0].padStart(2,'0');
+        const a = parcalar[1].padStart(2,'0');
+        const y = parcalar[2].length === 4 ? parcalar[2].slice(2) : parcalar[2];
+        return `${g}.${a}.${y}`;
+      }
+    }
+    if (bolum.includes('-')) {
+      const [y, a, g] = bolum.split('-');
+      return `${g}.${a}.${y.slice(2)}`;
+    }
+    return bolum;
+  } catch(e) { return '?'; }
 }
 
 function cizGrafik(noktalar, param) {
