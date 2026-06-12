@@ -113,37 +113,6 @@
  .ai-metin { font-size: 14px; color: #374151; line-height: 1.8; white-space: pre-wrap; }
  .ai-uyari { margin-top: 12px; padding: 8px 12px; background: #fff7ed; border-radius: 8px; font-size: 11px; color: #9a3412; }
 
- /* TOPLU TARAMA */
- #tarama { position: fixed; inset: 0; background: #f1f5f9; z-index: 100; display: none; flex-direction: column; }
- #tarama.acik { display: flex; }
- .tarama-header { background: #0f172a; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
- .tarama-header h2 { color: #f8fafc; font-size: 19px; font-weight: 900; margin-top: 1px; }
- .tarama-govde { flex: 1; overflow-y: auto; padding: 20px 24px; max-width: 1000px; margin: 0 auto; width: 100%; }
- .tarama-kontrol { background: #fff; border-radius: 14px; padding: 16px 20px; margin-bottom: 16px; display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
- .tarama-progress { height: 8px; background: #e2e8f0; border-radius: 20px; overflow: hidden; }
- .tarama-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #2563eb, #1d4ed8); transition: width 0.2s; }
- .tarama-baslik-satir { display: grid; grid-template-columns: 1.8fr 1.1fr 1.3fr 3fr; gap: 10px; padding: 10px 14px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
- .tarama-baslik-satir span { font-size: 11px; font-weight: 800; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
- .tarama-satir { display: grid; grid-template-columns: 1.8fr 1.1fr 1.3fr 3fr; gap: 10px; align-items: center; padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.12s; }
- .tarama-satir:hover { background: #f8fafc; }
- .tar-ad { font-size: 14px; font-weight: 700; color: #1e293b; }
- .tar-tc { font-size: 12px; color: #64748b; font-family: monospace; }
- .tar-chip { display: flex; flex-wrap: wrap; }
- .sev-badge { display: inline-block; border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 800; margin: 0 4px 2px 0; white-space: nowrap; }
- .sev-kritik { background: #fee2e2; color: #991b1b; }
- .sev-uyari { background: #ffedd5; color: #9a3412; }
- .sev-temiz { background: #dcfce7; color: #166534; }
- .sev-bos { background: #f1f5f9; color: #64748b; }
- .sev-hata { background: #f1f5f9; color: #94a3b8; }
- .chip { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; margin: 2px 3px 2px 0; white-space: nowrap; }
- .chip-kritik { background: #fee2e2; color: #b91c1c; }
- .chip-high { background: #fff7ed; color: #c2410c; }
- .chip-low { background: #eff6ff; color: #1d4ed8; }
- @media (max-width: 640px) {
- .tarama-baslik-satir { display: none; }
- .tarama-satir { grid-template-columns: 1fr; gap: 4px; }
- }
-
  #ana { display: none; }
  #ana.goster { display: block; }
  #giris.gizli { display: none; }
@@ -167,9 +136,6 @@
  oninput="aramaYap(this.value)"
  onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#334155'">
  </div>
-
- <!-- Toplu Tarama -->
- <button onclick="taramaAc()" style="width:100%;padding:12px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:16px">🔍 Toplu Anomali Taraması — Tüm Hastaları Tara</button>
 
  <!-- Manuel TC girişi -->
  <div style="background:#1e293b;border-radius:14px;padding:16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
@@ -206,55 +172,6 @@
  <input id="inp-kullanici" value="YasamLab">
  <label>Şifre</label>
  <input id="inp-sifre" value="Yas*88amX48_">
- </div>
- </div>
-</div>
-
-<!-- TOPLU TARAMA EKRANI -->
-<div id="tarama">
- <div class="tarama-header">
- <div>
- <div style="color:#3b82f6;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase">Diyaliz KKDS</div>
- <h2>🔍 Toplu Anomali Taraması</h2>
- </div>
- <button class="btn-geri" onclick="taramaKapat()">✕ Kapat</button>
- </div>
- <div class="tarama-govde">
- <div class="tarama-kontrol">
- <div class="tarih-grup">
- <label>Başlangıç</label>
- <input type="date" id="tarama-tarih1">
- </div>
- <div class="tarih-grup">
- <label>Bitiş</label>
- <input type="date" id="tarama-tarih2">
- </div>
- <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#475569;cursor:pointer;padding-bottom:6px">
- <input type="checkbox" id="tarama-aktif" checked style="width:16px;height:16px;cursor:pointer"> Sadece aktif hastalar
- </label>
- <button class="btn-cek" id="tarama-baslat" onclick="taramaBaslat()">▶ Taramayı Başlat</button>
- <button class="btn-geri" id="tarama-durdur" onclick="taramaIptalEdildi=true" style="display:none">⏹ Durdur</button>
- </div>
-
- <div id="tarama-ilerleme-kutu" style="display:none;background:#fff;border-radius:14px;padding:16px 20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.08)">
- <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px;flex-wrap:wrap">
- <span id="tarama-ilerleme-txt" style="font-size:13px;font-weight:700;color:#475569">Hazırlanıyor…</span>
- <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#64748b;cursor:pointer">
- <input type="checkbox" id="tarama-filtre" onchange="renderTaramaSonuclari()"> Sadece anomalili göster
- </label>
- </div>
- <div class="tarama-progress"><div class="tarama-progress-bar" id="tarama-bar"></div></div>
- </div>
-
- <div id="tarama-sonuc-kutu" style="display:none;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08)">
- <div class="tarama-baslik-satir">
- <span>Hasta</span><span>TC</span><span>Durum</span><span>Öne Çıkan Bulgular</span>
- </div>
- <div id="tarama-satirlar"></div>
- </div>
-
- <div style="margin-top:14px;font-size:11px;color:#94a3b8;line-height:1.6">
- ⚠️ Tarama, her hasta için seçili tarih aralığındaki en güncel ölçümleri KDIGO hedeflerine göre değerlendirir. Sonuçlar triyaj amaçlıdır; nihai değerlendirme için hastaya tıklayıp tam lab + tedavi sekmelerini inceleyin.
  </div>
  </div>
 </div>
@@ -465,12 +382,6 @@ const bugun = new Date().toISOString().split('T')[0];
 const birYilOnce = new Date(Date.now() - 365*24*60*60*1000).toISOString().split('T')[0];
 document.getElementById('tarih1').value = birYilOnce;
 document.getElementById('tarih2').value = bugun;
-// Toplu tarama varsayılan aralığı: son 90 gün
-const ucAyOnce = new Date(Date.now() - 90*24*60*60*1000).toISOString().split('T')[0];
-const _tt1 = document.getElementById('tarama-tarih1');
-const _tt2 = document.getElementById('tarama-tarih2');
-if (_tt1) _tt1.value = ucAyOnce;
-if (_tt2) _tt2.value = bugun;
 
 // ── YARDIMCILAR ──────────────────────────────────────────────────────────────
 function toggleAyar() {
@@ -479,16 +390,9 @@ function toggleAyar() {
 }
 
 function geriDon() {
+ document.getElementById('giris').classList.remove('gizli');
  document.getElementById('ana').classList.remove('goster');
  labSonuclari = [];
- // Taramadan gelindiyse tarama ekranına geri dön
- if (window.taramadanGelindi) {
-   window.taramadanGelindi = false;
-   document.getElementById('giris').classList.remove('gizli');
-   document.getElementById('tarama').classList.add('acik');
-   return;
- }
- document.getElementById('giris').classList.remove('gizli');
  // Hasta arama kutusunu temizle ve tam listeyi göster
  const aramaInput = document.querySelector('#giris input');
  if (aramaInput) aramaInput.value = '';
@@ -623,202 +527,6 @@ function parseXml(xmlText) {
  }
 
  return sonuclar;
-}
-
-// ── ORTAK SOAP ÇEKME YARDIMCISI ─────────────────────────────────────────────
-const SOAP_URL = 'https://yasamlab.iltelis.com/Integration/Integration.asmx';
-
-async function sonucCek(tc, t1, t2) {
- const kullanici = document.getElementById('inp-kullanici').value;
- const sifre = document.getElementById('inp-sifre').value;
- const soap = buildSoap(kullanici, sifre, tc, t1, t2);
- try {
- const res = await fetch(SOAP_URL, {
- method: 'POST',
- headers: {
- 'Content-Type': 'application/soap+xml; charset=utf-8',
- 'SOAPAction': 'http://tempuri.org/HastaSonuclariKimlikNO'
- },
- body: soap
- });
- if (!res.ok) return { ok: false, error: 'HTTP ' + res.status };
- const xml = await res.text();
- return { ok: true, sonuclar: parseXml(xml) };
- } catch (e) {
- return { ok: false, error: e.message };
- }
-}
-
-// ── TOPLU ANOMALİ TARAMASI ──────────────────────────────────────────────────
-let taramaCalisiyor = false;
-let taramaIptalEdildi = false;
-let taramaSonuclari = [];
-
-function taramaAc() {
- document.getElementById('tarama').classList.add('acik');
-}
-function taramaKapat() {
- taramaIptalEdildi = true;
- document.getElementById('tarama').classList.remove('acik');
-}
-
-// Bir öneri "kritik/acil" mi? (analizEt etiketlerine göre)
-function kritikMi(o) {
- const l = (o.label || '').toLocaleUpperCase('tr');
- return l.includes('KRİTİK') || l.includes('ACİL') || l.includes('DERHAL');
-}
-
-// Her test için en güncel ölçümü tut (triyaj değerlendirmesi için)
-function sonLabDegerler(sonuclar) {
- const map = new Map();
- (sonuclar || []).forEach(s => {
- const ad = (s.kisaAdi || s.uzunAdi || '').toLowerCase().trim();
- if (!ad) return;
- const t = parseTarih(s.tarih);
- const onceki = map.get(ad);
- if (!onceki || t >= parseTarih(onceki.tarih)) map.set(ad, s);
- });
- return Array.from(map.values());
-}
-
-function guncelleIlerleme(tamam, toplam, hata) {
- const yuzde = toplam ? Math.round((tamam / toplam) * 100) : 0;
- const bar = document.getElementById('tarama-bar');
- if (bar) bar.style.width = yuzde + '%';
- const anomalili = taramaSonuclari.filter(x => (x.kritikSayi + x.uyariSayi) > 0).length;
- const txt = document.getElementById('tarama-ilerleme-txt');
- if (txt) txt.textContent = `${tamam} / ${toplam} tarandı · ${anomalili} anomalili` + (hata ? ` · ${hata} hata/boş` : '');
-}
-
-async function taramaBaslat() {
- if (taramaCalisiyor) return;
- taramaCalisiyor = true;
- taramaIptalEdildi = false;
- taramaSonuclari = [];
-
- const t1 = document.getElementById('tarama-tarih1').value;
- const t2 = document.getElementById('tarama-tarih2').value;
- const sadeceAktif = document.getElementById('tarama-aktif').checked;
- const liste = sadeceAktif ? HASTALAR.filter(h => h.tip === 'Aktif') : HASTALAR.slice();
- const toplam = liste.length;
- let tamam = 0, hata = 0, idx = 0;
-
- document.getElementById('tarama-baslat').disabled = true;
- document.getElementById('tarama-durdur').style.display = 'inline-block';
- document.getElementById('tarama-ilerleme-kutu').style.display = 'block';
- document.getElementById('tarama-sonuc-kutu').style.display = 'block';
- guncelleIlerleme(0, toplam, 0);
- renderTaramaSonuclari();
-
- async function isci() {
- while (idx < liste.length && !taramaIptalEdildi) {
- const h = liste[idx++];
- const r = await sonucCek(h.tc, t1, t2);
- let kayit;
- if (!r.ok) {
- hata++;
- kayit = Object.assign({}, h, { hata: r.error, kritikSayi: 0, uyariSayi: 0, bulgular: [], sonuclar: [] });
- } else if (!r.sonuclar || r.sonuclar.length === 0) {
- hata++;
- kayit = Object.assign({}, h, { bos: true, kritikSayi: 0, uyariSayi: 0, bulgular: [], sonuclar: [] });
- } else {
- const guncel = sonLabDegerler(r.sonuclar);
- const oneriler = analizEt(guncel, false);
- const anormal = oneriler.filter(o => o.durum !== 'normal');
- const kritik = anormal.filter(kritikMi);
- const uyari = anormal.filter(o => !kritikMi(o));
- const bulgular = anormal
- .slice()
- .sort((a, b) => (kritikMi(b) ? 1 : 0) - (kritikMi(a) ? 1 : 0))
- .slice(0, 6)
- .map(o => ({ param: o.param, deger: o.deger, durum: o.durum, kritik: kritikMi(o) }));
- kayit = Object.assign({}, h, { kritikSayi: kritik.length, uyariSayi: uyari.length, bulgular, sonuclar: r.sonuclar });
- }
- taramaSonuclari.push(kayit);
- tamam++;
- guncelleIlerleme(tamam, toplam, hata);
- renderTaramaSonuclari();
- }
- }
-
- const KONKURAN = 4;
- const isciler = [];
- for (let w = 0; w < KONKURAN; w++) isciler.push(isci());
- await Promise.all(isciler);
-
- taramaCalisiyor = false;
- document.getElementById('tarama-durdur').style.display = 'none';
- const bbtn = document.getElementById('tarama-baslat');
- bbtn.disabled = false;
- bbtn.textContent = taramaIptalEdildi ? '🔄 Taramayı Sürdür' : '🔄 Yeniden Tara';
-}
-
-function renderTaramaSonuclari() {
- const kutu = document.getElementById('tarama-satirlar');
- if (!kutu) return;
- const sadeceAnomali = document.getElementById('tarama-filtre')?.checked;
- let liste = taramaSonuclari.slice();
- liste.sort((a, b) =>
- (b.kritikSayi - a.kritikSayi) ||
- (b.uyariSayi - a.uyariSayi) ||
- a.ad.localeCompare(b.ad, 'tr')
- );
- if (sadeceAnomali) liste = liste.filter(x => (x.kritikSayi + x.uyariSayi) > 0);
-
- kutu.innerHTML = '';
- if (liste.length === 0) {
- kutu.innerHTML = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px">' +
- (taramaSonuclari.length === 0 ? 'Henüz sonuç yok' : 'Anomalili hasta bulunamadı') + '</div>';
- return;
- }
-
- liste.forEach(x => {
- const satir = document.createElement('div');
- satir.className = 'tarama-satir';
- let durumEt;
- if (x.hata) durumEt = '<span class="sev-badge sev-hata">veri alınamadı</span>';
- else if (x.bos) durumEt = '<span class="sev-badge sev-bos">sonuç yok</span>';
- else if (x.kritikSayi + x.uyariSayi === 0) durumEt = '<span class="sev-badge sev-temiz">✓ temiz</span>';
- else durumEt =
- (x.kritikSayi ? `<span class="sev-badge sev-kritik">⚠ ${x.kritikSayi} kritik</span>` : '') +
- (x.uyariSayi ? `<span class="sev-badge sev-uyari">${x.uyariSayi} uyarı</span>` : '');
-
- const chipler = (x.bulgular || []).map(b => {
- const cls = b.kritik ? 'chip chip-kritik' : b.durum === 'high' ? 'chip chip-high' : 'chip chip-low';
- const ok = b.durum === 'high' ? '↑' : b.durum === 'low' ? '↓' : '';
- return `<span class="${cls}">${b.param} ${ok}${b.deger}</span>`;
- }).join('');
-
- satir.innerHTML = `
- <span class="tar-ad">${x.ad}</span>
- <span class="tar-tc">${x.tc}</span>
- <span class="tar-sev">${durumEt}</span>
- <span class="tar-chip">${chipler}</span>`;
-
- if (!x.hata && !x.bos) {
- satir.onclick = () => taramaHastaAc(x.tc, x.ad, x.sonuclar);
- } else {
- satir.style.cursor = 'default';
- satir.style.opacity = '0.55';
- }
- kutu.appendChild(satir);
- });
-}
-
-// Tarama sonucundan hastayı, verisini yeniden çekmeden aç
-function taramaHastaAc(tc, ad, sonuclar) {
- document.getElementById('inp-tc').value = tc;
- document.getElementById('inp-ad').value = ad;
- hastaGir(tc, ad); // ana ekranı açar + ekranı temizler
- document.getElementById('tarama').classList.remove('acik');
- window.taramadanGelindi = true;
- if (sonuclar && sonuclar.length) {
- labSonuclari = sonuclar;
- renderLabTablo(sonuclar);
- renderTedavi(sonuclar);
- const tarih = new Date().toLocaleString('tr-TR');
- document.getElementById('goster-alt').textContent = 'TC: ' + tc + ' · taramadan';
- }
 }
 
 // ── LAB ÇEK ──────────────────────────────────────────────────────────────────
@@ -1711,12 +1419,14 @@ function renderTedavi(sonuclar) {
 // ── AI YORUM ──────────────────────────────────────────────────────────────────
 // ── GRAFİK FONKSİYONLARI ──────────────────────────────────────────────────
 const GRAFIK_PARAMS = [
+  // Anemi grubu — alt alta: Hemoglobin → Ferritin → TSAT
   { aramaTerim: ['hemoglobin','hgb','hb'], ad: 'Hemoglobin', birim: 'g/dL', min: 10.0, max: 11.5, renk: '#ef4444' },
+  { aramaTerim: ['ferritin'], ad: 'Ferritin', birim: 'ng/mL', min: 200, max: 500, renk: '#ec4899' },
+  { aramaTerim: ['transferrin sat','tsat','demir saturasyon','satürasyon'], ad: 'TSAT', birim: '%', min: 20, max: 30, renk: '#f43f5e' },
+  // Mineral metabolizma ve diğerleri
   { aramaTerim: ['fosfor','fosfat','phosph'], ad: 'Fosfat', birim: 'mg/dL', min: 3.5, max: 5.5, renk: '#f97316' },
   { aramaTerim: ['kalsiyum','calcium'], ad: 'Kalsiyum', birim: 'mg/dL', min: 8.4, max: 10.2, renk: '#eab308' },
   { aramaTerim: ['pth','parathormon'], ad: 'PTH', birim: 'pg/mL', min: 130, max: 585, renk: '#8b5cf6' },
-  { aramaTerim: ['ferritin'], ad: 'Ferritin', birim: 'ng/mL', min: 200, max: 500, renk: '#ec4899' },
-  { aramaTerim: ['transferrin sat','tsat','demir saturasyon','satürasyon'], ad: 'TSAT', birim: '%', min: 20, max: 30, renk: '#f43f5e' },
   { aramaTerim: ['potasyum','kalium'], ad: 'Potasyum', birim: 'mEq/L', min: 3.5, max: 5.5, renk: '#06b6d4' },
   { aramaTerim: ['albumin'], ad: 'Albumin', birim: 'g/dL', min: 3.8, max: 5.0, renk: '#10b981' },
 ];
