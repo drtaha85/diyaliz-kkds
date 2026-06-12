@@ -404,6 +404,62 @@ function parseXml(xmlText) {
  sonuclar.push({ kisaAdi: kisaAd, uzunAdi: get('UzunAdi'), sonuc, birim: get('Birim'), minDeger: get('MinDeger'), maxDeger: get('MaxDeger'), tarih, durum: hesaplaDurum(sonuc, get('MinDeger'), get('MaxDeger')) });
  });
  }
+ // ── TSAT OTOMATİK HESAPLA (Demir / TDBK × 100) ──────────────────────
+ const fe = sonuclar.find(s => {
+   const ad = (s.kisaAdi + ' ' + s.uzunAdi).toLowerCase();
+   return ad.includes('demir') && !ad.includes('bağlama') && !ad.includes('baglama') && !ad.includes('tdbk') && !ad.includes('uibc');
+ });
+ const tdbk = sonuclar.find(s => {
+   const ad = (s.kisaAdi + ' ' + s.uzunAdi).toLowerCase();
+   return ad.includes('tdbk') || ad.includes('total demir') || (ad.includes('demir') && (ad.includes('bağlama') || ad.includes('baglama')) && !ad.includes('uibc'));
+ });
+ const uibc = sonuclar.find(s => {
+   const ad = (s.kisaAdi + ' ' + s.uzunAdi).toLowerCase();
+   return ad.includes('uibc');
+ });
+
+ // Aynı tarihli Fe ve TDBK çiftleri için TSAT hesapla
+ if (fe) {
+   // Fe ile aynı tarihteki tüm Fe ölçümlerini bul
+   const feOlcumler = sonuclar.filter(s => {
+     const ad = (s.kisaAdi + ' ' + s.uzunAdi).toLowerCase();
+     return ad.includes('demir') && !ad.includes('bağlama') && !ad.includes('baglama') && !ad.includes('tdbk') && !ad.includes('uibc');
+   });
+   feOlcumler.forEach(feOlcum => {
+     const feDeger = parseFloat(feOlcum.sonuc);
+     if (isNaN(feDeger)) return;
+     // Aynı tarihte TDBK var mı?
+     let tdbkDeger = null;
+     const tdbkAyni = sonuclar.find(s => {
+       const ad = (s.kisaAdi + ' ' + s.uzunAdi).toLowerCase();
+       return (ad.includes('tdbk') || ad.includes('total demir') || (ad.includes('demir') && (ad.includes('bağlama') || ad.includes('baglama')))) && s.tarih === feOlcum.tarih && !ad.includes('uibc');
+     });
+     if (tdbkAyni) {
+       tdbkDeger = parseFloat(tdbkAyni.sonuc);
+     } else {
+       // TDBK yoksa Demir + UIBC ile hesapla
+       const uibcAyni = sonuclar.find(s => {
+         const ad = (s.kisaAdi + ' ' + s.uzunAdi).toLowerCase();
+         return ad.includes('uibc') && s.tarih === feOlcum.tarih;
+       });
+       if (uibcAyni) tdbkDeger = feDeger + parseFloat(uibcAyni.sonuc);
+     }
+     if (tdbkDeger && tdbkDeger > 0) {
+       const tsatDeger = (feDeger / tdbkDeger) * 100;
+       sonuclar.push({
+         kisaAdi: 'TSAT',
+         uzunAdi: 'Transferrin Satürasyonu (hesaplanmış)',
+         sonuc: tsatDeger.toFixed(1),
+         birim: '%',
+         minDeger: '20',
+         maxDeger: '30',
+         tarih: feOlcum.tarih,
+         durum: hesaplaDurum(tsatDeger.toFixed(1), '20', '30')
+       });
+     }
+   });
+ }
+
  return sonuclar;
 }
 
@@ -1116,6 +1172,7 @@ const GRAFIK_PARAMS = [
   { aramaTerim: ['kalsiyum','calcium'], ad: 'Kalsiyum', birim: 'mg/dL', min: 8.4, max: 10.2, renk: '#eab308' },
   { aramaTerim: ['pth','parathormon'], ad: 'PTH', birim: 'pg/mL', min: 130, max: 585, renk: '#8b5cf6' },
   { aramaTerim: ['ferritin'], ad: 'Ferritin', birim: 'ng/mL', min: 200, max: 500, renk: '#ec4899' },
+  { aramaTerim: ['transferrin sat','tsat','demir saturasyon','satürasyon'], ad: 'TSAT', birim: '%', min: 20, max: 30, renk: '#f43f5e' },
   { aramaTerim: ['potasyum','kalium'], ad: 'Potasyum', birim: 'mEq/L', min: 3.5, max: 5.5, renk: '#06b6d4' },
   { aramaTerim: ['albumin'], ad: 'Albumin', birim: 'g/dL', min: 3.8, max: 5.0, renk: '#10b981' },
 ];
