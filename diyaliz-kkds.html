@@ -494,6 +494,8 @@ function renderLabTablo(sonuclar) {
  const tabTedavi = document.getElementById('tab-tedavi');
  if (anomali > 0) tabTedavi.innerHTML = `💊 Tedavi <span class="tab-badge">${anomali}</span>`;
  else tabTedavi.textContent = '💊 Tedavi';
+
+  try { renderGrafik(sonuclar); } catch(e) { console.log('Grafik hatası:', e); }
 }
 
 // ── TEDAVİ ANALİZ ────────────────────────────────────────────────────────────
