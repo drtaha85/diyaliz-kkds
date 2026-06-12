@@ -324,6 +324,52 @@ function hastaGir(tc, ad) {
  document.getElementById('goster-alt').textContent = 'TC: ' + tc;
  document.getElementById('giris').classList.add('gizli');
  document.getElementById('ana').classList.add('goster');
+ // Yeni hastaya geçince önceki hastanın verilerini TEMİZLE
+ ekraniTemizle();
+}
+
+function ekraniTemizle() {
+ // Lab sonuçlarını sıfırla
+ labSonuclari = [];
+ window.sonLabSonuclari = [];
+ // Lab tablosu
+ const labSatirlar = document.getElementById('lab-satirlar');
+ if (labSatirlar) labSatirlar.innerHTML = '';
+ const labTablo = document.getElementById('lab-tablo');
+ if (labTablo) labTablo.style.display = 'none';
+ const labArama = document.getElementById('lab-arama');
+ if (labArama) labArama.value = '';
+ // Boş kutu göster
+ const bosKutu = document.getElementById('bos-kutu');
+ if (bosKutu) bosKutu.style.display = 'block';
+ // Tedavi kartları
+ const oneriIcerik = document.getElementById('oneri-icerik');
+ if (oneriIcerik) oneriIcerik.innerHTML = '';
+ const tedaviBos = document.getElementById('tedavi-bos');
+ if (tedaviBos) tedaviBos.style.display = 'block';
+ const onayKutu = document.getElementById('onay-kutu');
+ if (onayKutu) onayKutu.style.display = 'none';
+ const demirSecim = document.getElementById('demir-tedavi-secim');
+ if (demirSecim) demirSecim.style.display = 'none';
+ const demirAliyor = document.getElementById('demir-tedavi-aliyor');
+ if (demirAliyor) demirAliyor.checked = false;
+ // Grafik
+ const grafikIcerik = document.getElementById('grafik-icerik');
+ if (grafikIcerik) grafikIcerik.innerHTML = '';
+ const grafikBos = document.getElementById('grafik-bos');
+ if (grafikBos) grafikBos.style.display = 'block';
+ // AI yorum
+ const aiSonuc = document.getElementById('ai-sonuc');
+ if (aiSonuc) aiSonuc.style.display = 'none';
+ // Anomali badge
+ const anomaliBadge = document.getElementById('anomali-badge');
+ if (anomaliBadge) anomaliBadge.style.display = 'none';
+ // Tab badge sıfırla
+ const tabTedavi = document.getElementById('tab-tedavi');
+ if (tabTedavi) tabTedavi.textContent = '💊 Tedavi';
+ // Laboratuvar sekmesine dön
+ const ilkTab = document.querySelector('.tab');
+ if (ilkTab) sekmeAc('lab', ilkTab);
 }
 
 // ── GLOBAL DURUM ─────────────────────────────────────────────────────────────
