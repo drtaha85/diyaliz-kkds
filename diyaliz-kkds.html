@@ -67,6 +67,7 @@
  .lab-satir.high { background: #fff7ed; }
  .lab-satir.low { background: #eff6ff; }
  .lab-satir .test-ad { font-size: 13px; color: #334155; }
+ .lab-satir .test-tarih { font-size: 10px; color: #94a3b8; font-weight: 400; }
  .lab-satir.high .test-ad, .lab-satir.low .test-ad { font-weight: 700; }
  .lab-satir .sonuc-deger { font-size: 14px; font-weight: 700; }
  .lab-satir.high .sonuc-deger { color: #9a3412; }
@@ -217,10 +218,16 @@
  <div style="font-size:13px">Tarih aralığı seçip butona tıklayın</div>
  </div>
  <div class="lab-tablo" id="lab-tablo" style="display:none">
+ <div style="padding:10px 12px;background:#fff;border-bottom:1px solid #e2e8f0">
+   <input type="text" id="lab-arama" placeholder="🔍 Test ara (örn: hgb, kreatinin, potasyum)..." 
+     oninput="labAra(this.value)" 
+     style="width:100%;padding:9px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none;font-family:inherit;box-sizing:border-box">
+ </div>
  <div class="lab-baslik">
  <span>Test Adı</span><span>Sonuç</span><span>Referans</span><span>Durum</span>
  </div>
  <div id="lab-satirlar"></div>
+ <div id="lab-bulunamadi" style="display:none;padding:20px;text-align:center;color:#94a3b8;font-size:13px">Aramayla eşleşen test bulunamadı</div>
  </div>
  </div>
 
@@ -537,9 +544,10 @@ function renderLabTablo(sonuclar) {
  sonuclar.forEach(s => {
  const div = document.createElement('div');
  div.className = 'lab-satir ' + s.durum;
+ div.setAttribute('data-ara', ((s.kisaAdi || '') + ' ' + (s.uzunAdi || '')).toLowerCase());
  const badgeLabel = s.durum === 'high' ? '↑ YÜK' : s.durum === 'low' ? '↓ DÜŞ' : '✓ N';
  div.innerHTML = `
- <span class="test-ad">${s.kisaAdi || s.uzunAdi || "?"}</span>
+ <span class="test-ad">${s.kisaAdi || s.uzunAdi || "?"}${s.tarih ? `<br><span class="test-tarih">📅 ${formatTarih(s.tarih)}</span>` : ''}</span>
  <span class="sonuc-deger">${s.sonuc} <span class="sonuc-birim">${s.birim}</span></span>
  <span class="ref-deger">${s.minDeger && s.maxDeger ? s.minDeger + ' – ' + s.maxDeger : '—'}</span>
  <span class="badge ${s.durum}">${badgeLabel}</span>
@@ -561,6 +569,24 @@ function renderLabTablo(sonuclar) {
  else tabTedavi.textContent = '💊 Tedavi';
 
   try { renderGrafik(sonuclar); } catch(e) { console.log('Grafik hatası:', e); }
+}
+
+// ── LAB ARAMA FİLTRELEME ─────────────────────────────────────────────────
+function labAra(metin) {
+  const arama = (metin || '').toLowerCase().trim();
+  const satirlar = document.querySelectorAll('#lab-satirlar .lab-satir');
+  let bulunan = 0;
+  satirlar.forEach(satir => {
+    const testAdi = satir.getAttribute('data-ara') || '';
+    if (arama === '' || testAdi.includes(arama)) {
+      satir.style.display = '';
+      bulunan++;
+    } else {
+      satir.style.display = 'none';
+    }
+  });
+  const bulunamadi = document.getElementById('lab-bulunamadi');
+  if (bulunamadi) bulunamadi.style.display = (bulunan === 0 && arama !== '') ? 'block' : 'none';
 }
 
 // ── TEDAVİ ANALİZ ────────────────────────────────────────────────────────────
