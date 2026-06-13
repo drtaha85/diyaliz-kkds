@@ -1178,8 +1178,25 @@ function analizEt(sonuclar, demirAliyor, kiloKg) {
    const refIlac = [];
    const epo50 = epoDozHesapla(kiloKg, 50);
    const epo100 = epoDozHesapla(kiloKg, 100);
-   refIlac.push(`EPO 50 IU/kg → ${_tr(epo50.seansDoz)} IU/seans  (3×/hafta = ${_tr(epo50.haftalik)} IU/hafta)`);
-   refIlac.push(`EPO 100 IU/kg → ${_tr(epo100.seansDoz)} IU/seans  (3×/hafta = ${_tr(epo100.haftalik)} IU/hafta)`);
+   const epo50txt = `EPO 50 IU/kg → ${_tr(epo50.seansDoz)} IU/seans  (3×/hafta = ${_tr(epo50.haftalik)} IU/hafta)`;
+   const epo100txt = `EPO 100 IU/kg → ${_tr(epo100.seansDoz)} IU/seans  (3×/hafta = ${_tr(epo100.haftalik)} IU/hafta)`;
+   // EPO referansı Hb'ye bağlıdır: başlatma eşiği <10 g/dL, ≥11.5 → ESA DURDUR.
+   if (hgb === null) {
+     refIlac.push('⚠️ Hb ölçülmedi — ESA başlatma kararı Hb\'ye bağlıdır (eşik <10 g/dL). Referans başlangıç dozları:');
+     refIlac.push(epo50txt);
+     refIlac.push(epo100txt);
+   } else if (hgb >= 11.5) {
+     refIlac.push(`⛔ Hb ${hgb} g/dL ≥11.5 → hedef aşıldı, ESA DURDUR. Başlatma dozu UYGULANMAZ.`);
+   } else if (hgb >= 10) {
+     refIlac.push(`Hb ${hgb} g/dL → başlatma eşiği (<10) üstünde; yeni ESA başlatma genelde endike değil.`);
+     refIlac.push(`(İdame/referans) ${epo50txt}`);
+     refIlac.push(`(İdame/referans) ${epo100txt}`);
+   } else {
+     // Hb < 10 → ESA başlatma endike
+     refIlac.push(`Hb ${hgb} g/dL <10 → ESA başlatma endike. Başlangıç dozları:`);
+     refIlac.push(epo50txt);
+     refIlac.push(epo100txt);
+   }
    if (hgb !== null) {
      const g = ganzoniDemirAcigi(kiloKg, hgb, 11.0, 500);
      if (g.sadeceDepo) {
@@ -1192,7 +1209,10 @@ function analizEt(sonuclar, demirAliyor, kiloKg) {
      refIlac.push('Ganzoni demir açığı için güncel Hb gerekli (ölçülmemiş)');
    }
    refIlac.push('ℹ️ Bu dozlar referans/karar desteği amaçlıdır; aktif endikasyon değerlendirmesi ve hekim onayı gerekir.');
-   ekle('⚖️ Kilo Bazlı Doz Referansı', `Hasta ${kiloKg} kg`, '', 'normal', 'HESAPLANAN BAŞLANGIÇ DOZLARI', [], refIlac, '', []);
+   let refDurum = 'normal', refLabel = 'KİLO BAZLI DOZ REFERANSI';
+   if (hgb !== null && hgb >= 11.5) { refDurum = 'high'; refLabel = 'ESA BAŞLATMA UYGUN DEĞİL (Hb hedef üstü)'; }
+   else if (hgb !== null && hgb < 10) { refDurum = 'low'; refLabel = 'ESA BAŞLATMA ENDİKE — BAŞLANGIÇ DOZLARI'; }
+   ekle('⚖️ Kilo Bazlı Doz Referansı', `Hasta ${kiloKg} kg`, '', refDurum, refLabel, [], refIlac, '', []);
  }
 
  // ── 1. MİNERAL METABOLİZMA (Ca + P + PTH kombine) ────────────────────────
